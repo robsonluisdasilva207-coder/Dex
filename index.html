@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-    <title>DEX</title>
+    <title>DEX IA</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <script>
@@ -12,10 +12,12 @@
                 extend: {
                     colors: {
                         principal: '#ff2222',
-                        escuro: '#121212',
+                        escuro: '#121218',
+                        medio: '#1e1e29',
                         claro: '#f8f8f8',
-                        cinza: '#e0e0e0',
-                        texto: '#222222'
+                        cinza: '#2a2a36',
+                        cinzaClaro: '#888899',
+                        texto: '#e2e2e9'
                     },
                     fontFamily: {
                         sans: ['Inter', 'system-ui', 'sans-serif']
@@ -26,166 +28,200 @@
     </script>
     <style type="text/tailwindcss">
         @layer utilities {
-            .content-auto {
-                content-visibility: auto;
-            }
-            .menu-aberto {
-                transform: translateX(0);
-            }
-            .menu-fechado {
-                transform: translateX(-100%);
-            }
-            .girar {
-                transform: rotate(45deg);
-            }
-            .transicao {
-                transition: all 0.3s ease;
-            }
-            .mensagem-ia {
-                border-left: 3px solid #ff2222;
-            }
-            .fundo-marca {
-                background-image: radial-gradient(#ff222215 1px, transparent 1px);
-                background-size: 20px 20px;
-            }
+            .transicao { transition: all 0.3s ease; }
+            .mensagem-ia { border-left: 3px solid #ff2222; }
+            .menu-jogos { max-height: 0; overflow: hidden; }
+            .menu-jogos.aberto { max-height: 200px; }
+            .ponto { @apply w-2 h-2 rounded-full bg-principal; }
         }
     </style>
 </head>
-<body class="bg-claro text-texto font-sans overflow-x-hidden">
+<body class="bg-escuro text-texto font-sans overflow-x-hidden">
 
-<!-- MENU LATERAL ANIMADO -->
-<div id="menuLateral" class="fixed top-0 left-0 h-full w-72 bg-white shadow-xl z-50 menu-fechado transicao">
-    <div class="p-5 border-b border-cinza">
-        <h3 class="text-xl font-bold text-center">📝 Novo Chat</h3>
-    </div>
-    <div class="p-4 space-y-3 overflow-y-auto h-[calc(100vh-80px)]">
-        <div class="flex items-center gap-3 p-2 rounded-lg hover:bg-cinza/50 cursor-pointer transition">
-            <i class="fa fa-comment-o text-principal"></i>
-            <span class="text-sm">Conversa Minecraft</span>
-        </div>
-        <div class="flex items-center gap-3 p-2 rounded-lg hover:bg-cinza/50 cursor-pointer transition">
-            <i class="fa fa-comment-o text-principal"></i>
-            <span class="text-sm">Scripts Roblox</span>
-        </div>
-        <div class="flex items-center gap-3 p-2 rounded-lg hover:bg-cinza/50 cursor-pointer transition">
-            <i class="fa fa-comment-o text-principal"></i>
-            <span class="text-sm">Configurações Free Fire</span>
-        </div>
-        <div class="flex items-center gap-3 p-2 rounded-lg hover:bg-cinza/50 cursor-pointer transition">
-            <i class="fa fa-comment-o text-principal"></i>
-            <span class="text-sm">Dicas e Truques</span>
-        </div>
-    </div>
-</div>
-
-<!-- FUNDO ESCURO QUANDO MENU ABERTO -->
-<div id="fundoEscuro" class="fixed inset-0 bg-black/40 z-40 hidden transicao"></div>
-
-<!-- CABEÇALHO PRINCIPAL -->
-<header class="sticky top-0 bg-white shadow-sm z-30 px-4 py-3 flex items-center justify-between">
-    <button id="botaoMenu" class="text-2xl text-principal hover:scale-105 transition">
-        <i class="fa fa-bars"></i>
-    </button>
-    <h1 class="text-lg font-bold">Filha Scripts IA</h1>
-    <div class="flex gap-2">
-        <span class="w-2 h-2 rounded-full bg-principal"></span>
-        <span class="w-2 h-2 rounded-full bg-principal"></span>
-        <span class="w-2 h-2 rounded-full bg-principal"></span>
-    </div>
-</header>
-
-<!-- ÁREA DE CONVERSA -->
-<main class="p-4 pb-28 min-h-[calc(100vh-120px)] fundo-marca">
-    <div id="caixaConversa" class="space-y-4 max-w-3xl mx-auto">
-        <div class="mensagem-ia bg-white p-3 rounded-lg shadow-sm max-w-[90%]">
-            <p class="text-sm">👋 Olá! Selecione um jogo abaixo e me peça o que precisar: comandos, scripts, sensibilidade ou configurações!</p>
-        </div>
-    </div>
-</main>
-
-<!-- SELEÇÃO DE JOGOS COM ÍCONES -->
-<div class="fixed bottom-16 left-0 right-0 bg-white border-t border-cinza p-4 shadow-lg z-20">
-    <div class="flex justify-center gap-4 max-w-3xl mx-auto">
-        <button id="jogoMinecraft" onclick="mudarJogo('minecraft')" class="flex flex-col items-center gap-1 p-2 rounded-xl hover:bg-principal/10 transition border border-transparent">
-            <div class="w-12 h-12 bg-green-700 rounded-lg flex items-center justify-center text-white text-xl">
-                🟩
+<!-- LADO ESQUERDO - MENU PRINCIPAL -->
+<div class="fixed top-0 left-0 h-full w-20 bg-medio shadow-lg z-50 flex flex-col items-center py-6 justify-between">
+    <div class="flex flex-col gap-8 items-center">
+        <!-- Logo DEX IA -->
+        <div class="flex items-center gap-2">
+            <div class="flex flex-col gap-0.5">
+                <div class="flex gap-0.5"><div class="ponto"></div><div class="ponto"></div></div>
+                <div class="flex gap-0.5"><div class="ponto"></div><div class="ponto"></div></div>
             </div>
-            <span class="text-xs font-medium">Minecraft</span>
-        </button>
-        <button id="jogoRoblox" onclick="mudarJogo('roblox')" class="flex flex-col items-center gap-1 p-2 rounded-xl hover:bg-principal/10 transition border border-transparent">
-            <div class="w-12 h-12 bg-red-500 rounded-lg flex items-center justify-center text-white text-xl font-bold">
-                R
-            </div>
-            <span class="text-xs font-medium">Roblox</span>
-        </button>
-        <button id="jogoFF" onclick="mudarJogo('ff')" class="flex flex-col items-center gap-1 p-2 rounded-xl hover:bg-principal/10 transition border border-transparent">
-            <div class="w-12 h-12 bg-black rounded-lg flex items-center justify-center text-white text-xl font-bold">
-                FF
-            </div>
-            <span class="text-xs font-medium">Free Fire</span>
-        </button>
-    </div>
-    <div class="text-center mt-2 text-xs text-gray-500">
-        Jogo selecionado: <span id="jogoAtual" class="font-semibold text-principal">Nenhum</span>
-    </div>
-</div>
+            <span class="text-xl font-bold text-principal">DEX</span>
+        </div>
 
-<!-- CAMPO DE DIGITAÇÃO -->
-<div class="fixed bottom-0 left-0 right-0 bg-white border-t border-cinza p-3 z-30">
-    <div class="flex items-center gap-2 max-w-3xl mx-auto">
-        <input type="text" id="campoMensagem" placeholder="Digite sua mensagem..." class="flex-1 border border-cinza rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-principal/40 text-sm">
-        <button id="botaoMais" class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-xl transicao">
+        <!-- Botão Menu -->
+        <button id="botaoMenu" class="text-2xl hover:scale-110 transicao">
+            <i class="fa fa-bars"></i>
+        </button>
+
+        <!-- Botão Chat -->
+        <button class="text-xl text-principal hover:scale-110 transicao">
+            <i class="fa fa-comments"></i>
+        </button>
+
+        <!-- Botão + Jogos -->
+        <button id="botaoMais" class="w-10 h-10 rounded-full bg-cinza flex items-center justify-center text-xl transicao hover:bg-principal hover:text-white">
             +
         </button>
-        <button onclick="enviarMensagem()" class="w-10 h-10 rounded-full bg-principal text-white flex items-center justify-center hover:bg-principal/90 transition">
+    </div>
+
+    <div class="text-sm text-cinzaClaro">v1.0</div>
+</div>
+
+<!-- MENU DE JOGOS (abre ao clicar no +) -->
+<div id="menuJogos" class="fixed left-20 top-28 w-48 bg-medio rounded-lg shadow-xl z-40 menu-jogos transicao p-2">
+    <button onclick="mudarJogo('minecraft')" class="w-full text-left p-2 rounded hover:bg-cinza flex items-center gap-2">
+        <span class="text-green-500">🟩</span> Minecraft
+    </button>
+    <button onclick="mudarJogo('roblox')" class="w-full text-left p-2 rounded hover:bg-cinza flex items-center gap-2">
+        <span class="text-red-500">R</span> Roblox
+    </button>
+    <button onclick="mudarJogo('ff')" class="w-full text-left p-2 rounded hover:bg-cinza flex items-center gap-2">
+        <span class="text-white">FF</span> Free Fire
+    </button>
+</div>
+
+<!-- ÁREA PRINCIPAL DO CHAT -->
+<main class="ml-20 h-screen flex flex-col">
+    <!-- Cabeçalho -->
+    <header class="h-16 bg-medio flex items-center justify-between px-6 border-b border-cinza">
+        <h2 class="text-lg font-semibold">DEX IA <span id="jogoAtual" class="text-sm text-cinzaClaro ml-2">| Nenhum jogo selecionado</span></h2>
+        <div class="flex gap-4">
+            <button class="text-lg hover:text-principal transicao"><i class="fa fa-search"></i></button>
+            <button class="text-lg hover:text-principal transicao"><i class="fa fa-phone"></i></button>
+        </div>
+    </header>
+
+    <!-- Conversa -->
+    <div id="caixaConversa" class="flex-1 p-6 overflow-y-auto space-y-4 bg-escuro">
+        <div class="mensagem-ia bg-medio p-3 rounded-lg max-w-[85%]">
+            <p>👋 Olá! Selecione um jogo no botão + e me peça o que precisar: scripts, comandos, configurações ou ajuda com qualquer coisa!</p>
+        </div>
+    </div>
+
+    <!-- Campo de entrada com todas as funções -->
+    <div class="h-20 bg-medio border-t border-cinza px-4 flex items-center gap-2">
+        <input type="file" id="entradaImagem" accept="image/*" class="hidden">
+        <button onclick="document.getElementById('entradaImagem').click()" class="w-10 h-10 rounded-full bg-cinza flex items-center justify-center text-lg transicao hover:bg-principal">
+            <i class="fa fa-image"></i>
+        </button>
+
+        <button id="botaoMicrofone" class="w-10 h-10 rounded-full bg-cinza flex items-center justify-center text-lg transicao hover:bg-principal">
+            <i class="fa fa-microphone"></i>
+        </button>
+
+        <input type="text" id="campoMensagem" placeholder="Digite sua mensagem..." class="flex-1 bg-cinza rounded-full px-4 py-2 outline-none focus:ring-1 focus:ring-principal">
+
+        <button onclick="enviarMensagem()" class="w-10 h-10 rounded-full bg-principal flex items-center justify-center text-white text-lg transicao hover:bg-principal/90">
             <i class="fa fa-paper-plane"></i>
         </button>
     </div>
-</div>
+</main>
 
 <script>
-// === CONFIGURAÇÃO DA IA — COLOQUE SUA CHAVE AQUI ===
-const CHAVE_IA = "AQ.Ab8RN6IEoDMRN1CZNBwzIqdC89LuccWG_SlNl5jsHmiyfX5dUQ";
-const URL_IA = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
-    
+// === CONFIGURAÇÃO DA IA ===
+const CHAVE_IA = "AQ.Ab8RN6IFvt9CaWu2zTuJAL8JA3cw5Q3Vq7pkh3DBzyUosdKP6w"; // Troque pela sua chave Gemini
+const URL_IA = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${CHAVE_IA}`;
+
 let jogoSelecionado = null;
+let reconhecimento = null;
 
-// === ABRIR E FECHAR MENU LATERAL ===
-const menuLateral = document.getElementById('menuLateral');
-const fundoEscuro = document.getElementById('fundoEscuro');
-const botaoMenu = document.getElementById('botaoMenu');
-
-botaoMenu.addEventListener('click', () => {
-    menuLateral.classList.toggle('menu-aberto');
-    menuLateral.classList.toggle('menu-fechado');
-    fundoEscuro.classList.toggle('hidden');
-});
-
-fundoEscuro.addEventListener('click', () => {
-    menuLateral.classList.remove('menu-aberto');
-    menuLateral.classList.add('menu-fechado');
-    fundoEscuro.classList.add('hidden');
-});
-
-// === BOTÃO + GIRATÓRIO ===
+// === ABRIR/FECHAR MENU DE JOGOS ===
 const botaoMais = document.getElementById('botaoMais');
-let aberto = false;
+const menuJogos = document.getElementById('menuJogos');
 botaoMais.addEventListener('click', () => {
-    aberto = !aberto;
-    botaoMais.classList.toggle('girar');
+    menuJogos.classList.toggle('aberto');
     botaoMais.classList.toggle('bg-principal');
     botaoMais.classList.toggle('text-white');
 });
 
-// === SELECIONAR JOGO E DEFINIR RESPOSTA DA IA ===
+// === SELECIONAR JOGO ===
 function mudarJogo(jogo) {
     jogoSelecionado = jogo;
-    document.getElementById('jogoAtual').textContent = jogo.toUpperCase();
-    document.querySelectorAll('[id^="jogo"]').forEach(btn => btn.classList.remove('border-principal'));
-    document.getElementById(`jogo${jogo.charAt(0).toUpperCase() + jogo.slice(1)}`).classList.add('border-principal');
+    const nomes = {minecraft: "Minecraft Bedrock", roblox: "Roblox / Delta", ff: "Free Fire"};
+    document.getElementById('jogoAtual').textContent = `| ${nomes[jogo]}`;
+    menuJogos.classList.remove('aberto');
+    botaoMais.classList.remove('bg-principal', 'text-white');
 }
 
-// === ENVIAR MENSAGEM PARA A IA ===
+// === RECONHECIMENTO DE VOZ (MICROFONE) ===
+if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    reconhecimento = new SpeechRecognition();
+    reconhecimento.lang = 'pt-BR';
+    reconhecimento.continuous = false;
+    reconhecimento.interimResults = false;
+
+    const botaoMic = document.getElementById('botaoMicrofone');
+    let gravando = false;
+
+    botaoMic.addEventListener('click', () => {
+        if (!gravando) {
+            reconhecimento.start();
+            botaoMic.classList.add('bg-principal', 'animate-pulse');
+            gravando = true;
+        } else {
+            reconhecimento.stop();
+            botaoMic.classList.remove('bg-principal', 'animate-pulse');
+            gravando = false;
+        }
+    });
+
+    reconhecimento.onresult = (e) => {
+        const texto = e.results[0][0].transcript;
+        document.getElementById('campoMensagem').value = texto;
+        botaoMic.classList.remove('bg-principal', 'animate-pulse');
+        gravando = false;
+    };
+
+    reconhecimento.onerror = () => {
+        botaoMic.classList.remove('bg-principal', 'animate-pulse');
+        gravando = false;
+    };
+}
+
+// === ENVIAR IMAGEM PARA ANÁLISE ===
+document.getElementById('entradaImagem').addEventListener('change', async (e) => {
+    const arquivo = e.target.files[0];
+    if (!arquivo) return;
+
+    adicionarMensagem('voce', `📸 Enviou uma imagem`);
+    adicionarMensagem('ia', 'Analisando imagem... ⏳');
+
+    const leitor = new FileReader();
+    leitor.onload = async () => {
+        const base64 = leitor.result.split(',')[1];
+        const instrucao = jogoSelecionado 
+            ? `Você é especialista em ${jogoSelecionado}. Analise essa imagem e responda em português de forma clara.`
+            : `Analise essa imagem e descreva ou responda o que for perguntado, em português.`;
+
+        try {
+            const resposta = await fetch(URL_IA, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    contents: [{
+                        parts: [
+                            { text: instrucao },
+                            { inlineData: { mimeType: arquivo.type, data: base64 } }
+                        ]
+                    }]
+                })
+            });
+            const dados = await resposta.json();
+            removerUltimaMensagem();
+            if (dados.error) throw new Error(dados.error.message);
+            adicionarMensagem('ia', dados.candidates[0].content.parts[0].text);
+        } catch (erro) {
+            removerUltimaMensagem();
+            adicionarMensagem('ia', `❌ Erro: ${erro.message}`);
+        }
+    };
+    leitor.readAsDataURL(arquivo);
+});
+
+// === ENVIAR MENSAGEM DE TEXTO ===
 async function enviarMensagem() {
     const campo = document.getElementById('campoMensagem');
     const texto = campo.value.trim();
@@ -198,16 +234,16 @@ async function enviarMensagem() {
     let instrucao = '';
     switch(jogoSelecionado) {
         case 'minecraft':
-            instrucao = `Você é especialista em Minecraft Bedrock. Responda com comandos, addons, texturas, redstone, sempre compatível com a versão Bedrock. Se pedir código, explique como instalar. Pergunta: ${texto}`;
+            instrucao = `Você é especialista em Minecraft Bedrock. Responda com comandos, addons, redstone compatíveis com a versão Bedrock. Pergunta: ${texto}`;
             break;
         case 'roblox':
-            instrucao = `Você é especialista em scripts para Roblox / Delta Mobile. Use código Lua compatível, organizado e funcional. Sempre explique onde colocar o código. Pergunta: ${texto}`;
+            instrucao = `Você é especialista em scripts Roblox / Delta Mobile. Use código Lua funcional e explique onde usar. Pergunta: ${texto}`;
             break;
         case 'ff':
-            instrucao = `Você é especialista em Free Fire. Dê DPI, sensibilidade, configurações por modelo de celular, dicas de mira e ajustes. Pergunta: ${texto}`;
+            instrucao = `Você é especialista em Free Fire. Dê DPI, sensibilidade e configurações por modelo de celular. Pergunta: ${texto}`;
             break;
         default:
-            instrucao = `Responda de forma clara, direta e objetiva: ${texto}`;
+            instrucao = `Responda de forma clara e direta em português: ${texto}`;
     }
 
     try {
@@ -217,24 +253,23 @@ async function enviarMensagem() {
             body: JSON.stringify({ contents: [{ parts: [{ text: instrucao }] }] })
         });
         const dados = await resposta.json();
-        if (dados.error) throw new Error(dados.error.message);
-        const respostaFinal = dados.candidates[0].content.parts[0].text;
         removerUltimaMensagem();
-        adicionarMensagem('ia', respostaFinal);
+        if (dados.error) throw new Error(dados.error.message);
+        adicionarMensagem('ia', dados.candidates[0].content.parts[0].text);
     } catch (erro) {
         removerUltimaMensagem();
-        adicionarMensagem('ia', '❌ Erro! Verifique se a chave da API está correta e se a internet está funcionando.');
+        adicionarMensagem('ia', `❌ Erro: ${erro.message}`);
     }
 }
 
-// === FUNÇÕES PARA MOSTRAR MENSAGENS ===
+// === FUNÇÕES DE EXIBIÇÃO ===
 function adicionarMensagem(tipo, conteudo) {
     const caixa = document.getElementById('caixaConversa');
     const div = document.createElement('div');
-    div.className = `max-w-[90%] p-3 rounded-lg shadow-sm whitespace-pre-wrap ${
+    div.className = `max-w-[85%] p-3 rounded-lg whitespace-pre-wrap ${
         tipo === 'voce' 
-        ? 'bg-principal/10 ml-auto text-right' 
-        : 'bg-white mensagem-ia mr-auto'
+        ? 'bg-principal ml-auto text-right' 
+        : 'bg-medio mensagem-ia mr-auto'
     }`;
     div.textContent = conteudo;
     caixa.appendChild(div);
@@ -246,12 +281,11 @@ function removerUltimaMensagem() {
     caixa.removeChild(caixa.lastChild);
 }
 
-// === ENVIAR MENSAGEM COM A TECLA ENTER ===
 document.getElementById('campoMensagem').addEventListener('keydown', (e) => {
     if (e.key === 'Enter') enviarMensagem();
 });
 </script>
 
 </body>
-            </html>
-    
+                                                     </html>
+            
