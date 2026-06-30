@@ -55,7 +55,7 @@ local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local LocalPlayer = Players.LocalPlayer
 local Gui = Instance.new("ScreenGui")
-Gui.Name = "FilhaMenu"
+Gui.Name = "IA DEX"
 Gui.ResetOnSpawn = false
 Gui.IgnoreGuiInset = true
 Gui.Parent = LocalPlayer:WaitForChild("PlayerGui")
@@ -73,7 +73,7 @@ Frame.Parent = Gui
 local Titulo = Instance.new("TextLabel")
 Titulo.Size = UDim2.new(1, 0, 0, 35)
 Titulo.BackgroundColor3 = Color3.new(0.8, 0, 0)
-Titulo.Text = "FILHA SCRIPTS"
+Titulo.Text = "IA DEX"
 Titulo.TextColor3 = Color3.new(1,1,1)
 Titulo.Font = Enum.Font.GothamBold
 Titulo.Parent = Frame
@@ -125,7 +125,7 @@ Botão de Tiro: 48%
         }
 
         // === COLE AQUI A SUA CHAVE DO GOOGLE ===
-        const CHAVE_IA = AQ.Ab8RN6IlC9LE-JLOD6vn1v7QeQgR_k-nLaE_3aGQ4-BPnfuaAQ
+        const CHAVE_IA =AQ.Ab8RN6IDqYMj0YABphJZNYE-uFJTbwXyhdKxM4IWd8-d0ZD8dg
         const URL_IA = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${CHAVE_IA}`;
 
         async function enviar() {
