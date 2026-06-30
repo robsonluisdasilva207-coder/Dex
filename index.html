@@ -12,15 +12,14 @@
                 extend: {
                     colors: {
                         principal: '#ff2222',
-                        escuro: '#121218',
-                        medio: '#1e1e29',
-                        claro: '#f8f8f8',
-                        cinza: '#2a2a36',
+                        escuro: '#0f0f13',
+                        medio: '#1a1a22',
+                        cinza: '#2a2a35',
                         cinzaClaro: '#888899',
-                        texto: '#e2e2e9'
+                        texto: '#e5e5ee'
                     },
                     fontFamily: {
-                        sans: ['Inter', 'system-ui', 'sans-serif']
+                        sans: ['Inter', 'Segoe UI', 'Roboto', 'system-ui', 'sans-serif']
                     }
                 }
             }
@@ -28,109 +27,112 @@
     </script>
     <style type="text/tailwindcss">
         @layer utilities {
-            .transicao { transition: all 0.3s ease; }
+            .transicao { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
             .mensagem-ia { border-left: 3px solid #ff2222; }
-            .menu-jogos { max-height: 0; overflow: hidden; }
-            .menu-jogos.aberto { max-height: 200px; }
+            .menu-jogos { max-height: 0; overflow: hidden; opacity: 0; }
+            .menu-jogos.aberto { max-height: 220px; opacity: 1; }
             .ponto { @apply w-2 h-2 rounded-full bg-principal; }
+            .rolagem-suave { scroll-behavior: smooth; }
         }
     </style>
 </head>
-<body class="bg-escuro text-texto font-sans overflow-x-hidden">
+<body class="bg-escuro text-texto font-sans overflow-x-hidden rolagem-suave">
 
-<!-- LADO ESQUERDO - MENU PRINCIPAL -->
-<div class="fixed top-0 left-0 h-full w-20 bg-medio shadow-lg z-50 flex flex-col items-center py-6 justify-between">
-    <div class="flex flex-col gap-8 items-center">
-        <!-- Logo DEX IA -->
-        <div class="flex items-center gap-2">
-            <div class="flex flex-col gap-0.5">
-                <div class="flex gap-0.5"><div class="ponto"></div><div class="ponto"></div></div>
-                <div class="flex gap-0.5"><div class="ponto"></div><div class="ponto"></div></div>
+<!-- MENU LATERAL -->
+<div class="fixed top-0 left-0 h-full w-20 bg-medio shadow-lg z-50 flex flex-col items-center py-6 justify-between border-r border-cinza/50">
+    <div class="flex flex-col gap-10 items-center">
+        <!-- Logo DEX -->
+        <div class="flex flex-col items-center gap-2">
+            <div class="grid grid-cols-2 gap-1">
+                <div class="ponto"></div><div class="ponto"></div>
+                <div class="ponto"></div><div class="ponto"></div>
             </div>
-            <span class="text-xl font-bold text-principal">DEX</span>
+            <span class="text-xl font-bold text-principal tracking-wider">DEX</span>
         </div>
 
-        <!-- Botão Menu -->
-        <button id="botaoMenu" class="text-2xl hover:scale-110 transicao">
-            <i class="fa fa-bars"></i>
-        </button>
-
-        <!-- Botão Chat -->
-        <button class="text-xl text-principal hover:scale-110 transicao">
-            <i class="fa fa-comments"></i>
-        </button>
-
-        <!-- Botão + Jogos -->
-        <button id="botaoMais" class="w-10 h-10 rounded-full bg-cinza flex items-center justify-center text-xl transicao hover:bg-principal hover:text-white">
-            +
-        </button>
+        <!-- Botões do menu -->
+        <div class="flex flex-col gap-8 items-center">
+            <button id="botaoMenu" class="text-2xl hover:scale-110 hover:text-principal transicao">
+                <i class="fa fa-bars"></i>
+            </button>
+            <button class="text-xl text-principal hover:scale-110 transicao">
+                <i class="fa fa-comments"></i>
+            </button>
+            <button id="botaoMais" class="w-11 h-11 rounded-full bg-cinza flex items-center justify-center text-xl transicao hover:bg-principal hover:text-white shadow-sm">
+                +
+            </button>
+        </div>
     </div>
 
-    <div class="text-sm text-cinzaClaro">v1.0</div>
+    <div class="text-xs text-cinzaClaro">v1.0</div>
 </div>
 
-<!-- MENU DE JOGOS (abre ao clicar no +) -->
-<div id="menuJogos" class="fixed left-20 top-28 w-48 bg-medio rounded-lg shadow-xl z-40 menu-jogos transicao p-2">
-    <button onclick="mudarJogo('minecraft')" class="w-full text-left p-2 rounded hover:bg-cinza flex items-center gap-2">
-        <span class="text-green-500">🟩</span> Minecraft
+<!-- MENU DE JOGOS -->
+<div id="menuJogos" class="fixed left-24 top-28 w-48 bg-medio rounded-xl shadow-xl z-40 menu-jogos transicao p-2 border border-cinza/60">
+    <button onclick="mudarJogo('minecraft')" class="w-full text-left p-3 rounded-lg hover:bg-cinza flex items-center gap-3 transicao">
+        <span class="text-green-500 text-lg">🟩</span>
+        <span>Minecraft</span>
     </button>
-    <button onclick="mudarJogo('roblox')" class="w-full text-left p-2 rounded hover:bg-cinza flex items-center gap-2">
-        <span class="text-red-500">R</span> Roblox
+    <button onclick="mudarJogo('roblox')" class="w-full text-left p-3 rounded-lg hover:bg-cinza flex items-center gap-3 transicao">
+        <span class="text-red-500 font-bold">R</span>
+        <span>Roblox</span>
     </button>
-    <button onclick="mudarJogo('ff')" class="w-full text-left p-2 rounded hover:bg-cinza flex items-center gap-2">
-        <span class="text-white">FF</span> Free Fire
+    <button onclick="mudarJogo('ff')" class="w-full text-left p-3 rounded-lg hover:bg-cinza flex items-center gap-3 transicao">
+        <span class="text-white font-bold">FF</span>
+        <span>Free Fire</span>
     </button>
 </div>
 
-<!-- ÁREA PRINCIPAL DO CHAT -->
+<!-- ÁREA PRINCIPAL -->
 <main class="ml-20 h-screen flex flex-col">
     <!-- Cabeçalho -->
-    <header class="h-16 bg-medio flex items-center justify-between px-6 border-b border-cinza">
-        <h2 class="text-lg font-semibold">DEX IA <span id="jogoAtual" class="text-sm text-cinzaClaro ml-2">| Nenhum jogo selecionado</span></h2>
-        <div class="flex gap-4">
-            <button class="text-lg hover:text-principal transicao"><i class="fa fa-search"></i></button>
-            <button class="text-lg hover:text-principal transicao"><i class="fa fa-phone"></i></button>
+    <header class="h-16 bg-medio flex items-center justify-between px-6 border-b border-cinza/50 shadow-sm">
+        <h2 class="text-lg font-semibold tracking-wide">DEX IA <span id="jogoAtual" class="text-sm text-cinzaClaro ml-2 font-normal">| Nenhum jogo selecionado</span></h2>
+        <div class="flex gap-5">
+            <button class="text-lg hover:text-principal transicao">
+                <i class="fa fa-search"></i>
+            </button>
+            <button class="text-lg hover:text-principal transicao">
+                <i class="fa fa-phone"></i>
+            </button>
         </div>
     </header>
 
-    <!-- Conversa -->
-    <div id="caixaConversa" class="flex-1 p-6 overflow-y-auto space-y-4 bg-escuro">
-        <div class="mensagem-ia bg-medio p-3 rounded-lg max-w-[85%]">
-            <p>👋 Olá! Selecione um jogo no botão + e me peça o que precisar: scripts, comandos, configurações ou ajuda com qualquer coisa!</p>
+    <!-- Área de conversa -->
+    <div id="caixaConversa" class="flex-1 p-5 overflow-y-auto space-y-5 bg-escuro/95">
+        <div class="mensagem-ia bg-medio p-4 rounded-lg shadow-sm max-w-[88%]">
+            <p class="text-sm leading-relaxed">👋 Olá! Selecione um jogo no botão + e me peça o que precisar: scripts, comandos, configurações ou ajuda com qualquer coisa!</p>
         </div>
     </div>
 
-    <!-- Campo de entrada com todas as funções -->
-    <div class="h-20 bg-medio border-t border-cinza px-4 flex items-center gap-2">
+    <!-- Campo de entrada -->
+    <div class="h-20 bg-medio border-t border-cinza/50 px-4 flex items-center gap-3 shadow-inner">
         <input type="file" id="entradaImagem" accept="image/*" class="hidden">
-        <button onclick="document.getElementById('entradaImagem').click()" class="w-10 h-10 rounded-full bg-cinza flex items-center justify-center text-lg transicao hover:bg-principal">
+        <button onclick="document.getElementById('entradaImagem').click()" class="w-10 h-10 rounded-full bg-cinza flex items-center justify-center text-lg transicao hover:bg-principal hover:text-white shadow-sm">
             <i class="fa fa-image"></i>
         </button>
 
-        <button id="botaoMicrofone" class="w-10 h-10 rounded-full bg-cinza flex items-center justify-center text-lg transicao hover:bg-principal">
+        <button id="botaoMicrofone" class="w-10 h-10 rounded-full bg-cinza flex items-center justify-center text-lg transicao hover:bg-principal hover:text-white shadow-sm">
             <i class="fa fa-microphone"></i>
         </button>
 
-        <input type="text" id="campoMensagem" placeholder="Digite sua mensagem..." class="flex-1 bg-cinza rounded-full px-4 py-2 outline-none focus:ring-1 focus:ring-principal">
+        <input type="text" id="campoMensagem" placeholder="Digite sua mensagem..." class="flex-1 bg-cinza rounded-full px-4 py-2.5 outline-none focus:ring-2 focus:ring-principal/40 transition-shadow">
 
-        <button onclick="enviarMensagem()" class="w-10 h-10 rounded-full bg-principal flex items-center justify-center text-white text-lg transicao hover:bg-principal/90">
+        <button onclick="enviarMensagem()" class="w-10 h-10 rounded-full bg-principal flex items-center justify-center text-white text-lg transicao hover:bg-principal/90 shadow-md">
             <i class="fa fa-paper-plane"></i>
         </button>
     </div>
 </main>
 
 <script>
-    
-// === CONFIGURAÇÃO DA IA ===
-const CHAVE_IA = "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";
+// === CONFIGURAÇÃO GROQ — PRONTA E CORRETA ===
+const CHAVE_IA = "gsk_SoNK1jwAw1mk7ZbnIMVWGdyb3FYuBkQnW4OUfk8PZnCPR29QCr";
 const URL_IA = "https://api.groq.com/openai/v1/chat/completions";
 const MODELO_IA = "llama3-70b-8192";
-    
 
 let jogoSelecionado = null;
-let reconhecimento = null;
 
-// === ABRIR/FECHAR MENU DE JOGOS ===
+// === ABRIR / FECHAR MENU DE JOGOS ===
 const botaoMais = document.getElementById('botaoMais');
 const menuJogos = document.getElementById('menuJogos');
 botaoMais.addEventListener('click', () => {
@@ -142,16 +144,20 @@ botaoMais.addEventListener('click', () => {
 // === SELECIONAR JOGO ===
 function mudarJogo(jogo) {
     jogoSelecionado = jogo;
-    const nomes = {minecraft: "Minecraft Bedrock", roblox: "Roblox / Delta", ff: "Free Fire"};
+    const nomes = {
+        minecraft: "Minecraft Bedrock",
+        roblox: "Roblox / Delta",
+        ff: "Free Fire"
+    };
     document.getElementById('jogoAtual').textContent = `| ${nomes[jogo]}`;
     menuJogos.classList.remove('aberto');
     botaoMais.classList.remove('bg-principal', 'text-white');
 }
 
-// === RECONHECIMENTO DE VOZ (MICROFONE) ===
+// === RECONHECIMENTO DE VOZ ===
 if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    reconhecimento = new SpeechRecognition();
+    const reconhecimento = new SpeechRecognition();
     reconhecimento.lang = 'pt-BR';
     reconhecimento.continuous = false;
     reconhecimento.interimResults = false;
@@ -184,47 +190,7 @@ if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
     };
 }
 
-// === ENVIAR IMAGEM PARA ANÁLISE ===
-document.getElementById('entradaImagem').addEventListener('change', async (e) => {
-    const arquivo = e.target.files[0];
-    if (!arquivo) return;
-
-    adicionarMensagem('voce', `📸 Enviou uma imagem`);
-    adicionarMensagem('ia', 'Analisando imagem... ⏳');
-
-    const leitor = new FileReader();
-    leitor.onload = async () => {
-        const base64 = leitor.result.split(',')[1];
-        const instrucao = jogoSelecionado 
-            ? `Você é especialista em ${jogoSelecionado}. Analise essa imagem e responda em português de forma clara.`
-            : `Analise essa imagem e descreva ou responda o que for perguntado, em português.`;
-
-        try {
-            const resposta = await fetch(URL_IA, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    contents: [{
-                        parts: [
-                            { text: instrucao },
-                            { inlineData: { mimeType: arquivo.type, data: base64 } }
-                        ]
-                    }]
-                })
-            });
-            const dados = await resposta.json();
-            removerUltimaMensagem();
-            if (dados.error) throw new Error(dados.error.message);
-            adicionarMensagem('ia', dados.candidates[0].content.parts[0].text);
-        } catch (erro) {
-            removerUltimaMensagem();
-            adicionarMensagem('ia', `❌ Erro: ${erro.message}`);
-        }
-    };
-    leitor.readAsDataURL(arquivo);
-});
-
-// === ENVIAR MENSAGEM DE TEXTO ===
+// === ENVIAR MENSAGEM PARA A IA ===
 async function enviarMensagem() {
     const campo = document.getElementById('campoMensagem');
     const texto = campo.value.trim();
@@ -237,41 +203,50 @@ async function enviarMensagem() {
     let instrucao = '';
     switch(jogoSelecionado) {
         case 'minecraft':
-            instrucao = `Você é especialista em Minecraft Bedrock. Responda com comandos, addons, redstone compatíveis com a versão Bedrock. Pergunta: ${texto}`;
+            instrucao = `Você é especialista em Minecraft Bedrock. Responda com comandos, addons, redstone e dicas sempre compatíveis com a versão Bedrock. Explique tudo passo a passo e de forma simples. Pergunta: ${texto}`;
             break;
         case 'roblox':
-            instrucao = `Você é especialista em scripts Roblox / Delta Mobile. Use código Lua funcional e explique onde usar. Pergunta: ${texto}`;
+            instrucao = `Você é especialista em scripts Roblox e Delta Mobile. Use código Lua funcional, organizado e explique exatamente onde e como usar. Pergunta: ${texto}`;
             break;
         case 'ff':
-            instrucao = `Você é especialista em Free Fire. Dê DPI, sensibilidade e configurações por modelo de celular. Pergunta: ${texto}`;
+            instrucao = `Você é especialista em Free Fire. Dê DPI, sensibilidade, configurações e dicas de mira por modelo de celular. Pergunta: ${texto}`;
             break;
         default:
-            instrucao = `Responda de forma clara e direta em português: ${texto}`;
+            instrucao = `Responda em português, de forma clara, direta e organizada: ${texto}`;
     }
 
     try {
         const resposta = await fetch(URL_IA, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ contents: [{ parts: [{ text: instrucao }] }] })
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${CHAVE_IA}`
+            },
+            body: JSON.stringify({
+                model: MODELO_IA,
+                messages: [{ role: "user", content: instrucao }]
+            })
         });
+
         const dados = await resposta.json();
         removerUltimaMensagem();
+
         if (dados.error) throw new Error(dados.error.message);
-        adicionarMensagem('ia', dados.candidates[0].content.parts[0].text);
+        adicionarMensagem('ia', dados.choices[0].message.content);
+
     } catch (erro) {
         removerUltimaMensagem();
         adicionarMensagem('ia', `❌ Erro: ${erro.message}`);
     }
 }
 
-// === FUNÇÕES DE EXIBIÇÃO ===
+// === FUNÇÕES DE EXIBIÇÃO DAS MENSAGENS ===
 function adicionarMensagem(tipo, conteudo) {
     const caixa = document.getElementById('caixaConversa');
     const div = document.createElement('div');
-    div.className = `max-w-[85%] p-3 rounded-lg whitespace-pre-wrap ${
+    div.className = `max-w-[88%] p-4 rounded-lg shadow-sm whitespace-pre-wrap leading-relaxed ${
         tipo === 'voce' 
-        ? 'bg-principal ml-auto text-right' 
+        ? 'bg-principal/90 ml-auto text-white text-right' 
         : 'bg-medio mensagem-ia mr-auto'
     }`;
     div.textContent = conteudo;
@@ -284,11 +259,12 @@ function removerUltimaMensagem() {
     caixa.removeChild(caixa.lastChild);
 }
 
+// === ENVIAR COM A TECLA ENTER ===
 document.getElementById('campoMensagem').addEventListener('keydown', (e) => {
     if (e.key === 'Enter') enviarMensagem();
 });
 </script>
 
 </body>
-                                                     </html>
-            
+                    </html>
+    
