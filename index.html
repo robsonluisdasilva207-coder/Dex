@@ -2,176 +2,256 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Filha Scripts</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
-        :root { --vermelho: #ff2222; --fundo: #0a0a0a; --card: #151515; --texto: #eeeeee; }
-        body { background: var(--fundo); color: var(--texto); padding: 15px; }
-        header { text-align: center; margin-bottom: 25px; }
-        h1 { color: var(--vermelho); font-size: 28px; }
-        .abas { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
-        .aba { flex: 1; padding: 10px; border: none; border-radius: 8px; background: #222; color: white; font-size: 14px; cursor: pointer; }
-        .aba.ativa { background: var(--vermelho); }
-        .conteudo { display: none; }
-        .conteudo.ativo { display: block; }
-        .chat { height: 320px; overflow-y: auto; background: var(--card); border-radius: 10px; padding: 12px; margin-bottom: 10px; border: 1px solid #333; }
-        .msg { margin: 8px 0; padding: 8px 12px; border-radius: 6px; max-width: 90%; }
-        .eu { background: #2b2b2b; margin-left: auto; text-align: right; }
-        .ia { background: #1e293b; margin-right: auto; border-left: 3px solid var(--vermelho); }
-        .campo { display: flex; gap: 8px; }
-        input { flex: 1; padding: 10px; border: none; border-radius: 8px; background: var(--card); color: white; }
-        button { padding: 10px 15px; border: none; border-radius: 8px; background: var(--vermelho); color: white; cursor: pointer; }
-        .codigo { background: #111; padding: 12px; border-radius: 6px; margin: 10px 0; border-left: 3px solid var(--vermelho); font-family: monospace; white-space: pre-wrap; overflow-x: auto; }
-        .copiar { background: #333; font-size: 12px; margin-top: 5px; }
-    </style>
-</head>
-<body>
-    <header>
-        <h1>🤖 Filha Scripts</h1>
-        <p>IA + Scripts + Configurações para Jogos</p>
-    </header>
-
-    <div class="abas">
-        <button class="aba ativa" onclick="mudarAba('ia')">IA Geradora</button>
-        <button class="aba" onclick="mudarAba('delta')">Delta / Roblox</button>
-        <button class="aba" onclick="mudarAba('ctr')">CTR / DPI</button>
-        <button class="aba" onclick="mudarAba('minecraft')">Minecraft</button>
-    </div>
-
-    <div id="ia" class="conteudo ativo">
-        <div class="chat" id="caixaChat"></div>
-        <div class="campo">
-            <input type="text" id="pergunta" placeholder="Ex: Script de menu, sensibilidade A20s...">
-            <button onclick="enviar()">Enviar</button>
-        </div>
-    </div>
-
-    <div id="delta" class="conteudo">
-        <h3>📜 Menu Básico - Delta Mobile</h3>
-        <div class="codigo" id="codDelta">
--- MENU COMPATÍVEL DELTA MOBILE
-local Players = game:GetService("Players")
-local TweenService = game:GetService("TweenService")
-local LocalPlayer = Players.LocalPlayer
-local Gui = Instance.new("ScreenGui")
-Gui.Name = "IA DEX"
-Gui.ResetOnSpawn = false
-Gui.IgnoreGuiInset = true
-Gui.Parent = LocalPlayer:WaitForChild("PlayerGui")
-
-local Frame = Instance.new("Frame")
-Frame.Size = UDim2.new(0, 240, 0, 300)
-Frame.Position = UDim2.new(0.02, 0, 0.1, 0)
-Frame.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1)
-Frame.BorderColor3 = Color3.new(1, 0, 0)
-Frame.BorderSizePixel = 2
-Frame.Active = true
-Frame.Draggable = true
-Frame.Parent = Gui
-
-local Titulo = Instance.new("TextLabel")
-Titulo.Size = UDim2.new(1, 0, 0, 35)
-Titulo.BackgroundColor3 = Color3.new(0.8, 0, 0)
-Titulo.Text = "IA DEX"
-Titulo.TextColor3 = Color3.new(1,1,1)
-Titulo.Font = Enum.Font.GothamBold
-Titulo.Parent = Frame
-        </div>
-        <button class="copiar" onclick="copiar('codDelta')">📋 Copiar</button>
-    </div>
-
-    <div id="ctr" class="conteudo">
-        <h3>🎯 Samsung A20s - Configuração</h3>
-        <div class="codigo" id="codCtr">
-DPI: 480
-Sensibilidade Geral: 96
-Mira de Ponto: 92
-Mira 2x: 88
-Mira 4x: 85
-Mira de Francotirador: 55
-Câmera 360: 60
-Botão de Tiro: 48%
-        </div>
-        <button class="copiar" onclick="copiar('codCtr')">📋 Copiar</button>
-    </div>
-
-    <div id="minecraft" class="conteudo">
-        <h3>⚙️ Comandos Úteis</h3>
-        <div class="codigo" id="codMc">
-/gamemode creative
-/gamemode survival
-/tp @s x y z
-/give @s diamond_sword 1
-/effect @s speed 10 2
-/setblock ~ ~ ~ stone
-        </div>
-        <button class="copiar" onclick="copiar('codMc')">📋 Copiar</button>
-    </div>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>Filha Scripts IA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <script>
-        function mudarAba(nome) {
-            document.querySelectorAll('.aba').forEach(a => a.classList.remove('ativa'))
-            document.querySelectorAll('.conteudo').forEach(c => c.classList.remove('ativa'))
-            event.target.classList.add('ativa')
-            document.getElementById(nome).classList.add('ativa')
-        }
-
-        function copiar(id) {
-            const texto = document.getElementById(id).innerText.trim()
-            navigator.clipboard.writeText(texto)
-                .then(() => alert('✅ Copiado!'))
-                .catch(() => alert('❌ Erro ao copiar'))
-        }
-
-        // === COLE AQUI A SUA CHAVE DO GOOGLE ===
-        const CHAVE_IA =AQ.Ab8RN6IDqYMj0YABphJZNYE-uFJTbwXyhdKxM4IWd8-d0ZD8dg
-        const URL_IA = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${CHAVE_IA}`;
-
-        async function enviar() {
-            const campo = document.getElementById('pergunta')
-            const pergunta = campo.value.trim()
-            if (!pergunta) return
-            campo.value = ""
-
-            adicionarMensagem("Você", pergunta)
-            adicionarMensagem("IA", "Pensando...")
-
-            const instrucao = `Você é a Filha Scripts, especialista em jogos. Responda apenas com códigos e configurações funcionais:
-- Roblox/Delta: use Lua/Luau compatível
-- Minecraft Bedrock: comandos e explicações claras
-- CTR: DPI e sensibilidade por modelo de celular
-Seja direto, sem enrolação. Pergunta: ${pergunta}`
-
-            try {
-                const resposta = await fetch(URL_IA, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: instrucao }] }] })
-                })
-                const dados = await resposta.json()
-                const textoFinal = dados.candidates[0].content.parts[0].text
-                removerUltima()
-                adicionarMensagem("IA", textoFinal)
-            } catch (erro) {
-                removerUltima()
-                adicionarMensagem("IA", "Erro: verifique a chave ou a internet.")
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        principal: '#ff2222',
+                        escuro: '#121212',
+                        claro: '#f8f8f8',
+                        cinza: '#e0e0e0',
+                        texto: '#222222'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif']
+                    }
+                }
             }
         }
-
-        function adicionarMensagem(quem, texto) {
-            const div = document.createElement('div')
-            div.className = quem === "Você" ? "msg eu" : "msg ia"
-            div.textContent = texto
-            document.getElementById('caixaChat').appendChild(div)
-            div.scrollIntoView()
-        }
-
-        function removerUltima() {
-            const caixa = document.getElementById('caixaChat')
-            caixa.removeChild(caixa.lastChild)
-        }
     </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .menu-aberto {
+                transform: translateX(0);
+            }
+            .menu-fechado {
+                transform: translateX(-100%);
+            }
+            .girar {
+                transform: rotate(45deg);
+            }
+            .transicao {
+                transition: all 0.3s ease;
+            }
+            .mensagem-ia {
+                border-left: 3px solid #ff2222;
+            }
+            .fundo-marca {
+                background-image: radial-gradient(#ff222215 1px, transparent 1px);
+                background-size: 20px 20px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-claro text-texto font-sans overflow-x-hidden">
+
+<!-- MENU LATERAL ANIMADO -->
+<div id="menuLateral" class="fixed top-0 left-0 h-full w-72 bg-white shadow-xl z-50 menu-fechado transicao">
+    <div class="p-5 border-b border-cinza">
+        <h3 class="text-xl font-bold text-center">📝 Novo Chat</h3>
+    </div>
+    <div class="p-4 space-y-3 overflow-y-auto h-[calc(100vh-80px)]">
+        <div class="flex items-center gap-3 p-2 rounded-lg hover:bg-cinza/50 cursor-pointer transition">
+            <i class="fa fa-comment-o text-principal"></i>
+            <span class="text-sm">Conversa Minecraft</span>
+        </div>
+        <div class="flex items-center gap-3 p-2 rounded-lg hover:bg-cinza/50 cursor-pointer transition">
+            <i class="fa fa-comment-o text-principal"></i>
+            <span class="text-sm">Scripts Roblox</span>
+        </div>
+        <div class="flex items-center gap-3 p-2 rounded-lg hover:bg-cinza/50 cursor-pointer transition">
+            <i class="fa fa-comment-o text-principal"></i>
+            <span class="text-sm">Configurações Free Fire</span>
+        </div>
+        <div class="flex items-center gap-3 p-2 rounded-lg hover:bg-cinza/50 cursor-pointer transition">
+            <i class="fa fa-comment-o text-principal"></i>
+            <span class="text-sm">Dicas e Truques</span>
+        </div>
+    </div>
+</div>
+
+<!-- FUNDO ESCURO QUANDO MENU ABERTO -->
+<div id="fundoEscuro" class="fixed inset-0 bg-black/40 z-40 hidden transicao"></div>
+
+<!-- CABEÇALHO PRINCIPAL -->
+<header class="sticky top-0 bg-white shadow-sm z-30 px-4 py-3 flex items-center justify-between">
+    <button id="botaoMenu" class="text-2xl text-principal hover:scale-105 transition">
+        <i class="fa fa-bars"></i>
+    </button>
+    <h1 class="text-lg font-bold">Filha Scripts IA</h1>
+    <div class="flex gap-2">
+        <span class="w-2 h-2 rounded-full bg-principal"></span>
+        <span class="w-2 h-2 rounded-full bg-principal"></span>
+        <span class="w-2 h-2 rounded-full bg-principal"></span>
+    </div>
+</header>
+
+<!-- ÁREA DE CONVERSA -->
+<main class="p-4 pb-28 min-h-[calc(100vh-120px)] fundo-marca">
+    <div id="caixaConversa" class="space-y-4 max-w-3xl mx-auto">
+        <div class="mensagem-ia bg-white p-3 rounded-lg shadow-sm max-w-[90%]">
+            <p class="text-sm">👋 Olá! Selecione um jogo abaixo e me peça o que precisar: comandos, scripts, sensibilidade ou configurações!</p>
+        </div>
+    </div>
+</main>
+
+<!-- SELEÇÃO DE JOGOS COM ÍCONES -->
+<div class="fixed bottom-16 left-0 right-0 bg-white border-t border-cinza p-4 shadow-lg z-20">
+    <div class="flex justify-center gap-4 max-w-3xl mx-auto">
+        <button id="jogoMinecraft" onclick="mudarJogo('minecraft')" class="flex flex-col items-center gap-1 p-2 rounded-xl hover:bg-principal/10 transition border border-transparent">
+            <div class="w-12 h-12 bg-green-700 rounded-lg flex items-center justify-center text-white text-xl">
+                🟩
+            </div>
+            <span class="text-xs font-medium">Minecraft</span>
+        </button>
+        <button id="jogoRoblox" onclick="mudarJogo('roblox')" class="flex flex-col items-center gap-1 p-2 rounded-xl hover:bg-principal/10 transition border border-transparent">
+            <div class="w-12 h-12 bg-red-500 rounded-lg flex items-center justify-center text-white text-xl font-bold">
+                R
+            </div>
+            <span class="text-xs font-medium">Roblox</span>
+        </button>
+        <button id="jogoFF" onclick="mudarJogo('ff')" class="flex flex-col items-center gap-1 p-2 rounded-xl hover:bg-principal/10 transition border border-transparent">
+            <div class="w-12 h-12 bg-black rounded-lg flex items-center justify-center text-white text-xl font-bold">
+                FF
+            </div>
+            <span class="text-xs font-medium">Free Fire</span>
+        </button>
+    </div>
+    <div class="text-center mt-2 text-xs text-gray-500">
+        Jogo selecionado: <span id="jogoAtual" class="font-semibold text-principal">Nenhum</span>
+    </div>
+</div>
+
+<!-- CAMPO DE DIGITAÇÃO -->
+<div class="fixed bottom-0 left-0 right-0 bg-white border-t border-cinza p-3 z-30">
+    <div class="flex items-center gap-2 max-w-3xl mx-auto">
+        <input type="text" id="campoMensagem" placeholder="Digite sua mensagem..." class="flex-1 border border-cinza rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-principal/40 text-sm">
+        <button id="botaoMais" class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-xl transicao">
+            +
+        </button>
+        <button onclick="enviarMensagem()" class="w-10 h-10 rounded-full bg-principal text-white flex items-center justify-center hover:bg-principal/90 transition">
+            <i class="fa fa-paper-plane"></i>
+        </button>
+    </div>
+</div>
+
+<script>
+// === CONFIGURAÇÃO DA IA — COLOQUE SUA CHAVE AQUI ===
+const CHAVE_IA = "AQ.Ab8RN6IrkkqWKKM8DU23cVWd3aIIJnxaKy0ej_S_Zu9iDES9ng"; // <-- TROQUE PELA SUA CHAVE
+const URL_IA = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${CHAVE_IA}`;
+
+let jogoSelecionado = null;
+
+// === ABRIR E FECHAR MENU LATERAL ===
+const menuLateral = document.getElementById('menuLateral');
+const fundoEscuro = document.getElementById('fundoEscuro');
+const botaoMenu = document.getElementById('botaoMenu');
+
+botaoMenu.addEventListener('click', () => {
+    menuLateral.classList.toggle('menu-aberto');
+    menuLateral.classList.toggle('menu-fechado');
+    fundoEscuro.classList.toggle('hidden');
+});
+
+fundoEscuro.addEventListener('click', () => {
+    menuLateral.classList.remove('menu-aberto');
+    menuLateral.classList.add('menu-fechado');
+    fundoEscuro.classList.add('hidden');
+});
+
+// === BOTÃO + GIRATÓRIO ===
+const botaoMais = document.getElementById('botaoMais');
+let aberto = false;
+botaoMais.addEventListener('click', () => {
+    aberto = !aberto;
+    botaoMais.classList.toggle('girar');
+    botaoMais.classList.toggle('bg-principal');
+    botaoMais.classList.toggle('text-white');
+});
+
+// === SELECIONAR JOGO E DEFINIR RESPOSTA DA IA ===
+function mudarJogo(jogo) {
+    jogoSelecionado = jogo;
+    document.getElementById('jogoAtual').textContent = jogo.toUpperCase();
+    document.querySelectorAll('[id^="jogo"]').forEach(btn => btn.classList.remove('border-principal'));
+    document.getElementById(`jogo${jogo.charAt(0).toUpperCase() + jogo.slice(1)}`).classList.add('border-principal');
+}
+
+// === ENVIAR MENSAGEM PARA A IA ===
+async function enviarMensagem() {
+    const campo = document.getElementById('campoMensagem');
+    const texto = campo.value.trim();
+    if (!texto) return;
+
+    adicionarMensagem('voce', texto);
+    campo.value = '';
+    adicionarMensagem('ia', 'Pensando... ⏳');
+
+    let instrucao = '';
+    switch(jogoSelecionado) {
+        case 'minecraft':
+            instrucao = `Você é especialista em Minecraft Bedrock. Responda com comandos, addons, texturas, redstone, sempre compatível com a versão Bedrock. Se pedir código, explique como instalar. Pergunta: ${texto}`;
+            break;
+        case 'roblox':
+            instrucao = `Você é especialista em scripts para Roblox / Delta Mobile. Use código Lua compatível, organizado e funcional. Sempre explique onde colocar o código. Pergunta: ${texto}`;
+            break;
+        case 'ff':
+            instrucao = `Você é especialista em Free Fire. Dê DPI, sensibilidade, configurações por modelo de celular, dicas de mira e ajustes. Pergunta: ${texto}`;
+            break;
+        default:
+            instrucao = `Responda de forma clara, direta e objetiva: ${texto}`;
+    }
+
+    try {
+        const resposta = await fetch(URL_IA, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ contents: [{ parts: [{ text: instrucao }] }] })
+        });
+        const dados = await resposta.json();
+        if (dados.error) throw new Error(dados.error.message);
+        const respostaFinal = dados.candidates[0].content.parts[0].text;
+        removerUltimaMensagem();
+        adicionarMensagem('ia', respostaFinal);
+    } catch (erro) {
+        removerUltimaMensagem();
+        adicionarMensagem('ia', '❌ Erro! Verifique se a chave da API está correta e se a internet está funcionando.');
+    }
+}
+
+// === FUNÇÕES PARA MOSTRAR MENSAGENS ===
+function adicionarMensagem(tipo, conteudo) {
+    const caixa = document.getElementById('caixaConversa');
+    const div = document.createElement('div');
+    div.className = `max-w-[90%] p-3 rounded-lg shadow-sm whitespace-pre-wrap ${
+        tipo === 'voce' 
+        ? 'bg-principal/10 ml-auto text-right' 
+        : 'bg-white mensagem-ia mr-auto'
+    }`;
+    div.textContent = conteudo;
+    caixa.appendChild(div);
+    caixa.scrollTop = caixa.scrollHeight;
+}
+
+function removerUltimaMensagem() {
+    const caixa = document.getElementById('caixaConversa');
+    caixa.removeChild(caixa.lastChild);
+}
+
+// === ENVIAR MENSAGEM COM A TECLA ENTER ===
+document.getElementById('campoMensagem').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') enviarMensagem();
+});
+</script>
+
 </body>
-  </html>
-          
+            </html>
+    
