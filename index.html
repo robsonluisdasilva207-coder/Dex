@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filha Scripts</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
+        :root { --vermelho: #ff2222; --fundo: #0a0a0a; --card: #151515; --texto: #eeeeee; }
+        body { background: var(--fundo); color: var(--texto); padding: 15px; }
+        header { text-align: center; margin-bottom: 25px; }
+        h1 { color: var(--vermelho); font-size: 28px; }
+        .abas { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+        .aba { flex: 1; padding: 10px; border: none; border-radius: 8px; background: #222; color: white; font-size: 14px; cursor: pointer; }
+        .aba.ativa { background: var(--vermelho); }
+        .conteudo { display: none; }
+        .conteudo.ativo { display: block; }
+        .chat { height: 320px; overflow-y: auto; background: var(--card); border-radius: 10px; padding: 12px; margin-bottom: 10px; border: 1px solid #333; }
+        .msg { margin: 8px 0; padding: 8px 12px; border-radius: 6px; max-width: 90%; }
+        .eu { background: #2b2b2b; margin-left: auto; text-align: right; }
+        .ia { background: #1e293b; margin-right: auto; border-left: 3px solid var(--vermelho); }
+        .campo { display: flex; gap: 8px; }
+        input { flex: 1; padding: 10px; border: none; border-radius: 8px; background: var(--card); color: white; }
+        button { padding: 10px 15px; border: none; border-radius: 8px; background: var(--vermelho); color: white; cursor: pointer; }
+        .codigo { background: #111; padding: 12px; border-radius: 6px; margin: 10px 0; border-left: 3px solid var(--vermelho); font-family: monospace; white-space: pre-wrap; overflow-x: auto; }
+        .copiar { background: #333; font-size: 12px; margin-top: 5px; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🤖 Filha Scripts</h1>
+        <p>IA + Scripts + Configurações para Jogos</p>
+    </header>
+
+    <div class="abas">
+        <button class="aba ativa" onclick="mudarAba('ia')">IA Geradora</button>
+        <button class="aba" onclick="mudarAba('delta')">Delta / Roblox</button>
+        <button class="aba" onclick="mudarAba('ctr')">CTR / DPI</button>
+        <button class="aba" onclick="mudarAba('minecraft')">Minecraft</button>
+    </div>
+
+    <div id="ia" class="conteudo ativo">
+        <div class="chat" id="caixaChat"></div>
+        <div class="campo">
+            <input type="text" id="pergunta" placeholder="Ex: Script de menu, sensibilidade A20s...">
+            <button onclick="enviar()">Enviar</button>
+        </div>
+    </div>
+
+    <div id="delta" class="conteudo">
+        <h3>📜 Menu Básico - Delta Mobile</h3>
+        <div class="codigo" id="codDelta">
+-- MENU COMPATÍVEL DELTA MOBILE
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local LocalPlayer = Players.LocalPlayer
+local Gui = Instance.new("ScreenGui")
+Gui.Name = "FilhaMenu"
+Gui.ResetOnSpawn = false
+Gui.IgnoreGuiInset = true
+Gui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+
+local Frame = Instance.new("Frame")
+Frame.Size = UDim2.new(0, 240, 0, 300)
+Frame.Position = UDim2.new(0.02, 0, 0.1, 0)
+Frame.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1)
+Frame.BorderColor3 = Color3.new(1, 0, 0)
+Frame.BorderSizePixel = 2
+Frame.Active = true
+Frame.Draggable = true
+Frame.Parent = Gui
+
+local Titulo = Instance.new("TextLabel")
+Titulo.Size = UDim2.new(1, 0, 0, 35)
+Titulo.BackgroundColor3 = Color3.new(0.8, 0, 0)
+Titulo.Text = "FILHA SCRIPTS"
+Titulo.TextColor3 = Color3.new(1,1,1)
+Titulo.Font = Enum.Font.GothamBold
+Titulo.Parent = Frame
+        </div>
+        <button class="copiar" onclick="copiar('codDelta')">📋 Copiar</button>
+    </div>
+
+    <div id="ctr" class="conteudo">
+        <h3>🎯 Samsung A20s - Configuração</h3>
+        <div class="codigo" id="codCtr">
+DPI: 480
+Sensibilidade Geral: 96
+Mira de Ponto: 92
+Mira 2x: 88
+Mira 4x: 85
+Mira de Francotirador: 55
+Câmera 360: 60
+Botão de Tiro: 48%
+        </div>
+        <button class="copiar" onclick="copiar('codCtr')">📋 Copiar</button>
+    </div>
+
+    <div id="minecraft" class="conteudo">
+        <h3>⚙️ Comandos Úteis</h3>
+        <div class="codigo" id="codMc">
+/gamemode creative
+/gamemode survival
+/tp @s x y z
+/give @s diamond_sword 1
+/effect @s speed 10 2
+/setblock ~ ~ ~ stone
+        </div>
+        <button class="copiar" onclick="copiar('codMc')">📋 Copiar</button>
+    </div>
+
+    <script>
+        function mudarAba(nome) {
+            document.querySelectorAll('.aba').forEach(a => a.classList.remove('ativa'))
+            document.querySelectorAll('.conteudo').forEach(c => c.classList.remove('ativa'))
+            event.target.classList.add('ativa')
+            document.getElementById(nome).classList.add('ativa')
+        }
+
+        function copiar(id) {
+            const texto = document.getElementById(id).innerText.trim()
+            navigator.clipboard.writeText(texto)
+                .then(() => alert('✅ Copiado!'))
+                .catch(() => alert('❌ Erro ao copiar'))
+        }
+
+        // === COLE AQUI A SUA CHAVE DO GOOGLE ===
+        const CHAVE_IA = AQ.Ab8RN6IlC9LE-JLOD6vn1v7QeQgR_k-nLaE_3aGQ4-BPnfuaAQ
+        const URL_IA = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${CHAVE_IA}`;
+
+        async function enviar() {
+            const campo = document.getElementById('pergunta')
+            const pergunta = campo.value.trim()
+            if (!pergunta) return
+            campo.value = ""
+
+            adicionarMensagem("Você", pergunta)
+            adicionarMensagem("IA", "Pensando...")
+
+            const instrucao = `Você é a Filha Scripts, especialista em jogos. Responda apenas com códigos e configurações funcionais:
+- Roblox/Delta: use Lua/Luau compatível
+- Minecraft Bedrock: comandos e explicações claras
+- CTR: DPI e sensibilidade por modelo de celular
+Seja direto, sem enrolação. Pergunta: ${pergunta}`
+
+            try {
+                const resposta = await fetch(URL_IA, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: instrucao }] }] })
+                })
+                const dados = await resposta.json()
+                const textoFinal = dados.candidates[0].content.parts[0].text
+                removerUltima()
+                adicionarMensagem("IA", textoFinal)
+            } catch (erro) {
+                removerUltima()
+                adicionarMensagem("IA", "Erro: verifique a chave ou a internet.")
+            }
+        }
+
+        function adicionarMensagem(quem, texto) {
+            const div = document.createElement('div')
+            div.className = quem === "Você" ? "msg eu" : "msg ia"
+            div.textContent = texto
+            document.getElementById('caixaChat').appendChild(div)
+            div.scrollIntoView()
+        }
+
+        function removerUltima() {
+            const caixa = document.getElementById('caixaChat')
+            caixa.removeChild(caixa.lastChild)
+        }
+    </script>
+</body>
+  </html>
+          
