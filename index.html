@@ -2,11 +2,10 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Chat Dex</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste DEXas</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
     <script>
         tailwind.config = {
             theme: {
@@ -14,291 +13,128 @@
                     colors: {
                         fundo: '#0F0F14',
                         painel: '#181820',
-                        itemAtivo: '#29151A',
                         destaque: '#FF2222',
                         texto: '#F0F0F8',
                         textoCinza: '#9090A0',
-                        borda: '#282832'
-                    },
-                    fontFamily: { sans: ['Inter', 'Segoe UI', 'Roboto', 'sans-serif'] }
+                    }
                 }
             }
         }
     </script>
-
-    <style type="text/tailwindcss">
-        @layer utilities {
-            .transicao { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-            .menu-lateral { width: 260px; transform: translateX(-100%); }
-            .menu-lateral.aberto { transform: translateX(0); }
-            .item-menu { @apply flex items-center gap-3 p-3 rounded-lg transicao hover:bg-painel/70 active:scale-[0.98]; }
-            .item-menu.ativo { @apply bg-itemAtivo border-l-2 border-destaque; }
-            .bolha-ia { @apply bg-painel rounded-2xl p-4 max-w-[88%] rounded-tl-sm; }
-            .bolha-usuario { @apply bg-destaque rounded-2xl p-4 max-w-[88%] rounded-tr-sm ml-auto text-white; }
-            .botao-animado { @apply active:scale-95 hover:brightness-110 transicao; }
-            @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-            .animate-fadeIn { animation: fadeIn 0.25s ease forwards; }
-        }
-    </style>
 </head>
-<body class="bg-fundo text-texto font-sans h-screen flex overflow-hidden">
+<body class="bg-fundo text-texto h-screen flex flex-col p-4">
 
-<!-- MENU LATERAL - COMEÇA FECHADO -->
-<div id="menuLateral" class="menu-lateral bg-painel border-r border-borda fixed top-0 left-0 h-full z-50 shadow-2xl transicao">
-    <div class="p-4 border-b border-borda flex items-center justify-between">
-        <h3 class="text-lg font-semibold">Chat Dex</h3>
-        <button id="fecharMenu" class="text-xl text-textoCinza hover:text-destaque transicao">
-            <i class="fa-solid fa-xmark"></i>
-        </button>
+    <h1 class="text-xl font-bold text-center mb-4">🧪 Teste DEXas</h1>
+
+    <!-- Área de mensagens -->
+    <div id="caixa" class="flex-1 bg-painel rounded-xl p-4 mb-4 overflow-y-auto space-y-3">
+        <div class="text-textoCinza">Aguardando sua pergunta...</div>
     </div>
 
-    <div class="p-4 space-y-2 mt-2">
-        <div class="item-menu">
-            <div class="w-8 h-8 rounded-full bg-fundo flex items-center justify-center">
-                <i class="fa-solid fa-history"></i>
-            </div>
-            <span>Histórico</span>
-        </div>
-
-        <div class="item-menu ativo">
-            <div class="w-8 h-8 rounded-full bg-destaque flex items-center justify-center text-white">
-                <i class="fa-solid fa-plus"></i>
-            </div>
-            <span>Nova Conversa</span>
-        </div>
-
-        <div class="item-menu" onclick="abrirMenuJogos()">
-            <div class="w-8 h-8 rounded-full bg-fundo flex items-center justify-center">
-                <i class="fa-solid fa-gamepad"></i>
-            </div>
-            <span>Jogos</span>
-        </div>
-
-        <div class="item-menu">
-            <div class="w-8 h-8 rounded-full bg-fundo flex items-center justify-center">
-                <i class="fa-solid fa-gear"></i>
-            </div>
-            <span>Configurações</span>
-        </div>
-    </div>
-
-    <div class="absolute bottom-4 left-0 right-0 text-center text-xs text-textoCinza">
-        Chat Dex v1.3
-    </div>
-</div>
-
-<!-- MENU DE JOGOS -->
-<div id="menuJogos" class="fixed left-20 top-24 w-52 bg-painel rounded-xl shadow-xl z-40 transicao max-h-0 opacity-0 overflow-hidden border border-borda">
-    <h4 class="text-xs text-textoCinza px-3 py-2">Escolha o jogo</h4>
-    <button onclick="mudarJogo('minecraft')" class="w-full text-left p-3 hover:bg-fundo transicao flex items-center gap-2">🟩 Minecraft Bedrock</button>
-    <button onclick="mudarJogo('roblox')" class="w-full text-left p-3 hover:bg-fundo transicao flex items-center gap-2">🟥 Roblox / Delta</button>
-    <button onclick="mudarJogo('ff')" class="w-full text-left p-3 hover:bg-fundo transicao flex items-center gap-2">⚔️ Free Fire</button>
-</div>
-
-<!-- ÁREA PRINCIPAL -->
-<div class="flex-1 flex flex-col h-full">
-    <!-- CABEÇALHO -->
-    <header class="bg-painel border-b border-borda px-4 py-3 flex items-center justify-between">
-        <div class="flex items-center gap-3">
-            <button id="abrirMenu" class="w-9 h-9 rounded-full bg-fundo flex items-center justify-center text-xl botao-animado">
-                <i class="fa-solid fa-ellipsis-vertical"></i>
-            </button>
-            <div>
-                <h1 class="text-lg font-bold">Chat Dex</h1>
-                <p class="text-xs text-textoCinza">Assistente para jogos e dúvidas</p>
-            </div>
-        </div>
-        <div class="flex gap-3 text-textoCinza">
-            <button class="hover:text-texto transicao"><i class="fa-solid fa-desktop"></i></button>
-            <button class="hover:text-texto transicao"><i class="fa-solid fa-circle-half-stroke"></i></button>
-            <button class="hover:text-destaque transicao"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-    </header>
-
-    <!-- CAIXA DE CONVERSA -->
-    <div id="caixaConversa" class="flex-1 overflow-y-auto p-4 space-y-4 bg-fundo/95">
-        <div class="flex gap-3">
-            <div class="w-8 h-8 rounded-full bg-destaque flex items-center justify-center text-white shrink-0">
-                <i class="fa-solid fa-robot"></i>
-            </div>
-            <div class="bolha-ia">
-                <p class="text-sm leading-relaxed">👋 Olá! Selecione um jogo ou envie sua pergunta, e eu ajudo com comandos, scripts, dicas e configurações!</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- BARRA DE ENTRADA -->
-    <div class="bg-painel border-t border-borda p-3 flex items-center gap-2">
-        <input type="file" id="entradaImagem" accept="image/*" class="hidden">
-        <button onclick="document.getElementById('entradaImagem').click()" class="w-9 h-9 rounded-full bg-fundo flex items-center justify-center botao-animado">
-            <i class="fa-solid fa-image"></i>
-        </button>
-        <input type="text" id="campoMensagem" placeholder="Digite sua mensagem..." class="flex-1 bg-fundo rounded-full px-4 py-2 outline-none focus:ring-1 focus:ring-destaque/50 transicao">
-        <button onclick="enviarMensagem()" class="w-9 h-9 rounded-full bg-destaque flex items-center justify-center text-white botao-animado">
+    <!-- Entrada -->
+    <div class="flex gap-2">
+        <input type="text" id="pergunta" placeholder="Digite algo para testar..." 
+            class="flex-1 bg-painel border border-textoCinza/30 rounded-lg px-3 py-2 outline-none focus:ring-1 focus:ring-destaque">
+        <button onclick="enviar()" class="bg-destaque px-4 rounded-lg text-white">
             <i class="fa-solid fa-paper-plane"></i>
         </button>
+        <button onclick="pararVoz()" class="bg-gray-600 px-3 rounded-lg text-white" title="Parar voz">
+            <i class="fa-solid fa-volume-xmark"></i>
+        </button>
     </div>
-</div>
 
 <script>
-// ==============================================
-// CONFIGURAÇÃO NOVA: IA GRATUITA, SEM CHAVE, SEM ERRO
-// ==============================================
-// Usando a API gratuita do Hugging Face - Llama 3 8B
-const URL_IA = "https://api-inference.huggingface.co/models/meta-llama/Meta-Llama-3-8B-Instruct/v1/chat/completions";
-const CHAVE_IA = "hf_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"; // Não precisa alterar, funciona com acesso público
-const MODELO_IA = "meta-llama/Meta-Llama-3-8B-Instruct";
+// ----------------------
+// CONFIGURAÇÃO DE TESTE
+// ----------------------
+const URL_IA = "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2";
+let voz = window.speechSynthesis;
 
-let jogoSelecionado = null;
-let imagemBase64 = null;
-let historicoConversas = [];
-
-// ==============================================
-// CONTROLE DO MENU LATERAL
-// ==============================================
-const menuLateral = document.getElementById('menuLateral');
-const abrirMenu = document.getElementById('abrirMenu');
-const fecharMenu = document.getElementById('fecharMenu');
-
-abrirMenu.addEventListener('click', () => menuLateral.classList.add('aberto'));
-fecharMenu.addEventListener('click', () => menuLateral.classList.remove('aberto'));
-
-document.addEventListener('click', (e) => {
-    if (!menuLateral.contains(e.target) && !abrirMenu.contains(e.target)) {
-        menuLateral.classList.remove('aberto');
-    }
-});
-
-// ==============================================
-// MENU DE JOGOS
-// ==============================================
-const menuJogos = document.getElementById('menuJogos');
-let menuJogosAberto = false;
-
-function abrirMenuJogos() {
-    menuJogosAberto = !menuJogosAberto;
-    if (menuJogosAberto) {
-        menuJogos.classList.remove('max-h-0', 'opacity-0');
-        menuJogos.classList.add('max-h-[200px]', 'opacity-100');
-    } else {
-        menuJogos.classList.add('max-h-0', 'opacity-0');
-        menuJogos.classList.remove('max-h-[200px]', 'opacity-100');
-    }
+// ----------------------
+// FUNÇÃO DE FALAR
+// ----------------------
+function falar(texto) {
+    if (!voz) return;
+    pararVoz();
+    const fala = new SpeechSynthesisUtterance(texto);
+    fala.lang = "pt-BR";
+    fala.rate = 1.1;
+    voz.speak(fala);
 }
 
-function mudarJogo(jogo) {
-    jogoSelecionado = jogo;
-    const nomes = {
-        minecraft: "Minecraft Bedrock",
-        roblox: "Roblox / Delta Mobile",
-        ff: "Free Fire"
-    };
-    adicionarMensagem('ia', `✅ Modo ativado: ${nomes[jogo]}. Pergunte o que precisar!`);
-    abrirMenuJogos();
+function pararVoz() {
+    if (voz) voz.cancel();
 }
 
-// ==============================================
-// ENVIO DE IMAGEM
-// ==============================================
-document.getElementById('entradaImagem').addEventListener('change', (e) => {
-    const arquivo = e.target.files[0];
-    if (!arquivo) return;
-    const leitor = new FileReader();
-    leitor.onload = (ev) => {
-        imagemBase64 = ev.target.result;
-        adicionarMensagem('usuario', '📸 Imagem enviada!');
-    };
-    leitor.readAsDataURL(arquivo);
-});
-
-// ==============================================
-// FUNÇÃO PRINCIPAL DE ENVIO
-// ==============================================
-async function enviarMensagem() {
-    const campo = document.getElementById('campoMensagem');
+// ----------------------
+// ENVIAR E RECEBER
+// ----------------------
+async function enviar() {
+    const campo = document.getElementById("pergunta");
     const texto = campo.value.trim();
-    if (!texto && !imagemBase64) return;
+    if (!texto) return;
 
-    if (texto) adicionarMensagem('usuario', texto);
-    campo.value = '';
-    adicionarMensagem('ia', 'Processando... ⏳');
-
-    let instrucao = '';
-    switch(jogoSelecionado) {
-        case 'minecraft':
-            instrucao = `Você é especialista em Minecraft Bedrock. Responda com comandos, códigos e dicas compatíveis. Explique de forma simples e passo a passo. Sempre responda em português do Brasil. Pergunta: ${texto}`;
-            break;
-        case 'roblox':
-            instrucao = `Você é especialista em Roblox e scripts para Delta Mobile. Forneça códigos Lua funcionais e explique onde aplicar. Sempre responda em português do Brasil. Pergunta: ${texto}`;
-            break;
-        case 'ff':
-            instrucao = `Você é especialista em Free Fire. Dê dicas de DPI, sensibilidade e configurações para celular. Sempre responda em português do Brasil. Pergunta: ${texto}`;
-            break;
-        default:
-            instrucao = `Responda sempre em português do Brasil, de forma clara e direta. Se houver imagem, analise com detalhes: ${texto || 'Descreva o conteúdo da imagem'}`;
-    }
+    adicionar("Você", texto);
+    campo.value = "";
+    adicionar("DEXas", "Pensando... 🤔");
 
     try {
-        const mensagens = [{ role: "user", content: instrucao }];
-
         const resposta = await fetch(URL_IA, {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer hf_anonymous`
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-                model: MODELO_IA,
-                messages: mensagens,
-                max_tokens: 800,
-                temperature: 0.7
+                inputs: `<s>[INST] Responda em português do Brasil, de forma curta e clara: ${texto} [/INST]`
             })
         });
 
         const dados = await resposta.json();
-        removerUltimaMensagem();
+        removerUltima();
 
-        if (dados.error) throw new Error(`❌ Erro: ${dados.error.message || 'Não foi possível conectar. Tente novamente em instantes.'}`);
+        if (dados.error) throw new Error("Aguarde um instante e tente novamente");
 
-        const respostaIA = dados.choices[0].message.content;
-        adicionarMensagem('ia', respostaIA);
-        historicoConversas.push({ pergunta: texto, resposta: respostaIA });
+        const respostaTexto = dados[0].generated_text.split("[/INST]")[1].trim();
+        adicionar("DEXas", respostaTexto);
+        falar(respostaTexto);
 
     } catch (erro) {
-        removerUltimaMensagem();
-        adicionarMensagem('ia', `❌ ${erro.message.replace('Error:', 'Erro:')}`);
+        removerUltima();
+        const msgErro = "❌ " + erro.message;
+        adicionar("DEXas", msgErro);
+        falar(msgErro);
     }
 }
 
-// ==============================================
-// FUNÇÕES AUXILIARES
-// ==============================================
-function adicionarMensagem(tipo, conteudo) {
-    const caixa = document.getElementById('caixaConversa');
-    const div = document.createElement('div');
-    div.className = `flex gap-3 transicao animate-fadeIn`;
-    div.innerHTML = `
-        <div class="w-8 h-8 rounded-full shrink-0 flex items-center justify-center ${tipo === 'usuario' ? 'bg-destaque text-white' : 'bg-painel text-destaque'}">
-            <i class="fa-solid ${tipo === 'usuario' ? 'fa-user' : 'fa-robot'}"></i>
-        </div>
-        <div class="${tipo === 'usuario' ? 'bolha-usuario' : 'bolha-ia'}">
-            <p class="text-sm leading-relaxed whitespace-pre-wrap">${conteudo}</p>
+// ----------------------
+// AJUDANTES
+// ----------------------
+function adicionar(quem, conteudo) {
+    const caixa = document.getElementById("caixa");
+    const bloco = document.createElement("div");
+    bloco.className = quem === "Você" 
+        ? "text-right" 
+        : "text-left";
+    bloco.innerHTML = `
+        <div class="inline-block max-w-[85%] p-3 rounded-lg ${
+            quem === "Você" ? "bg-destaque text-white" : "bg-gray-700 text-white"
+        }">
+            <strong>${quem}:</strong><br>
+            ${conteudo}
         </div>
     `;
-    caixa.appendChild(div);
+    caixa.appendChild(bloco);
     caixa.scrollTop = caixa.scrollHeight;
 }
 
-function removerUltimaMensagem() {
-    const caixa = document.getElementById('caixaConversa');
+function removerUltima() {
+    const caixa = document.getElementById("caixa");
     caixa.removeChild(caixa.lastChild);
 }
 
-document.getElementById('campoMensagem').addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') enviarMensagem();
+// Enter para enviar
+document.getElementById("pergunta").addEventListener("keydown", e => {
+    if (e.key === "Enter") enviar();
 });
 </script>
 
 </body>
-                               </html>
-                    
+</html>
