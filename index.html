@@ -33,20 +33,8 @@
             .menu-jogos.aberto { max-height: 220px; opacity: 1; }
             .ponto-logo { @apply w-2 h-2 rounded-full bg-principal; }
             .rolagem-suave { scroll-behavior: smooth; }
-            .gravando { animation: pulso 1.5s infinite; }
-            .ligacao-ativa { animation: piscar 2s infinite; }
             .aba-historico { transform: translateX(100%); opacity: 0; }
             .aba-historico.aberto { transform: translateX(0); opacity: 1; }
-
-            @keyframes pulso {
-                0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 34, 34, 0.4); }
-                70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(255, 34, 34, 0); }
-                100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 34, 34, 0); }
-            }
-            @keyframes piscar {
-                0%, 100% { opacity: 1; }
-                50% { opacity: 0.6; }
-            }
         }
     </style>
 </head>
@@ -65,20 +53,17 @@
 
         <div class="flex flex-col gap-8 items-center">
             <button id="botaoHistorico" class="text-2xl hover:scale-110 hover:text-principal transicao" title="Histórico de conversas">
-                <i class="fa-solid fa-ellipsis-vertical"></i>
+                <i class="fa-solid fa-clock-rotate-left"></i>
             </button>
             <button class="text-xl text-principal hover:scale-110 transicao" title="Nova conversa">
                 <i class="fa-solid fa-comments"></i>
             </button>
-            <button id="botaoLigacao" class="text-xl hover:scale-110 transicao" title="Ligação permanente">
-                <i class="fa-solid fa-phone"></i>
-            </button>
-            <button id="botaoMais" class="w-11 h-11 rounded-full bg-cinza flex items-center justify-center text-xl transicao hover:bg-principal hover:text-white shadow-sm">
-                +
+            <button id="botaoMenuJogos" class="w-11 h-11 rounded-full bg-cinza flex items-center justify-center text-xl transicao hover:bg-principal hover:text-white shadow-sm" title="Selecionar jogo">
+                <i class="fa-solid fa-gamepad"></i>
             </button>
         </div>
     </div>
-    <div class="text-xs text-cinzaClaro">v1.6</div>
+    <div class="text-xs text-cinzaClaro">v1.8</div>
 </div>
 
 <!-- ABA DE HISTÓRICO -->
@@ -95,7 +80,8 @@
 </div>
 
 <!-- MENU DE JOGOS -->
-<div id="menuJogos" class="fixed left-24 top-28 w-48 bg-medio rounded-xl shadow-xl z-40 menu-jogos transicao p-2 border border-cinza/60">
+<div id="menuJogos" class="fixed left-24 top-28 w-52 bg-medio rounded-xl shadow-xl z-40 menu-jogos transicao p-2 border border-cinza/60">
+    <h4 class="text-xs text-cinzaClaro px-3 py-1 mb-1">Escolha o jogo</h4>
     <button onclick="mudarJogo('minecraft')" class="w-full text-left p-3 rounded-lg hover:bg-cinza flex items-center gap-3 transicao">
         <span class="text-green-500 text-lg">🟩</span>
         <span>Minecraft Bedrock</span>
@@ -113,15 +99,12 @@
 <!-- ÁREA PRINCIPAL -->
 <main class="ml-20 h-screen flex flex-col">
     <header class="h-16 bg-medio flex items-center justify-between px-6 border-b border-cinza/50 shadow-sm">
-        <h2 class="text-lg font-semibold tracking-wide">DEX IA <span id="jogoAtual" class="text-sm text-cinzaClaro ml-2 font-normal">| Nenhum jogo selecionado</span></h2>
-        <div class="flex gap-5 items-center">
-            <span id="statusLigacao" class="hidden text-sm text-green-400 font-medium">🔊 Em ligação</span>
-        </div>
+        <h2 class="text-xl font-bold tracking-wide">DEX IA <span id="jogoAtual" class="text-sm text-cinzaClaro ml-3 font-normal">| Nenhum jogo selecionado</span></h2>
     </header>
 
     <div id="caixaConversa" class="flex-1 p-5 overflow-y-auto space-y-5 bg-escuro/95">
         <div class="mensagem-ia bg-medio p-4 rounded-lg shadow-sm max-w-[88%]">
-            <p class="text-sm leading-relaxed">👋 Olá! Selecione um jogo, envie texto, imagem ou use o microfone. A ligação continua funcionando mesmo se você minimizar ou abrir outro aplicativo!</p>
+            <p class="text-sm leading-relaxed">👋 Olá! Selecione um jogo, envie texto ou imagem para eu ajudar você!</p>
         </div>
     </div>
 
@@ -131,13 +114,9 @@
             <i class="fa-solid fa-image"></i>
         </button>
 
-        <button id="botaoMicrofone" class="w-10 h-10 rounded-full bg-cinza flex items-center justify-center text-lg transicao hover:bg-principal hover:text-white shadow-sm" title="Usar microfone">
-            <i class="fa-solid fa-microphone"></i>
-        </button>
-
         <input type="text" id="campoMensagem" placeholder="Digite sua mensagem..." class="flex-1 bg-cinza rounded-full px-4 py-2.5 outline-none focus:ring-2 focus:ring-principal/40 transition-shadow">
 
-        <button onclick="enviarMensagem()" class="w-10 h-10 rounded-full bg-principal flex items-center justify-center text-white text-lg transicao hover:bg-principal/90 shadow-md" title="Enviar">
+        <button onclick="enviarMensagem()" class="w-10 h-10 rounded-full bg-principal flex items-center justify-center text-white text-lg transicao hover:bg-principal/90 shadow-md" title="Enviar mensagem">
             <i class="fa-solid fa-paper-plane"></i>
         </button>
     </div>
@@ -145,26 +124,21 @@
 
 <script>
 // ==============================================
-// CONFIGURAÇÃO ESTÁVEL 100% GRATUITA
+// CONFIGURAÇÃO DEEPSEEK
 // ==============================================
-// Usando DeepSeek (não precisa de chave complexa, funciona com cadastro simples)
-const CHAVE_IA = "AQ.Ab8RN6JnaSsyX777h9h2etfZEo9yoa6we_d5bJj8R9M7v3zn1A"; // Pegue em: platform.deepseek.com
+const CHAVE_IA = "sk-e59d15790dc8482881890d1e7c53393a";
 const URL_IA = "https://api.deepseek.com/v1/chat/completions";
-const MODELO_IA = "deepseek-vision"; // Suporta texto + imagem
-const SITE_NOME = "DEX IA";
+const MODELO_IA = "deepseek-vision";
 
 // ==============================================
 // VARIÁVEIS GLOBAIS
 // ==============================================
 let jogoSelecionado = null;
-let reconhecimentoVoz = null;
-let gravando = false;
-let ligacaoAtiva = false;
 let imagemBase64 = null;
 let historicoConversas = [];
 
 // ==============================================
-// SISTEMA DE HISTÓRICO
+// HISTÓRICO
 // ==============================================
 const botaoHistorico = document.getElementById('botaoHistorico');
 const abaHistorico = document.getElementById('abaHistorico');
@@ -182,13 +156,13 @@ document.addEventListener('click', (e) => {
 // ==============================================
 // MENU DE JOGOS
 // ==============================================
-const botaoMais = document.getElementById('botaoMais');
+const botaoMenuJogos = document.getElementById('botaoMenuJogos');
 const menuJogos = document.getElementById('menuJogos');
 
-botaoMais.addEventListener('click', () => {
+botaoMenuJogos.addEventListener('click', () => {
     menuJogos.classList.toggle('aberto');
-    botaoMais.classList.toggle('bg-principal');
-    botaoMais.classList.toggle('text-white');
+    botaoMenuJogos.classList.toggle('bg-principal');
+    botaoMenuJogos.classList.toggle('text-white');
 });
 
 function mudarJogo(jogo) {
@@ -200,75 +174,7 @@ function mudarJogo(jogo) {
     };
     document.getElementById('jogoAtual').textContent = `| ${nomes[jogo]}`;
     menuJogos.classList.remove('aberto');
-    botaoMais.classList.remove('bg-principal', 'text-white');
-}
-
-// ==============================================
-// LIGAÇÃO PERMANENTE
-// ==============================================
-const botaoLigacao = document.getElementById('botaoLigacao');
-const statusLigacao = document.getElementById('statusLigacao');
-
-botaoLigacao.addEventListener('click', () => ligacaoAtiva ? pararLigacao() : iniciarLigacao());
-
-function iniciarLigacao() {
-    ligacaoAtiva = true;
-    botaoLigacao.classList.add('text-green-400', 'ligacao-ativa');
-    statusLigacao.classList.remove('hidden');
-    if ('wakeLock' in navigator) navigator.wakeLock.request('screen').catch(() => {});
-    adicionarMensagem('ia', '📞 Ligação iniciada! Continuo ouvindo mesmo se minimizar ou trocar de jogo.');
-}
-
-function pararLigacao() {
-    ligacaoAtiva = false;
-    botaoLigacao.classList.remove('text-green-400', 'ligacao-ativa');
-    statusLigacao.classList.add('hidden');
-    if (reconhecimentoVoz) reconhecimentoVoz.stop();
-    adicionarMensagem('ia', '📴 Ligação encerrada.');
-}
-
-// ==============================================
-// MICROFONE
-// ==============================================
-if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-    const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
-    reconhecimentoVoz = new SpeechRecognitionAPI();
-    reconhecimentoVoz.lang = 'pt-BR';
-    reconhecimentoVoz.continuous = true;
-    reconhecimentoVoz.interimResults = false;
-
-    const botaoMic = document.getElementById('botaoMicrofone');
-
-    botaoMic.addEventListener('click', () => {
-        if (!gravando) {
-            reconhecimentoVoz.start();
-            botaoMic.classList.add('bg-principal', 'gravando');
-            gravando = true;
-        } else {
-            reconhecimentoVoz.stop();
-            botaoMic.classList.remove('bg-principal', 'gravando');
-            gravando = false;
-        }
-    });
-
-    reconhecimentoVoz.onresult = (evento) => {
-        const textoFalado = evento.results[evento.results.length - 1][0].transcript.trim();
-        if (textoFalado) {
-            document.getElementById('campoMensagem').value = textoFalado;
-            if (ligacaoAtiva) setTimeout(enviarMensagem, 600);
-        }
-    };
-
-    reconhecimentoVoz.onerror = () => {
-        if (!ligacaoAtiva) {
-            botaoMic.classList.remove('bg-principal', 'gravando');
-            gravando = false;
-        }
-    };
-
-    reconhecimentoVoz.onend = () => {
-        if (ligacaoAtiva) reconhecimentoVoz.start();
-    };
+    botaoMenuJogos.classList.remove('bg-principal', 'text-white');
 }
 
 // ==============================================
@@ -295,21 +201,21 @@ async function enviarMensagem() {
 
     if (texto) adicionarMensagem('usuario', texto);
     campo.value = '';
-    adicionarMensagem('ia', 'Pensando... ⏳');
+    adicionarMensagem('ia', 'Processando... ⏳');
 
     let instrucao = '';
     switch(jogoSelecionado) {
         case 'minecraft':
-            instrucao = `Você é especialista em Minecraft Bedrock. Responda com comandos, addons, redstone compatíveis. Explique passo a passo. Pergunta: ${texto}`;
+            instrucao = `Você é especialista em Minecraft Bedrock. Responda com comandos, códigos, addons e dicas compatíveis com a versão Bedrock. Explique de forma simples e passo a passo. Pergunta: ${texto}`;
             break;
         case 'roblox':
-            instrucao = `Você é especialista em scripts Roblox e Delta Mobile. Use código Lua funcional e explique onde usar. Pergunta: ${texto}`;
+            instrucao = `Você é especialista em Roblox e scripts para Delta Mobile. Forneça códigos Lua funcionais e explique onde aplicar. Pergunta: ${texto}`;
             break;
         case 'ff':
-            instrucao = `Você é especialista em Free Fire. Dê DPI, sensibilidade e configurações por celular. Pergunta: ${texto}`;
+            instrucao = `Você é especialista em Free Fire. Dê dicas de DPI, sensibilidade, configurações e estratégias para celular. Pergunta: ${texto}`;
             break;
         default:
-            instrucao = `Responda em português do Brasil, claro e direto. Se tiver imagem, analise com detalhes: ${texto || 'Descreva o conteúdo da imagem'}`;
+            instrucao = `Responda em português do Brasil, de forma clara e direta. Se houver imagem, analise com detalhes e responda sobre o conteúdo: ${texto || 'Descreva o que aparece na imagem'}`;
     }
 
     try {
@@ -338,7 +244,7 @@ async function enviarMensagem() {
         const dados = await resposta.json();
         removerUltimaMensagem();
 
-        if (dados.error) throw new Error(dados.error.message);
+        if (dados.error) throw new Error(`Erro: ${dados.error.message}`);
         const respostaIA = dados.choices[0].message.content;
         adicionarMensagem('ia', respostaIA);
 
@@ -347,7 +253,7 @@ async function enviarMensagem() {
 
     } catch (erro) {
         removerUltimaMensagem();
-        adicionarMensagem('ia', `❌ Erro: ${erro.message}`);
+        adicionarMensagem('ia', `❌ Ocorreu um erro: ${erro.message || 'Não foi possível conectar. Verifique sua chave ou a conexão.'}`);
     }
 }
 
@@ -394,14 +300,8 @@ function atualizarHistorico() {
 document.getElementById('campoMensagem').addEventListener('keydown', (e) => {
     if (e.key === 'Enter') enviarMensagem();
 });
-
-document.addEventListener('visibilitychange', () => {
-    if (ligacaoAtiva && document.hidden && reconhecimentoVoz?.state === 'inactive') {
-        reconhecimentoVoz.start();
-    }
-});
 </script>
 
 </body>
-                </html>
-    
+    </html>
+                    
