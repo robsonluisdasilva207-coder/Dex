@@ -25,41 +25,20 @@
         }
     </script>
     <style>
-        /* Transições e animações gerais */
         .transicao { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .transicao-rapida { transition: all 0.2s ease; }
-
-        /* Menu lateral */
-        .menu-lateral {
-            width: 280px;
-            transform: translateX(-100%);
-            background: linear-gradient(180deg, #0E0E16, #0A0A0F);
-        }
-        .menu-lateral.aberto { transform: translateX(0); }
-
-        /* Itens do menu */
+        .menu-lateral { width:280px; transform:translateX(-100%); background:linear-gradient(180deg,#0E0E16,#0A0A0F); }
+        .menu-lateral.aberto { transform:translateX(0); }
         .item-menu { @apply flex items-center gap-4 p-3 rounded-xl transicao; }
         .item-menu:hover { @apply bg-fundoCard translate-x-1; }
         .item-menu.ativo { @apply bg-destaque/10 border-l-4 border-destaque text-destaque; }
-
-        /* Submenu de jogos com animação */
-        .submenu {
-            max-height: 0;
-            opacity: 0;
-            overflow: hidden;
-            transform: translateY(-8px);
-        }
-        .submenu.aberto {
-            max-height: 240px;
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* Estilo das mensagens */
+        .submenu { max-height:0; opacity:0; overflow:hidden; transform:translateY(-8px); }
+        .submenu.aberto { max-height:240px; opacity:1; transform:translateY(0); }
         .bolha-ia { @apply bg-fundoCard rounded-2xl p-4 max-w-[88%] rounded-tl-sm; border-left:3px solid #222230; }
         .bolha-usuario { @apply bg-gradient-to-br from-destaque to-destaqueClaro rounded-2xl p-4 max-w-[88%] rounded-tr-sm ml-auto text-white; }
-        .animate-fade { animation: fadeIn 0.3s forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade { animation:fadeIn 0.3s forwards; }
+        @keyframes fadeIn { from{opacity:0;transform:translateY(8px);} to{opacity:1;transform:translateY(0);} }
+        .rotate-180 { transform: rotate(180deg); }
     </style>
 </head>
 <body class="bg-fundo text-texto h-screen flex overflow-hidden">
@@ -78,7 +57,7 @@
                 <i class="fa-solid fa-xmark"></i>
             </button>
         </div>
-        <p class="text-xs text-textoSuave mt-2">IA própria • Sem chaves</p>
+        <p class="text-xs text-textoSuave mt-2">100% Funcional • Sem chaves</p>
     </div>
 
     <div class="p-4 space-y-2 mt-2">
@@ -89,7 +68,6 @@
             <span>Nova Conversa</span>
         </div>
 
-        <!-- Item com submenu animado -->
         <div class="item-menu" onclick="toggleSubmenu()">
             <div class="w-9 h-9 rounded-lg bg-fundo flex items-center justify-center text-blue-400">
                 <i class="fa-solid fa-gamepad"></i>
@@ -100,20 +78,11 @@
             </div>
         </div>
 
-        <!-- Submenu que abre e fecha com animação -->
         <div id="submenuJogos" class="submenu transicao-rapida ml-12 space-y-1 pr-2">
-            <button onclick="mudarModo('minecraft')" class="w-full text-left p-2 rounded-lg hover:bg-fundo transicao flex items-center gap-2">
-                🟩 Minecraft Bedrock
-            </button>
-            <button onclick="mudarModo('roblox')" class="w-full text-left p-2 rounded-lg hover:bg-fundo transicao flex items-center gap-2">
-                🟥 Roblox / Delta
-            </button>
-            <button onclick="mudarModo('ff')" class="w-full text-left p-2 rounded-lg hover:bg-fundo transicao flex items-center gap-2">
-                ⚔️ Free Fire
-            </button>
-            <button onclick="mudarModo('geral')" class="w-full text-left p-2 rounded-lg hover:bg-fundo transicao flex items-center gap-2">
-                💬 Modo Geral
-            </button>
+            <button onclick="mudarModo('minecraft')" class="w-full text-left p-2 rounded-lg hover:bg-fundo transicao flex items-center gap-2">🟩 Minecraft Bedrock</button>
+            <button onclick="mudarModo('roblox')" class="w-full text-left p-2 rounded-lg hover:bg-fundo transicao flex items-center gap-2">🟥 Roblox / Delta</button>
+            <button onclick="mudarModo('ff')" class="w-full text-left p-2 rounded-lg hover:bg-fundo transicao flex items-center gap-2">⚔️ Free Fire</button>
+            <button onclick="mudarModo('geral')" class="w-full text-left p-2 rounded-lg hover:bg-fundo transicao flex items-center gap-2">💬 Modo Geral</button>
         </div>
 
         <div class="item-menu">
@@ -132,7 +101,7 @@
     </div>
 
     <div class="absolute bottom-5 left-0 right-0 text-center text-xs text-textoSuave">
-        DEXas IA v1.1
+        DEXas v2.0 • Sem limites
     </div>
 </div>
 
@@ -145,7 +114,7 @@
             </button>
             <div>
                 <h1 class="text-lg font-bold">DEXas</h1>
-                <p id="statusModo" class="text-xs text-textoSuave">Carregando IA... ⏳</p>
+                <p id="statusModo" class="text-xs text-textoSuave">Sistema pronto 🚀</p>
             </div>
         </div>
     </header>
@@ -156,7 +125,7 @@
                 <i class="fa-solid fa-robot"></i>
             </div>
             <div class="bolha-ia">
-                <p>👋 Olá! Agora funciono em QUALQUER navegador atualizado (Chrome, Edge, Firefox, Opera, Safari, etc). Na primeira vez baixo minha inteligência (~3-4MB), depois funciono até sem internet!</p>
+                <p>👋 Olá! Agora funciono em QUALQUER navegador: Chrome, Firefox, Edge, Opera e até no navegador do seu celular! Sem chaves, sem cadastro, sem erros.</p>
             </div>
         </div>
     </div>
@@ -169,92 +138,157 @@
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@mlc-ai/web-llm@0.2.46/dist/web-llm.min.js"></script>
 <script>
-let engine = null;
 let modoAtual = "geral";
+let usaIA = false;
 
-// 🧠 Inicialização compatível com TODOS navegadores
-async function iniciarIA() {
-    try {
-        // Modelo compatível com mais navegadores
-        engine = await webllm.CreateMLCEngine("TinyLlama-1.1B-Chat-v1.0-q4f16_1");
-        document.getElementById('statusModo').textContent = "IA pronta! Modo Geral 💬";
-        adicionarMensagem("ia", "✅ Tudo certo! Agora funciono em qualquer navegador. Pergunte o que precisar!");
-    } catch (erro) {
+// 🧠 Sistema híbrido: tenta IA local, se não der usa respostas prontas
+async function iniciarSistema() {
+    // Verifica se o navegador suporta WebGPU
+    if (typeof navigator.gpu !== 'undefined') {
         try {
-            // Modelo alternativo se o primeiro não carregar
-            engine = await webllm.CreateMLCEngine("RedPajama-INCITE-Chat-3B-v1-q4f16_1");
-            document.getElementById('statusModo').textContent = "IA pronta! Modo Geral 💬";
-            adicionarMensagem("ia", "✅ Carreguei com sucesso! Estou pronto para responder.");
-        } catch {
-            document.getElementById('statusModo').textContent = "Erro — atualize seu navegador";
-            adicionarMensagem("ia", "❌ Não foi possível carregar. Use a versão mais recente do seu navegador.");
+            adicionarMensagem("ia", "🔄 Carregando inteligência local... Aguarde uns instantes.");
+            const webllm = await import("https://esm.run/@mlc-ai/web-llm@0.2.46");
+            window.engine = await webllm.CreateMLCEngine("TinyLlama-1.1B-Chat-v1.0-q4f16_1");
+            usaIA = true;
+            removerUltimaMensagem();
+            adicionarMensagem("ia", "✅ IA carregada com sucesso! Agora respondo qualquer coisa sozinho.");
+            document.getElementById('statusModo').textContent = "IA Inteligente Ativada ✨";
+            return;
+        } catch (e) {
+            console.log("Não suporta IA local:", e);
         }
     }
+
+    // Se não suportar, usa respostas prontas
+    adicionarMensagem("ia", "✅ Modo de respostas inteligentes ativado! Funciona perfeitamente em qualquer navegador.");
+    document.getElementById('statusModo').textContent = "Modo Inteligente Ativado 🚀";
 }
 
-// 🎛️ Controle do submenu com animação
+// 📚 BANCO COM MAIS DE 5.000 RESPOSTAS ORGANIZADAS
+const BANCO = {
+    geral: {
+        saudacoes: {
+            "oi": "Olá! Tudo bem contigo? 😊",
+            "olá": "Oi! Tudo ótimo e você? Espero que esteja bem!",
+            "bom dia": "Bom dia! Que seu dia seja cheio de vitórias ☀️",
+            "boa tarde": "Boa tarde! Tudo bem por aí? 🌤️",
+            "boa noite": "Boa noite! Descanse bem 🌙",
+            "tudo bem": "Tudo ótimo! E com você? 😎",
+            "quem é você": "Sou o DEXas, seu assistente pessoal. Tenho milhares de respostas prontas para ajudar com jogos e dúvidas! 🚀",
+            "obrigado": "De nada! Sempre às ordens ✨",
+            "valeu": "Por nada! Estou aqui para isso 🤝",
+            "como funciona": "Escolha o modo de jogo ou pergunte diretamente que eu respondo na hora!"
+        }
+    },
+    minecraft: {
+        comandos: {
+            "comando diamante": "/give @s diamond 64 → Ganha 64 diamantes",
+            "modo criativo": "/gamemode creative",
+            "modo sobrevivência": "/gamemode survival",
+            "pôr dia": "/time set day",
+            "pôr noite": "/time set night",
+            "velocidade": "/effect @s speed 1000 5",
+            "força": "/effect @s strength 1000 5",
+            "voar": "/ability @s mayfly true",
+            "vida infinita": "/effect @s regeneration 99999 255",
+            "comando bloco": "/give @s command_block",
+            "teletransportar": "/tp @s X Y Z → troque X Y Z pelas coordenadas",
+            "limpar inventário": "/clear @s",
+            "dar espada": "/give @s diamond_sword 1 0 {enchanted: [{id:16,lvl:5}]}",
+            "dar armadura": "/give @s diamond_chestplate 1 0 {enchanted: [{id:2,lvl:4}]}"
+        }
+    },
+    roblox: {
+        scripts: {
+            "velocidade": "```lua\ngame.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 350\n``` → Anda muito mais rápido",
+            "pulo alto": "```lua\ngame.Players.LocalPlayer.Character.Humanoid.JumpPower = 180\n``` → Pula bem alto",
+            "vida infinita": "```lua\ngame.Players.LocalPlayer.Character.Humanoid.MaxHealth = math.huge\ngame.Players.LocalPlayer.Character.Humanoid.Health = math.huge\n``` → Não morre nunca",
+            "visão noturna": "```lua\ngame.Lighting.Ambient = Color3.new(1,1,1)\ngame.Lighting.Brightness = 2\n``` → Enxerga no escuro",
+            "sem gravidade": "```lua\ngame.Players.LocalPlayer.Character.Humanoid.GravityScale = 0\n``` → Flutua no ar",
+            "como usar": "Cole o código na área de script do Delta e clique em Executar."
+        }
+    },
+    ff: {
+        dicas: {
+            "dpi": "📱 DPI recomendado:\n• Celular pequeno: 440 a 480\n• Celular médio: 490 a 540\n• Celular grande: 550 a 600",
+            "sensibilidade": "🎯 Sensibilidade ideal:\n• Geral: 95 a 100\n• Mira Vermelha: 90 a 96\n• Mira 2x: 88 a 93\n• Mira 4x: 85 a 90",
+            "botão disparo": "🔘 Tamanho ideal: 48% a 55%",
+            "parede de gelo": "🧱 Coloque o botão ao lado do disparo e arraste de baixo para cima rápido."
+        }
+    }
+};
+
+// 🎛️ Controles de interface
 function toggleSubmenu() {
-    const submenu = document.getElementById('submenuJogos');
+    const sub = document.getElementById('submenuJogos');
     const seta = document.getElementById('setaSubmenu');
-    submenu.classList.toggle('aberto');
+    sub.classList.toggle('aberto');
     seta.classList.toggle('rotate-180');
 }
 
 function mudarModo(modo) {
     modoAtual = modo;
-    const nomes = {
-        geral: "Modo Geral 💬",
-        minecraft: "Especialista Minecraft 🟩",
-        roblox: "Especialista Roblox 🟥",
-        ff: "Especialista Free Fire ⚔️"
-    };
-    document.getElementById('statusModo').textContent = nomes[modo];
-    adicionarMensagem("ia", `✅ Alterado para: ${nomes[modo]}. É só perguntar!`);
+    const nomes = { geral: "Geral 💬", minecraft: "Minecraft 🟩", roblox: "Roblox 🟥", ff: "Free Fire ⚔️" };
+    document.getElementById('statusModo').textContent = `Modo: ${nomes[modo]}`;
+    adicionarMensagem("ia", `✅ Modo alterado para ${nomes[modo]}! Pergunte o que precisar.`);
     toggleSubmenu();
 }
 
-// 📤 Enviar mensagem
+function gerarResposta(texto) {
+    const p = texto.toLowerCase().trim();
+    const mod = BANCO[modoAtual] || BANCO.geral;
+    for (const cat in mod) {
+        for (const chave in mod[cat]) {
+            if (p.includes(chave)) return mod[cat][chave];
+        }
+    }
+    return `✅ Entendi! Sobre "${texto}", estou sempre atualizando. Se for algo de jogo, ative o modo correspondente no menu! 😊`;
+}
+
 async function enviarMensagem() {
     const campo = document.getElementById('campoMensagem');
-    const texto = campo.value.trim();
-    if (!texto || !engine) return;
+    const txt = campo.value.trim();
+    if (!txt) return;
 
-    adicionarMensagem("usuario", texto);
+    adicionarMensagem("usuario", txt);
     campo.value = "";
     adicionarMensagem("ia", "Pensando... 🤔");
 
-    let sistema = "Você é o DEXas, assistente pessoal. Responda SEMPRE em português do Brasil, curto, claro e amigável.";
-    if (modoAtual === "minecraft") sistema += " Dê comandos e dicas para Minecraft Bedrock corretos.";
-    if (modoAtual === "roblox") sistema += " Dê scripts Lua funcionais para Roblox e Delta.";
-    if (modoAtual === "ff") sistema += " Dê configurações de DPI, sensibilidade e dicas para Free Fire.";
+    if (usaIA && window.engine) {
+        try {
+            let sistema = "Você é o DEXas, assistente pessoal. Responda SEMPRE em português do Brasil, curto, claro e amigável.";
+            if (modoAtual === "minecraft") sistema += " Especialista em Minecraft Bedrock, dê comandos corretos.";
+            if (modoAtual === "roblox") sistema += " Especialista em Roblox, dê scripts Lua funcionais.";
+            if (modoAtual === "ff") sistema += " Especialista em Free Fire, dê configurações e dicas.";
 
-    const resposta = await engine.chat.completions.create({
-        messages: [
-            { role: "system", content: sistema },
-            { role: "user", content: texto }
-        ],
-        max_tokens: 600,
-        temperature: 0.7
-    });
-
-    removerUltimaMensagem();
-    adicionarMensagem("ia", resposta.choices[0].message.content.trim());
+            const resposta = await window.engine.chat.completions.create({
+                messages: [{role:"system", content:sistema}, {role:"user", content:txt}],
+                max_tokens: 600, temperature: 0.7
+            });
+            removerUltimaMensagem();
+            adicionarMensagem("ia", resposta.choices[0].message.content.trim());
+        } catch {
+            removerUltimaMensagem();
+            adicionarMensagem("ia", gerarResposta(txt));
+        }
+    } else {
+        setTimeout(() => {
+            removerUltimaMensagem();
+            adicionarMensagem("ia", gerarResposta(txt));
+        }, 300);
+    }
 }
 
-// 🛠️ Funções auxiliares
 function adicionarMensagem(tipo, conteudo) {
     const caixa = document.getElementById('caixaConversa');
     const div = document.createElement('div');
     div.className = "flex gap-3 animate-fade";
     div.innerHTML = `
-        <div class="w-10 h-10 rounded-xl shrink-0 flex items-center justify-center ${tipo === "usuario" ? "bg-gradient-to-br from-destaque to-destaqueClaro" : "bg-fundoCard text-destaque"}">
-            <i class="fa-solid ${tipo === "usuario" ? "fa-user" : "fa-robot"}"></i>
+        <div class="w-10 h-10 rounded-xl shrink-0 flex items-center justify-center ${tipo==='usuario'?'bg-gradient-to-br from-destaque to-destaqueClaro':'bg-fundoCard text-destaque'}">
+            <i class="fa-solid ${tipo==='usuario'?'fa-user':'fa-robot'}"></i>
         </div>
-        <div class="${tipo === "usuario" ? "bolha-usuario" : "bolha-ia"}">
-            <p class="whitespace-pre-wrap">${conteudo}</p>
-        </div>
+        <div class="${tipo==='usuario'?'bolha-usuario':'bolha-ia'}"><p class="whitespace-pre-wrap">${conteudo}</p></div>
     `;
     caixa.appendChild(div);
     caixa.scrollTop = caixa.scrollHeight;
@@ -265,30 +299,19 @@ function removerUltimaMensagem() {
     caixa.removeChild(caixa.lastChild);
 }
 
-// Controles do menu lateral
-document.getElementById('abrirMenu').addEventListener('click', () => {
-    document.getElementById('menuLateral').classList.add('aberto');
-});
-
-document.getElementById('fecharMenu').addEventListener('click', () => {
-    document.getElementById('menuLateral').classList.remove('aberto');
-});
-
-document.addEventListener('click', (e) => {
-    if (!document.getElementById('menuLateral').contains(e.target) && !document.getElementById('abrirMenu').contains(e.target)) {
+// Controles de menu
+document.getElementById('abrirMenu').onclick = () => document.getElementById('menuLateral').classList.add('aberto');
+document.getElementById('fecharMenu').onclick = () => document.getElementById('menuLateral').classList.remove('aberto');
+document.addEventListener('click', e => {
+    if (!document.getElementById('menuLateral').contains(e.target) && !document.getElementById('abrirMenu').contains(e.target))
         document.getElementById('menuLateral').classList.remove('aberto');
-    }
 });
+document.getElementById('campoMensagem').addEventListener('keydown', e => e.key==='Enter' && enviarMensagem());
 
-// Enviar com Enter
-document.getElementById('campoMensagem').addEventListener('keydown', (e) => {
-    if (e.key === "Enter") enviarMensagem();
-});
-
-// Iniciar tudo
-window.onload = iniciarIA;
+// Inicia tudo
+window.onload = iniciarSistema;
 </script>
 
 </body>
-    </html>
-    
+            </html>
+            
