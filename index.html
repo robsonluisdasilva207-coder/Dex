@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-    <title>DEXas - Gemini</title>
+    <title>DEXas - IA Própria</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <script>
@@ -58,7 +58,7 @@
                 <i class="fa-solid fa-xmark"></i>
             </button>
         </div>
-        <p class="text-xs text-textoSuave mt-2">Com Gemini • Cria do Zero</p>
+        <p class="text-xs text-textoSuave mt-2">IA Local • Sem Serviços Externos</p>
     </div>
 
     <div class="p-4 space-y-2 mt-2">
@@ -95,7 +95,7 @@
     </div>
 
     <div class="absolute bottom-5 left-0 right-0 text-center text-xs text-textoSuave">
-        DEXas • Gemini
+        DEXas v3.0
     </div>
 </div>
 
@@ -108,7 +108,7 @@
             </button>
             <div>
                 <h1 class="text-lg font-bold">DEXas</h1>
-                <p id="statusModo" class="text-xs text-textoSuave">Pronto para usar ✅</p>
+                <p id="statusModo" class="text-xs text-textoSuave">Iniciando...</p>
             </div>
         </div>
     </header>
@@ -119,70 +119,49 @@
                 <i class="fa-solid fa-robot"></i>
             </div>
             <div class="bolha-ia">
-                <p>👋 Tudo certo! Agora uso o Gemini para criar respostas, scripts e comandos do zero. Funciona em qualquer navegador.</p>
+                <p>👋 Sem Google, sem chave, sem bloqueios! Aguarde só a primeira inicialização.</p>
             </div>
         </div>
     </div>
 
     <div class="bg-menuFundo border-t border-borda/50 p-4 flex gap-3">
-        <input id="campoMensagem" type="text" placeholder="Digite sua mensagem..." class="flex-1 bg-fundo rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-destaque/40 transicao">
-        <button onclick="enviarMensagem()" class="w-10 h-10 rounded-xl bg-gradient-to-br from-destaque to-destaqueClaro flex items-center justify-center text-white transicao hover:brightness-110">
+        <input id="campoMensagem" type="text" placeholder="Digite sua mensagem..." class="flex-1 bg-fundo rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-destaque/40 transicao" disabled>
+        <button onclick="enviarMensagem()" class="w-10 h-10 rounded-xl bg-gradient-to-br from-destaque to-destaqueClaro flex items-center justify-center text-white transicao hover:brightness-110" disabled>
             <i class="fa-solid fa-paper-plane"></i>
         </button>
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@mlc-ai/web-llm@0.2.57/dist/web-llm.min.js"></script>
 <script>
-// 🗝️ CHAVE - DEPOIS DE TESTAR, RECOMENDO CRIAR UMA NOVA E LIMITAR O DOMÍNIO
-const GEMINI_CHAVE = "AQ.Ab8RN6K4_1O8LfWRBueRXCYLPTHy2oIcVNpPS23z9-AXkXP9aQ";
-const GEMINI_MODELO = "gemini-1.5-flash-latest";
+let engine = null;
 let modoAtual = "geral";
 
-// 📤 Função de envio com tratamento melhorado
-async function enviarMensagem() {
-    const campo = document.getElementById("campoMensagem");
-    const texto = campo.value.trim();
-    if (!texto) return;
-
-    adicionarMensagem("usuario", texto);
-    campo.value = "";
-    adicionarMensagem("ia", "Pensando e criando... 🤔");
-
-    let sistema = `Você é o DEXas, assistente especializado em jogos e programação. Responda SEMPRE em português do Brasil, de forma clara e direta. Se pedirem código, comando ou script, escreva ele completo e funcional. Não use mensagens genéricas — crie a resposta específica para o que foi perguntado.`;
-
-    if (modoAtual === "minecraft") sistema += " Crie comandos válidos para Minecraft Bedrock Edition.";
-    if (modoAtual === "roblox") sistema += " Crie scripts Lua funcionais para Roblox e Delta Executor.";
-    if (modoAtual === "ff") sistema += " Dê dicas de configuração, DPI e sensibilidade para Free Fire.";
-
+async function iniciarIA() {
     try {
-        const resposta = await fetch(`https://generativelanguage.googleapis.com/v1/models/${GEMINI_MODELO}:generateContent?key=${GEMINI_CHAVE}`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                contents: [{ parts: [{ text: sistema + "\n\nPergunta: " + texto }] }],
-                generationConfig: { temperature: 0.7, maxOutputTokens: 1000 }
-            })
+        adicionarMensagem("ia", "🔄 Preparando IA... Aguarde um momento.");
+        document.getElementById('statusModo').textContent = "Carregando...";
+
+        engine = await webllm.CreateMLCEngine("TinyLlama-1.1B-Chat-v1.0-q4f16_1", {
+            initProgressCallback: (progresso) => {
+                const porcentagem = Math.round(progresso * 100);
+                document.getElementById('statusModo').textContent = `Carregando: ${porcentagem}%`;
+            }
         });
 
-        const dados = await resposta.json();
         removerUltimaMensagem();
-
-        if (dados.candidates && dados.candidates[0].content) {
-            const textoResposta = dados.candidates[0].content.parts[0].text;
-            adicionarMensagem("ia", textoResposta);
-        } else {
-            console.log("Resposta da API:", dados);
-            adicionarMensagem("ia", "❌ Chave bloqueada. Crie uma NOVA chave e permita o domínio do seu site.");
-        }
+        adicionarMensagem("ia", "✅ Pronto! Crio scripts, comandos e respostas do zero.");
+        document.getElementById('statusModo').textContent = "IA Ativa ✨";
+        habilitarEntrada();
 
     } catch (erro) {
         console.error("Erro:", erro);
         removerUltimaMensagem();
-        adicionarMensagem("ia", "❌ Não funcionou. Crie uma nova chave.");
+        adicionarMensagem("ia", "❌ Não funcionou a instalação");
+        document.getElementById('statusModo').textContent = "Falha";
     }
 }
 
-// 🎛️ Controles
 function toggleSubmenu() {
     const sub = document.getElementById('submenuJogos');
     const seta = document.getElementById('setaSubmenu');
@@ -191,6 +170,7 @@ function toggleSubmenu() {
 }
 
 function mudarModo(modo) {
+    if (!engine) return;
     modoAtual = modo;
     const nomes = { geral: "Geral 💬", minecraft: "Minecraft 🟩", roblox: "Roblox 🟥", ff: "Free Fire ⚔️" };
     document.getElementById('statusModo').textContent = `Modo: ${nomes[modo]}`;
@@ -198,7 +178,45 @@ function mudarModo(modo) {
     toggleSubmenu();
 }
 
-// 🛠️ Funções auxiliares
+async function enviarMensagem() {
+    const campo = document.getElementById('campoMensagem');
+    const txt = campo.value.trim();
+    if (!txt || !engine) return;
+
+    adicionarMensagem("usuario", txt);
+    campo.value = "";
+    adicionarMensagem("ia", "Pensando... 🤔");
+
+    let sistema = `Você é o DEXas, assistente especializado em jogos e programação. Responda SEMPRE em português do Brasil, de forma clara e direta. Se pedirem código, comando ou script, escreva ele completo e funcional. Não use mensagens genéricas.`;
+
+    if (modoAtual === "minecraft") sistema += " Crie comandos válidos para Minecraft Bedrock Edition.";
+    if (modoAtual === "roblox") sistema += " Crie scripts Lua funcionais para Roblox e Delta Executor.";
+    if (modoAtual === "ff") sistema += " Dê dicas de configuração, DPI e sensibilidade para Free Fire.";
+
+    try {
+        const resposta = await engine.chat.completions.create({
+            messages: [
+                { role: "system", content: sistema },
+                { role: "user", content: txt }
+            ],
+            max_tokens: 800,
+            temperature: 0.7
+        });
+
+        removerUltimaMensagem();
+        adicionarMensagem("ia", resposta.choices[0].message.content.trim());
+    } catch (e) {
+        removerUltimaMensagem();
+        adicionarMensagem("ia", "❌ Erro ao gerar resposta");
+    }
+}
+
+function habilitarEntrada() {
+    document.getElementById('campoMensagem').disabled = false;
+    document.getElementById('campoMensagem').placeholder = "Digite sua mensagem...";
+    document.querySelector('button[onclick="enviarMensagem()"]').disabled = false;
+}
+
 function adicionarMensagem(tipo, conteudo) {
     const caixa = document.getElementById('caixaConversa');
     const div = document.createElement('div');
@@ -218,7 +236,6 @@ function removerUltimaMensagem() {
     caixa.removeChild(caixa.lastChild);
 }
 
-// Controles de menu
 document.getElementById('abrirMenu').onclick = () => document.getElementById('menuLateral').classList.add('aberto');
 document.getElementById('fecharMenu').onclick = () => document.getElementById('menuLateral').classList.remove('aberto');
 document.addEventListener('click', e => {
@@ -227,7 +244,9 @@ document.addEventListener('click', e => {
 });
 document.getElementById('campoMensagem').addEventListener('keydown', e => e.key==='Enter' && enviarMensagem());
 
+window.onload = iniciarIA;
 </script>
 
 </body>
-</html>
+    </html>
+    
