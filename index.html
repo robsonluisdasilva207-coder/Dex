@@ -108,7 +108,7 @@
             </button>
             <div>
                 <h1 class="text-lg font-bold">DEXas</h1>
-                <p id="statusModo" class="text-xs text-textoSuave">Conectando com Gemini...</p>
+                <p id="statusModo" class="text-xs text-textoSuave">Pronto para usar ✅</p>
             </div>
         </div>
     </header>
@@ -119,7 +119,7 @@
                 <i class="fa-solid fa-robot"></i>
             </div>
             <div class="bolha-ia">
-                <p>👋 Agora usando o Gemini! Ele cria respostas, scripts e comandos do zero. Funciona em qualquer navegador.</p>
+                <p>👋 Tudo certo! Agora uso o Gemini para criar respostas, scripts e comandos do zero. Funciona em qualquer navegador.</p>
             </div>
         </div>
     </div>
@@ -133,8 +133,8 @@
 </div>
 
 <script>
-// 🗝️ COLOQUE AQUI SUA CHAVE DO GEMINI
-const GEMINI_CHAVE = "AQ.Ab8RN6LLGJVMO1BgVEA1f-y1czr0We5QthVdvCM4fQuUxAHzcg";
+// 🗝️ CHAVE JÁ COLOCADA
+const GEMINI_CHAVE = "AQ.AB8RN6LLGJVM01BgVEA1f-y1czr0We5QthVdvCM4TQuUxAHzcg";
 const GEMINI_MODELO = "gemini-1.5-flash";
 let modoAtual = "geral";
 
@@ -148,7 +148,6 @@ async function enviarMensagem() {
     campo.value = "";
     adicionarMensagem("ia", "Pensando... 🤔");
 
-    // Instrução para o modelo
     let sistema = `Você é o DEXas, assistente especializado em jogos e programação. Responda SEMPRE em português do Brasil, de forma clara e direta. Se pedirem código, comando ou script, escreva ele completo e funcional. Não use mensagens genéricas — crie a resposta específica para o que foi perguntado.`;
 
     if (modoAtual === "minecraft") sistema += " Crie comandos válidos para Minecraft Bedrock Edition.";
@@ -161,7 +160,7 @@ async function enviarMensagem() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 contents: [{
-                    parts: [{ text: sistema + "\n\nPergunta do usuário: " + texto }]
+                    parts: [{ text: sistema + "\n\nPergunta: " + texto }]
                 }]
             })
         });
@@ -173,7 +172,7 @@ async function enviarMensagem() {
             const textoResposta = dados.candidates[0].content.parts[0].text;
             adicionarMensagem("ia", textoResposta);
         } else {
-            adicionarMensagem("ia", "❌ Não funcionou a instalação/resposta. Verifique a chave.");
+            adicionarMensagem("ia", "❌ Não funcionou a instalação/resposta.");
         }
 
     } catch (erro) {
@@ -232,4 +231,4 @@ document.getElementById('campoMensagem').addEventListener('keydown', e => e.key=
 
 </body>
     </html>
-    
+                    
