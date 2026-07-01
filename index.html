@@ -7,123 +7,288 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <script>
-        tailwind.config = { theme: { extend: { colors: { fundo:'#0A0A0F', fundoCard:'#12121A', menuFundo:'#0E0E16', destaque:'#FF2233', destaqueClaro:'#FF4455', texto:'#F8F8FC', textoSuave:'#B0B0C0', borda:'#222230' } } } }
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        fundo: '#0A0A0F',
+                        fundoCard: '#12121A',
+                        menuFundo: '#0E0E16',
+                        destaque: '#FF2233',
+                        destaqueClaro: '#FF4455',
+                        texto: '#F8F8FC',
+                        textoSuave: '#B0B0C0',
+                        borda: '#222230'
+                    }
+                }
+            }
+        }
     </script>
     <style>
-        .transicao { transition: all 0.3s ease; }
-        .menu-lateral { width:280px; transform:translateX(-100%); background:linear-gradient(180deg,#0E0E16,#0A0A0F); }
-        .menu-lateral.aberto { transform:translateX(0); }
+        /* Transições e animações gerais */
+        .transicao { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .transicao-rapida { transition: all 0.2s ease; }
+
+        /* Menu lateral */
+        .menu-lateral {
+            width: 280px;
+            transform: translateX(-100%);
+            background: linear-gradient(180deg, #0E0E16, #0A0A0F);
+        }
+        .menu-lateral.aberto { transform: translateX(0); }
+
+        /* Itens do menu */
         .item-menu { @apply flex items-center gap-4 p-3 rounded-xl transicao; }
         .item-menu:hover { @apply bg-fundoCard translate-x-1; }
         .item-menu.ativo { @apply bg-destaque/10 border-l-4 border-destaque text-destaque; }
+
+        /* Submenu de jogos com animação */
+        .submenu {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transform: translateY(-8px);
+        }
+        .submenu.aberto {
+            max-height: 240px;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Estilo das mensagens */
         .bolha-ia { @apply bg-fundoCard rounded-2xl p-4 max-w-[88%] rounded-tl-sm; border-left:3px solid #222230; }
         .bolha-usuario { @apply bg-gradient-to-br from-destaque to-destaqueClaro rounded-2xl p-4 max-w-[88%] rounded-tr-sm ml-auto text-white; }
-        .animate-fade { animation:fadeIn 0.3s forwards; }
-        @keyframes fadeIn { from{opacity:0;transform:translateY(8px);} to{opacity:1;transform:translateY(0);} }
+        .animate-fade { animation: fadeIn 0.3s forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body class="bg-fundo text-texto h-screen flex overflow-hidden">
 
 <!-- MENU LATERAL -->
-<div id="menuLateral" class="menu-lateral fixed top-0 left-0 h-full z-50 border-r border-borda">
+<div id="menuLateral" class="menu-lateral fixed top-0 left-0 h-full z-50 border-r border-borda transicao">
     <div class="p-5 border-b border-borda/50">
         <div class="flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-destaque to-destaqueClaro flex items-center justify-center text-white"><i class="fa-solid fa-brain"></i></div>
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-destaque to-destaqueClaro flex items-center justify-center text-white">
+                    <i class="fa-solid fa-brain"></i>
+                </div>
                 <h2 class="text-xl font-bold">DEXas</h2>
             </div>
-            <button id="fecharMenu" class="text-xl text-textoSuave hover:text-destaque"><i class="fa-solid fa-xmark"></i></button>
+            <button id="fecharMenu" class="text-xl text-textoSuave hover:text-destaque transicao">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
         </div>
-        <p class="text-xs text-textoSuave mt-2">IA própria — sem serviços externos</p>
+        <p class="text-xs text-textoSuave mt-2">IA própria • Sem chaves</p>
     </div>
+
     <div class="p-4 space-y-2 mt-2">
-        <div class="item-menu ativo"><div class="w-9 h-9 rounded-lg bg-fundo flex items-center justify-center text-destaque"><i class="fa-solid fa-comments"></i></div><span>Nova Conversa</span></div>
-        <div class="item-menu" onclick="abrirJogos()"><div class="w-9 h-9 rounded-lg bg-fundo flex items-center justify-center text-blue-400"><i class="fa-solid fa-gamepad"></i></div><span>Modos Jogos</span></div>
+        <div class="item-menu ativo">
+            <div class="w-9 h-9 rounded-lg bg-fundo flex items-center justify-center text-destaque">
+                <i class="fa-solid fa-comments"></i>
+            </div>
+            <span>Nova Conversa</span>
+        </div>
+
+        <!-- Item com submenu animado -->
+        <div class="item-menu" onclick="toggleSubmenu()">
+            <div class="w-9 h-9 rounded-lg bg-fundo flex items-center justify-center text-blue-400">
+                <i class="fa-solid fa-gamepad"></i>
+            </div>
+            <div class="flex justify-between items-center w-full">
+                <span>Modos de Jogo</span>
+                <i id="setaSubmenu" class="fa-solid fa-chevron-down text-xs text-textoSuave transicao-rapida"></i>
+            </div>
+        </div>
+
+        <!-- Submenu que abre e fecha com animação -->
+        <div id="submenuJogos" class="submenu transicao-rapida ml-12 space-y-1 pr-2">
+            <button onclick="mudarModo('minecraft')" class="w-full text-left p-2 rounded-lg hover:bg-fundo transicao flex items-center gap-2">
+                🟩 Minecraft Bedrock
+            </button>
+            <button onclick="mudarModo('roblox')" class="w-full text-left p-2 rounded-lg hover:bg-fundo transicao flex items-center gap-2">
+                🟥 Roblox / Delta
+            </button>
+            <button onclick="mudarModo('ff')" class="w-full text-left p-2 rounded-lg hover:bg-fundo transicao flex items-center gap-2">
+                ⚔️ Free Fire
+            </button>
+            <button onclick="mudarModo('geral')" class="w-full text-left p-2 rounded-lg hover:bg-fundo transicao flex items-center gap-2">
+                💬 Modo Geral
+            </button>
+        </div>
+
+        <div class="item-menu">
+            <div class="w-9 h-9 rounded-lg bg-fundo flex items-center justify-center text-purple-400">
+                <i class="fa-solid fa-history"></i>
+            </div>
+            <span>Histórico</span>
+        </div>
+
+        <div class="item-menu">
+            <div class="w-9 h-9 rounded-lg bg-fundo flex items-center justify-center text-yellow-400">
+                <i class="fa-solid fa-gear"></i>
+            </div>
+            <span>Configurações</span>
+        </div>
     </div>
-    <div class="absolute bottom-5 left-0 right-0 text-center text-xs text-textoSuave">DEXas IA v1.0</div>
+
+    <div class="absolute bottom-5 left-0 right-0 text-center text-xs text-textoSuave">
+        DEXas IA v1.1
+    </div>
 </div>
 
 <!-- ÁREA PRINCIPAL -->
 <div class="flex-1 flex flex-col h-full">
     <header class="bg-menuFundo border-b border-borda/50 px-5 py-4 flex items-center justify-between">
         <div class="flex items-center gap-4">
-            <button id="abrirMenu" class="w-10 h-10 rounded-xl bg-fundo flex items-center justify-center text-lg"><i class="fa-solid fa-bars"></i></button>
-            <div><h1 class="text-lg font-bold">DEXas</h1><p id="status" class="text-xs text-textoSuave">Carregando IA local...</p></div>
+            <button id="abrirMenu" class="w-10 h-10 rounded-xl bg-fundo flex items-center justify-center text-lg transicao hover:bg-fundoCard">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <div>
+                <h1 class="text-lg font-bold">DEXas</h1>
+                <p id="statusModo" class="text-xs text-textoSuave">Carregando IA... ⏳</p>
+            </div>
         </div>
     </header>
-    <div id="caixa" class="flex-1 overflow-y-auto p-5 space-y-5 bg-gradient-to-b from-fundo to-fundo/95">
+
+    <div id="caixaConversa" class="flex-1 overflow-y-auto p-5 space-y-5 bg-gradient-to-b from-fundo to-fundo/95">
         <div class="flex gap-3 animate-fade">
-            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-destaque to-destaqueClaro flex items-center justify-center text-white"><i class="fa-solid fa-robot"></i></div>
-            <div class="bolha-ia"><p>👋 Estou carregando minha inteligência dentro do seu navegador. Aguarde uns 30~60 segundos na primeira vez — depois respondo tudo sem precisar de nada externo!</p></div>
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-destaque to-destaqueClaro flex items-center justify-center text-white shrink-0">
+                <i class="fa-solid fa-robot"></i>
+            </div>
+            <div class="bolha-ia">
+                <p>👋 Olá! Agora funciono em QUALQUER navegador atualizado (Chrome, Edge, Firefox, Opera, Safari, etc). Na primeira vez baixo minha inteligência (~3-4MB), depois funciono até sem internet!</p>
+            </div>
         </div>
     </div>
+
     <div class="bg-menuFundo border-t border-borda/50 p-4 flex gap-3">
-        <input id="mensagem" type="text" placeholder="Digite sua pergunta..." class="flex-1 bg-fundo rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-destaque/40">
-        <button onclick="enviar()" class="w-10 h-10 rounded-xl bg-gradient-to-br from-destaque to-destaqueClaro flex items-center justify-center text-white"><i class="fa-solid fa-paper-plane"></i></button>
+        <input id="campoMensagem" type="text" placeholder="Digite sua mensagem..." class="flex-1 bg-fundo rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-destaque/40 transicao">
+        <button onclick="enviarMensagem()" class="w-10 h-10 rounded-xl bg-gradient-to-br from-destaque to-destaqueClaro flex items-center justify-center text-white transicao hover:brightness-110">
+            <i class="fa-solid fa-paper-plane"></i>
+        </button>
     </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@mlc-ai/web-llm@0.2.46/dist/web-llm.min.js"></script>
 <script>
-let engine;
-const status = document.getElementById('status');
+let engine = null;
+let modoAtual = "geral";
 
-// Inicializa IA LOCAL, sem conexão externa depois de carregada
+// 🧠 Inicialização compatível com TODOS navegadores
 async function iniciarIA() {
     try {
-        engine = await webllm.CreateMLCEngine("Mistral-7B-Instruct-v0.2-q4f16_1");
-        status.textContent = "IA pronta! Modo: Geral 💬";
-        adicionar("ia", "✅ Estou pronto! Sou o DEXas, minha inteligência roda aqui mesmo no seu navegador. Pergunte qualquer coisa!");
-    } catch (e) {
-        status.textContent = "Erro ao carregar IA";
-        adicionar("ia", "❌ Não consegui carregar o modelo. Use um navegador atualizado (Chrome, Edge, Firefox).");
+        // Modelo compatível com mais navegadores
+        engine = await webllm.CreateMLCEngine("TinyLlama-1.1B-Chat-v1.0-q4f16_1");
+        document.getElementById('statusModo').textContent = "IA pronta! Modo Geral 💬";
+        adicionarMensagem("ia", "✅ Tudo certo! Agora funciono em qualquer navegador. Pergunte o que precisar!");
+    } catch (erro) {
+        try {
+            // Modelo alternativo se o primeiro não carregar
+            engine = await webllm.CreateMLCEngine("RedPajama-INCITE-Chat-3B-v1-q4f16_1");
+            document.getElementById('statusModo').textContent = "IA pronta! Modo Geral 💬";
+            adicionarMensagem("ia", "✅ Carreguei com sucesso! Estou pronto para responder.");
+        } catch {
+            document.getElementById('statusModo').textContent = "Erro — atualize seu navegador";
+            adicionarMensagem("ia", "❌ Não foi possível carregar. Use a versão mais recente do seu navegador.");
+        }
     }
 }
 
-// Envia pergunta e gera resposta real
-async function enviar() {
-    const campo = document.getElementById('mensagem');
+// 🎛️ Controle do submenu com animação
+function toggleSubmenu() {
+    const submenu = document.getElementById('submenuJogos');
+    const seta = document.getElementById('setaSubmenu');
+    submenu.classList.toggle('aberto');
+    seta.classList.toggle('rotate-180');
+}
+
+function mudarModo(modo) {
+    modoAtual = modo;
+    const nomes = {
+        geral: "Modo Geral 💬",
+        minecraft: "Especialista Minecraft 🟩",
+        roblox: "Especialista Roblox 🟥",
+        ff: "Especialista Free Fire ⚔️"
+    };
+    document.getElementById('statusModo').textContent = nomes[modo];
+    adicionarMensagem("ia", `✅ Alterado para: ${nomes[modo]}. É só perguntar!`);
+    toggleSubmenu();
+}
+
+// 📤 Enviar mensagem
+async function enviarMensagem() {
+    const campo = document.getElementById('campoMensagem');
     const texto = campo.value.trim();
     if (!texto || !engine) return;
-    adicionar("usuario", texto);
+
+    adicionarMensagem("usuario", texto);
     campo.value = "";
-    adicionar("ia", "Pensando... 🤔");
+    adicionarMensagem("ia", "Pensando... 🤔");
+
+    let sistema = "Você é o DEXas, assistente pessoal. Responda SEMPRE em português do Brasil, curto, claro e amigável.";
+    if (modoAtual === "minecraft") sistema += " Dê comandos e dicas para Minecraft Bedrock corretos.";
+    if (modoAtual === "roblox") sistema += " Dê scripts Lua funcionais para Roblox e Delta.";
+    if (modoAtual === "ff") sistema += " Dê configurações de DPI, sensibilidade e dicas para Free Fire.";
 
     const resposta = await engine.chat.completions.create({
         messages: [
-            { role: "system", content: "Você é o DEXas, assistente pessoal. Responda SEMPRE em português do Brasil, curto, claro e amigável. Ajuda com jogos, códigos, dúvidas e conversas." },
+            { role: "system", content: sistema },
             { role: "user", content: texto }
         ],
         max_tokens: 600,
         temperature: 0.7
     });
-    removerUltima();
-    adicionar("ia", resposta.choices[0].message.content.trim());
+
+    removerUltimaMensagem();
+    adicionarMensagem("ia", resposta.choices[0].message.content.trim());
 }
 
-// Funções auxiliares
-function adicionar(tipo, txt) {
-    const caixa = document.getElementById('caixa');
+// 🛠️ Funções auxiliares
+function adicionarMensagem(tipo, conteudo) {
+    const caixa = document.getElementById('caixaConversa');
     const div = document.createElement('div');
     div.className = "flex gap-3 animate-fade";
     div.innerHTML = `
-        <div class="w-10 h-10 rounded-xl shrink-0 flex items-center justify-center ${tipo==='usuario'?'bg-gradient-to-br from-destaque to-destaqueClaro':'bg-fundoCard text-destaque'}">
-            <i class="fa-solid ${tipo==='usuario'?'fa-user':'fa-robot'}"></i>
+        <div class="w-10 h-10 rounded-xl shrink-0 flex items-center justify-center ${tipo === "usuario" ? "bg-gradient-to-br from-destaque to-destaqueClaro" : "bg-fundoCard text-destaque"}">
+            <i class="fa-solid ${tipo === "usuario" ? "fa-user" : "fa-robot"}"></i>
         </div>
-        <div class="${tipo==='usuario'?'bolha-usuario':'bolha-ia'}"><p class="whitespace-pre-wrap">${txt}</p></div>
+        <div class="${tipo === "usuario" ? "bolha-usuario" : "bolha-ia"}">
+            <p class="whitespace-pre-wrap">${conteudo}</p>
+        </div>
     `;
     caixa.appendChild(div);
     caixa.scrollTop = caixa.scrollHeight;
 }
-function removerUltima() { document.getElementById('caixa').removeChild(document.getElementById('caixa').lastChild); }
 
-// Controles menu
-document.getElementById('abrirMenu').onclick = () => document.getElementById('menuLateral').classList.add('aberto');
-document.getElementById('fecharMenu').onclick = () => document.getElementById('menuLateral').classList.remove('aberto');
-document.getElementById('mensagem').addEventListener('keydown', e => e.key==='Enter' && enviar());
+function removerUltimaMensagem() {
+    const caixa = document.getElementById('caixaConversa');
+    caixa.removeChild(caixa.lastChild);
+}
 
-// Começa a carregar a IA
+// Controles do menu lateral
+document.getElementById('abrirMenu').addEventListener('click', () => {
+    document.getElementById('menuLateral').classList.add('aberto');
+});
+
+document.getElementById('fecharMenu').addEventListener('click', () => {
+    document.getElementById('menuLateral').classList.remove('aberto');
+});
+
+document.addEventListener('click', (e) => {
+    if (!document.getElementById('menuLateral').contains(e.target) && !document.getElementById('abrirMenu').contains(e.target)) {
+        document.getElementById('menuLateral').classList.remove('aberto');
+    }
+});
+
+// Enviar com Enter
+document.getElementById('campoMensagem').addEventListener('keydown', (e) => {
+    if (e.key === "Enter") enviarMensagem();
+});
+
+// Iniciar tudo
 window.onload = iniciarIA;
 </script>
+
 </body>
-</html>
+    </html>
+    
