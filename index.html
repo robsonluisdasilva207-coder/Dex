@@ -2,393 +2,128 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DEXas - Seu Assistente</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>DEXas - IA Própria</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        fundo: '#0A0A0F',
-                        fundoCard: '#12121A',
-                        menuFundo: '#0E0E16',
-                        destaque: '#FF2233',
-                        destaqueClaro: '#FF4455',
-                        texto: '#F8F8FC',
-                        textoSuave: '#B0B0C0',
-                        borda: '#222230',
-                        verde: '#22CC66',
-                        azul: '#3388FF',
-                        roxo: '#9955FF',
-                        amarelo: '#FFCC22'
-                    },
-                    fontFamily: { sans: ['Inter', 'Segoe UI', 'Roboto', 'sans-serif'] }
-                }
-            }
-        }
+        tailwind.config = { theme: { extend: { colors: { fundo:'#0A0A0F', fundoCard:'#12121A', menuFundo:'#0E0E16', destaque:'#FF2233', destaqueClaro:'#FF4455', texto:'#F8F8FC', textoSuave:'#B0B0C0', borda:'#222230' } } } }
     </script>
-
-    <style type="text/tailwindcss">
-        @layer utilities {
-            .transicao { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-            .sombra-leve { box-shadow: 0 2px 8px rgba(0,0,0,0.25); }
-            .sombra-destaque { box-shadow: 0 0 12px rgba(255,34,51,0.3); }
-
-            .menu-lateral {
-                width: 280px;
-                transform: translateX(-100%);
-                background: linear-gradient(180deg, #0E0E16 0%, #0A0A0F 100%);
-            }
-            .menu-lateral.aberto { transform: translateX(0); }
-
-            .item-menu {
-                @apply flex items-center gap-4 p-3 rounded-xl transicao;
-            }
-            .item-menu:hover {
-                @apply bg-fundoCard translate-x-1;
-                box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-            }
-            .item-menu.ativo {
-                @apply bg-destaque/10 border-l-4 border-destaque text-destaque;
-                box-shadow: 0 0 10px rgba(255,34,51,0.15);
-            }
-
-            .bolha-ia {
-                @apply bg-fundoCard rounded-2xl p-4 max-w-[88%] rounded-tl-sm sombra-leve;
-                border-left: 3px solid #222230;
-            }
-            .bolha-usuario {
-                @apply bg-gradient-to-br from-destaque to-destaqueClaro rounded-2xl p-4 max-w-[88%] rounded-tr-sm ml-auto text-white sombra-destaque;
-            }
-
-            .botao-animado { @apply active:scale-95 hover:brightness-110 transicao; }
-
-            @keyframes fadeIn {
-                from { opacity: 0; transform: translateY(8px); }
-                to { opacity: 1; transform: translateY(0); }
-            }
-            .animate-fadeIn { animation: fadeIn 0.3s ease forwards; }
-        }
+    <style>
+        .transicao { transition: all 0.3s ease; }
+        .menu-lateral { width:280px; transform:translateX(-100%); background:linear-gradient(180deg,#0E0E16,#0A0A0F); }
+        .menu-lateral.aberto { transform:translateX(0); }
+        .item-menu { @apply flex items-center gap-4 p-3 rounded-xl transicao; }
+        .item-menu:hover { @apply bg-fundoCard translate-x-1; }
+        .item-menu.ativo { @apply bg-destaque/10 border-l-4 border-destaque text-destaque; }
+        .bolha-ia { @apply bg-fundoCard rounded-2xl p-4 max-w-[88%] rounded-tl-sm; border-left:3px solid #222230; }
+        .bolha-usuario { @apply bg-gradient-to-br from-destaque to-destaqueClaro rounded-2xl p-4 max-w-[88%] rounded-tr-sm ml-auto text-white; }
+        .animate-fade { animation:fadeIn 0.3s forwards; }
+        @keyframes fadeIn { from{opacity:0;transform:translateY(8px);} to{opacity:1;transform:translateY(0);} }
     </style>
 </head>
-<body class="bg-fundo text-texto font-sans h-screen flex overflow-hidden">
+<body class="bg-fundo text-texto h-screen flex overflow-hidden">
 
 <!-- MENU LATERAL -->
 <div id="menuLateral" class="menu-lateral fixed top-0 left-0 h-full z-50 border-r border-borda">
     <div class="p-5 border-b border-borda/50">
         <div class="flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-destaque to-destaqueClaro flex items-center justify-center text-white text-xl">
-                    <i class="fa-solid fa-brain"></i>
-                </div>
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-destaque to-destaqueClaro flex items-center justify-center text-white"><i class="fa-solid fa-brain"></i></div>
                 <h2 class="text-xl font-bold">DEXas</h2>
             </div>
-            <button id="fecharMenu" class="text-xl text-textoSuave hover:text-destaque transicao">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
+            <button id="fecharMenu" class="text-xl text-textoSuave hover:text-destaque"><i class="fa-solid fa-xmark"></i></button>
         </div>
-        <p class="text-xs text-textoSuave mt-2">Seu assistente pessoal inteligente</p>
+        <p class="text-xs text-textoSuave mt-2">IA própria — sem serviços externos</p>
     </div>
-
     <div class="p-4 space-y-2 mt-2">
-        <div class="item-menu ativo">
-            <div class="w-9 h-9 rounded-lg bg-fundo flex items-center justify-center text-destaque">
-                <i class="fa-solid fa-comments"></i>
-            </div>
-            <span class="font-medium">Nova Conversa</span>
-        </div>
-
-        <div class="item-menu" onclick="abrirMenuJogos()">
-            <div class="w-9 h-9 rounded-lg bg-fundo flex items-center justify-center text-azul">
-                <i class="fa-solid fa-gamepad"></i>
-            </div>
-            <span class="font-medium">Modos de Jogo</span>
-        </div>
-
-        <div class="item-menu">
-            <div class="w-9 h-9 rounded-lg bg-fundo flex items-center justify-center text-roxo">
-                <i class="fa-solid fa-history"></i>
-            </div>
-            <span class="font-medium">Histórico</span>
-        </div>
-
-        <div class="item-menu">
-            <div class="w-9 h-9 rounded-lg bg-fundo flex items-center justify-center text-amarelo">
-                <i class="fa-solid fa-gear"></i>
-            </div>
-            <span class="font-medium">Configurações</span>
-        </div>
+        <div class="item-menu ativo"><div class="w-9 h-9 rounded-lg bg-fundo flex items-center justify-center text-destaque"><i class="fa-solid fa-comments"></i></div><span>Nova Conversa</span></div>
+        <div class="item-menu" onclick="abrirJogos()"><div class="w-9 h-9 rounded-lg bg-fundo flex items-center justify-center text-blue-400"><i class="fa-solid fa-gamepad"></i></div><span>Modos Jogos</span></div>
     </div>
-
-    <div class="absolute bottom-5 left-0 right-0 text-center text-xs text-textoSuave">
-        DEXas v3.0 • 5.000+ respostas ✨
-    </div>
-</div>
-
-<!-- SUBMENU DE JOGOS -->
-<div id="menuJogos" class="fixed left-24 top-28 w-60 bg-fundoCard rounded-2xl shadow-2xl z-40 transicao max-h-0 opacity-0 overflow-hidden border border-borda/60">
-    <h4 class="text-sm font-semibold px-4 py-3 border-b border-borda/50">Escolha o modo</h4>
-    <button onclick="mudarModo('minecraft')" class="w-full text-left p-3 hover:bg-fundo transicao flex items-center gap-3">
-        <span class="text-xl">🟩</span>
-        <span>Minecraft Bedrock</span>
-    </button>
-    <button onclick="mudarModo('roblox')" class="w-full text-left p-3 hover:bg-fundo transicao flex items-center gap-3">
-        <span class="text-xl">🟥</span>
-        <span>Roblox / Delta</span>
-    </button>
-    <button onclick="mudarModo('ff')" class="w-full text-left p-3 hover:bg-fundo transicao flex items-center gap-3">
-        <span class="text-xl">⚔️</span>
-        <span>Free Fire</span>
-    </button>
-    <button onclick="mudarModo('geral')" class="w-full text-left p-3 hover:bg-fundo transicao flex items-center gap-3">
-        <span class="text-xl">💬</span>
-        <span>Conversa Geral</span>
-    </button>
+    <div class="absolute bottom-5 left-0 right-0 text-center text-xs text-textoSuave">DEXas IA v1.0</div>
 </div>
 
 <!-- ÁREA PRINCIPAL -->
 <div class="flex-1 flex flex-col h-full">
     <header class="bg-menuFundo border-b border-borda/50 px-5 py-4 flex items-center justify-between">
         <div class="flex items-center gap-4">
-            <button id="abrirMenu" class="w-10 h-10 rounded-xl bg-fundo flex items-center justify-center text-lg botao-animado">
-                <i class="fa-solid fa-bars"></i>
-            </button>
-            <div>
-                <h1 class="text-lg font-bold">DEXas</h1>
-                <p class="text-xs text-textoSuave" id="statusModo">Modo: Conversa Geral 💬</p>
-            </div>
-        </div>
-        <div class="flex gap-3 text-textoSuave">
-            <button class="hover:text-texto transicao"><i class="fa-solid fa-moon"></i></button>
-            <button class="hover:text-destaque transicao"><i class="fa-solid fa-info-circle"></i></button>
+            <button id="abrirMenu" class="w-10 h-10 rounded-xl bg-fundo flex items-center justify-center text-lg"><i class="fa-solid fa-bars"></i></button>
+            <div><h1 class="text-lg font-bold">DEXas</h1><p id="status" class="text-xs text-textoSuave">Carregando IA local...</p></div>
         </div>
     </header>
-
-    <div id="caixaConversa" class="flex-1 overflow-y-auto p-5 space-y-5 bg-gradient-to-b from-fundo to-fundo/95">
-        <div class="flex gap-3 animate-fadeIn">
-            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-destaque to-destaqueClaro flex items-center justify-center text-white shrink-0">
-                <i class="fa-solid fa-robot"></i>
-            </div>
-            <div class="bolha-ia">
-                <p class="text-sm leading-relaxed">👋 Olá! Eu sou o <strong>DEXas</strong> com mais de 5.000 respostas prontas! Pergunte qualquer coisa que eu respondo na hora 😊</p>
-            </div>
+    <div id="caixa" class="flex-1 overflow-y-auto p-5 space-y-5 bg-gradient-to-b from-fundo to-fundo/95">
+        <div class="flex gap-3 animate-fade">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-destaque to-destaqueClaro flex items-center justify-center text-white"><i class="fa-solid fa-robot"></i></div>
+            <div class="bolha-ia"><p>👋 Estou carregando minha inteligência dentro do seu navegador. Aguarde uns 30~60 segundos na primeira vez — depois respondo tudo sem precisar de nada externo!</p></div>
         </div>
     </div>
-
-    <div class="bg-menuFundo border-t border-borda/50 p-4 flex items-center gap-3">
-        <input type="text" id="campoMensagem" placeholder="Digite sua mensagem aqui..." class="flex-1 bg-fundo rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-destaque/40 transicao">
-        <button onclick="enviarMensagem()" class="w-10 h-10 rounded-xl bg-gradient-to-br from-destaque to-destaqueClaro flex items-center justify-center text-white text-lg botao-animado">
-            <i class="fa-solid fa-paper-plane"></i>
-        </button>
+    <div class="bg-menuFundo border-t border-borda/50 p-4 flex gap-3">
+        <input id="mensagem" type="text" placeholder="Digite sua pergunta..." class="flex-1 bg-fundo rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-destaque/40">
+        <button onclick="enviar()" class="w-10 h-10 rounded-xl bg-gradient-to-br from-destaque to-destaqueClaro flex items-center justify-center text-white"><i class="fa-solid fa-paper-plane"></i></button>
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@mlc-ai/web-llm@0.2.46/dist/web-llm.min.js"></script>
 <script>
-let modoAtual = "geral";
-let menuJogosAberto = false;
+let engine;
+const status = document.getElementById('status');
 
-// ----------------------
-// MAIS DE 5.000 RESPOSTAS ORGANIZADAS
-// ----------------------
-const BANCO_RESPOSTAS = {
-    geral: {
-        saudacoes: {
-            "oi": "Olá! Tudo bem contigo? 😊",
-            "olá": "Oi! Tudo ótimo e você? Espero que esteja bem!",
-            "bom dia": "Bom dia! Que seu dia seja cheio de vitórias e boas surpresas ☀️",
-            "boa tarde": "Boa tarde! Tudo bem? Aproveite bem o seu dia 🌤️",
-            "boa noite": "Boa noite! Descanse bastante e até a próxima 🌙",
-            "tudo bem": "Tudo ótimo! E com você? 😎",
-            "como vai": "Vou muito bem, obrigado por perguntar! E você, como está?",
-            "e aí": "E aí! Tudo em cima? 😜",
-            "fala": "Fala aí! Tudo certo? 🤝",
-            "salve": "Salve! Tudo bem por aí? ✌️"
-        },
-        apresentacao: {
-            "quem é você": "Sou o DEXas, seu assistente pessoal inteligente! Tenho mais de 5.000 respostas prontas para ajudar com jogos, dúvidas, conversas e muito mais 🚀",
-            "o que você faz": "Ajudo com comandos do Minecraft, scripts do Roblox, configurações do Free Fire, respondo perguntas do dia a dia e converso com você sempre que precisar 😊",
-            "como funciona": "É simples: escolha o modo no menu para respostas específicas, ou pergunte diretamente — eu reconheço milhares de palavras e respondo na hora!",
-            "qual é o seu nome": "Me chamo DEXas, o assistente que você criou especialmente para você! 🤖",
-            "de onde você é": "Sou um programa feito com muito carinho para estar sempre ao seu lado, respondendo o que precisar 😊"
-        },
-        agradecimentos: {
-            "obrigado": "De nada! Estou aqui para isso, sempre que precisar é só chamar ✨",
-            "valeu": "Por nada! Sempre às ordens! 🤜🤛",
-            "muito obrigado": "Que nada! Fico feliz em poder ajudar! 😊",
-            "agradeço": "Disponha! É um prazer ajudar você! 🚀"
-        },
-        // ... aqui vão mais de 2.000 frases gerais, organizadas por assunto
-    },
-
-    minecraft: {
-        comandos_basicos: {
-            "comando para diamante": "/give @s diamond 64 → Ganha 64 diamantes",
-            "como ganhar diamantes": "/give @s diamond 64 → comando rápido e seguro",
-            "modo criativo": "/gamemode creative → libera todos os blocos e itens",
-            "modo sobrevivência": "/gamemode survival → volta ao modo normal",
-            "pôr dia": "/time set day → deixa o mundo claro",
-            "pôr noite": "/time set night → escurece o ambiente",
-            "teletransportar": "/tp @s X Y Z → troque X Y Z pelas coordenadas",
-            "remover mobs": "/kill @e[type=!player] → remove todos os monstros",
-            "velocidade": "/effect @s speed 1000 5 → velocidade máxima",
-            "força": "/effect @s strength 1000 5 → quebra blocos mais rápido"
-        },
-        comandos_construcao: {
-            "fazer parede": "/fill ~5 ~ ~-5 ~-5 ~10 ~5 stone → parede de pedra",
-            "fazer chão": "/fill ~-10 ~-1 ~-10 ~10 ~-1 ~10 oak_planks → chão de madeira",
-            "fazer telhado": "/fill ~-8 ~3 ~-8 ~8 ~5 ~8 spruce_stairs → telhado inclinado",
-            "fazer porta": "/setblock ~ ~1 ~ oak_door → coloca uma porta",
-            "fazer janela": "/setblock ~ ~2 ~ glass → coloca vidro",
-            "limpar área": "/fill ~-20 ~ ~-20 ~20 ~10 ~20 air → remove tudo da região"
-        },
-        // ... mais de 1.200 comandos diferentes
-    },
-
-    roblox: {
-        scripts_basicos: {
-            "velocidade": "```lua\ngame.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 350\n``` → anda mais rápido",
-            "pulo alto": "```lua\ngame.Players.LocalPlayer.Character.Humanoid.JumpPower = 180\n``` → pula bem mais alto",
-            "vida infinita": "```lua\ngame.Players.LocalPlayer.Character.Humanoid.MaxHealth = math.huge\ngame.Players.LocalPlayer.Character.Humanoid.Health = math.huge\n``` → não morre mais",
-            "visão noturna": "```lua\ngame.Lighting.Ambient = Color3.new(1,1,1)\ngame.Lighting.Brightness = 2\n``` → enxerga no escuro",
-            "sem gravidade": "```lua\ngame.Players.LocalPlayer.Character.Humanoid.GravityScale = 0\n``` → flutua"
-        },
-        scripts_avancados: {
-            "voar": "```lua\nlocal h = game.Players.LocalPlayer.Character.Humanoid\nh.PlatformStand = true\nh.WalkSpeed = 0\nh.JumpPower = 0\n``` → sistema de voo básico",
-            "correr muito": "```lua\ngetgenv().Speed = 500\ngame:GetService('RunService').RenderStepped:Connect(function()\n    if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild('Humanoid') then\n        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = getgenv().Speed\n    end\nend)\n``` → velocidade ajustável"
-        },
-        // ... mais de 1.000 scripts diferentes
-    },
-
-    ff: {
-        dpi: {
-            "dpi pequeno": "Celulares pequenos: 420 a 470 → mais estabilidade",
-            "dpi médio": "Celulares médios: 480 a 540 → equilíbrio perfeito",
-            "dpi grande": "Celulares grandes: 550 a 620 → agilidade máxima",
-            "dpi recomendado": "O melhor para a maioria: 500 → não trava e responde bem"
-        },
-        sensibilidade: {
-            "sensibilidade geral": "Geral: 95 a 100 → melhora a velocidade da câmera",
-            "mira vermelha": "Mira de ponto vermelho: 90 a 96 → acerta mais na cabeça",
-            "mira 2x": "Mira 2x: 88 a 93 → estabilidade em média distância",
-            "mira 4x": "Mira 4x: 85 a 90 → precisão em longa distância"
-        },
-        // ... mais de 800 configurações e dicas
-    }
-};
-
-// ----------------------
-// FUNÇÃO DE BUSCA INTELIGENTE
-// ----------------------
-function gerarResposta(pergunta) {
-    const p = pergunta.toLowerCase().trim();
-    const banco = BANCO_RESPOSTAS[modoAtual] || BANCO_RESPOSTAS.geral;
-
-    // Percorre todo o banco procurando palavras-chave
-    for (const categoria in banco) {
-        for (const chave in banco[categoria]) {
-            if (p.includes(chave)) {
-                return banco[categoria][chave];
-            }
-        }
-    }
-
-    // Se não encontrar, retorna resposta padrão
-    return `✅ Entendi! Sobre "${pergunta}", ainda não tenho essa frase cadastrada, mas posso adicionar rapidamente se você quiser! 😊`;
-}
-
-// ----------------------
-// CONTROLES DE INTERFACE
-// ----------------------
-const menuLateral = document.getElementById('menuLateral');
-const abrirMenu = document.getElementById('abrirMenu');
-const fecharMenu = document.getElementById('fecharMenu');
-
-abrirMenu.addEventListener('click', () => menuLateral.classList.add('aberto'));
-fecharMenu.addEventListener('click', () => menuLateral.classList.remove('aberto'));
-
-document.addEventListener('click', (e) => {
-    if (!menuLateral.contains(e.target) && !abrirMenu.contains(e.target)) {
-        menuLateral.classList.remove('aberto');
-    }
-    if (!document.getElementById('menuJogos').contains(e.target)) {
-        document.getElementById('menuJogos').classList.add('max-h-0', 'opacity-0');
-        menuJogosAberto = false;
-    }
-});
-
-function abrirMenuJogos() {
-    menuJogosAberto = !menuJogosAberto;
-    const menu = document.getElementById('menuJogos');
-    if (menuJogosAberto) {
-        menu.classList.remove('max-h-0', 'opacity-0');
-        menu.classList.add('max-h-[260px]', 'opacity-100');
-    } else {
-        menu.classList.add('max-h-0', 'opacity-0');
-        menu.classList.remove('max-h-[260px]', 'opacity-100');
+// Inicializa IA LOCAL, sem conexão externa depois de carregada
+async function iniciarIA() {
+    try {
+        engine = await webllm.CreateMLCEngine("Mistral-7B-Instruct-v0.2-q4f16_1");
+        status.textContent = "IA pronta! Modo: Geral 💬";
+        adicionar("ia", "✅ Estou pronto! Sou o DEXas, minha inteligência roda aqui mesmo no seu navegador. Pergunte qualquer coisa!");
+    } catch (e) {
+        status.textContent = "Erro ao carregar IA";
+        adicionar("ia", "❌ Não consegui carregar o modelo. Use um navegador atualizado (Chrome, Edge, Firefox).");
     }
 }
 
-function mudarModo(modo) {
-    modoAtual = modo;
-    const status = document.getElementById('statusModo');
-    const nomes = {
-        geral: "Modo: Conversa Geral 💬",
-        minecraft: "Modo: Minecraft Bedrock 🟩",
-        roblox: "Modo: Roblox / Delta 🟥",
-        ff: "Modo: Free Fire ⚔️"
-    };
-    status.textContent = nomes[modo];
-    adicionarMensagem("ia", `✅ Modo alterado! Agora com mais de 5.000 respostas para ${nomes[modo].replace("Modo: ", "")}!`);
-    abrirMenuJogos();
-}
-
-// ----------------------
-// FUNÇÕES DE MENSAGEM
-// ----------------------
-async function enviarMensagem() {
-    const campo = document.getElementById("campoMensagem");
+// Envia pergunta e gera resposta real
+async function enviar() {
+    const campo = document.getElementById('mensagem');
     const texto = campo.value.trim();
-    if (!texto) return;
-
-    adicionarMensagem("usuario", texto);
+    if (!texto || !engine) return;
+    adicionar("usuario", texto);
     campo.value = "";
-    adicionarMensagem("ia", "Pensando... 🤔");
+    adicionar("ia", "Pensando... 🤔");
 
-    const resposta = gerarResposta(texto);
-
-    removerUltimaMensagem();
-    adicionarMensagem("ia", resposta);
+    const resposta = await engine.chat.completions.create({
+        messages: [
+            { role: "system", content: "Você é o DEXas, assistente pessoal. Responda SEMPRE em português do Brasil, curto, claro e amigável. Ajuda com jogos, códigos, dúvidas e conversas." },
+            { role: "user", content: texto }
+        ],
+        max_tokens: 600,
+        temperature: 0.7
+    });
+    removerUltima();
+    adicionar("ia", resposta.choices[0].message.content.trim());
 }
 
-function adicionarMensagem(tipo, conteudo) {
-    const caixa = document.getElementById("caixaConversa");
-    const div = document.createElement("div");
-    div.className = `flex gap-3 animate-fadeIn`;
+// Funções auxiliares
+function adicionar(tipo, txt) {
+    const caixa = document.getElementById('caixa');
+    const div = document.createElement('div');
+    div.className = "flex gap-3 animate-fade";
     div.innerHTML = `
-        <div class="w-10 h-10 rounded-xl shrink-0 flex items-center justify-center ${tipo === "usuario" ? "bg-gradient-to-br from-destaque to-destaqueClaro text-white" : "bg-fundoCard text-destaque"}">
-            <i class="fa-solid ${tipo === "usuario" ? "fa-user" : "fa-robot"}"></i>
+        <div class="w-10 h-10 rounded-xl shrink-0 flex items-center justify-center ${tipo==='usuario'?'bg-gradient-to-br from-destaque to-destaqueClaro':'bg-fundoCard text-destaque'}">
+            <i class="fa-solid ${tipo==='usuario'?'fa-user':'fa-robot'}"></i>
         </div>
-        <div class="${tipo === "usuario" ? "bolha-usuario" : "bolha-ia"}">
-            <p class="text-sm leading-relaxed whitespace-pre-wrap">${conteudo}</p>
-        </div>
+        <div class="${tipo==='usuario'?'bolha-usuario':'bolha-ia'}"><p class="whitespace-pre-wrap">${txt}</p></div>
     `;
     caixa.appendChild(div);
     caixa.scrollTop = caixa.scrollHeight;
 }
+function removerUltima() { document.getElementById('caixa').removeChild(document.getElementById('caixa').lastChild); }
 
-function removerUltimaMensagem() {
-    const caixa = document.getElementById("caixaConversa");
-    caixa.removeChild(caixa.lastChild);
-}
+// Controles menu
+document.getElementById('abrirMenu').onclick = () => document.getElementById('menuLateral').classList.add('aberto');
+document.getElementById('fecharMenu').onclick = () => document.getElementById('menuLateral').classList.remove('aberto');
+document.getElementById('mensagem').addEventListener('keydown', e => e.key==='Enter' && enviar());
 
-document.getElementById("campoMensagem").addEventListener("keydown", e => {
-    if (e.key === "Enter") enviarMensagem();
-});
+// Começa a carregar a IA
+window.onload = iniciarIA;
 </script>
-
 </body>
-    </html>
-                
+</html>
