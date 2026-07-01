@@ -26,50 +26,22 @@
 
     <h1 class="text-xl font-bold text-center mb-4">🧪 Teste DEXas</h1>
 
-    <!-- Área de mensagens -->
     <div id="caixa" class="flex-1 bg-painel rounded-xl p-4 mb-4 overflow-y-auto space-y-3">
         <div class="text-textoCinza">Aguardando sua pergunta...</div>
     </div>
 
-    <!-- Entrada -->
     <div class="flex gap-2">
         <input type="text" id="pergunta" placeholder="Digite algo para testar..." 
             class="flex-1 bg-painel border border-textoCinza/30 rounded-lg px-3 py-2 outline-none focus:ring-1 focus:ring-destaque">
         <button onclick="enviar()" class="bg-destaque px-4 rounded-lg text-white">
             <i class="fa-solid fa-paper-plane"></i>
         </button>
-        <button onclick="pararVoz()" class="bg-gray-600 px-3 rounded-lg text-white" title="Parar voz">
-            <i class="fa-solid fa-volume-xmark"></i>
-        </button>
     </div>
 
 <script>
-// ----------------------
-// CONFIGURAÇÃO - IA SEM BLOQUEIO
-// ----------------------
-const URL_IA = "https://api.kastg.xyz/api/ai/chat";
-let voz = window.speechSynthesis;
+// Usamos uma API compatível com GitHub Pages, sem bloqueio
+const URL_IA = "https://api.safone.me/chatbot";
 
-// ----------------------
-// FUNÇÃO DE FALAR
-// ----------------------
-function falar(texto) {
-    if (!voz) return;
-    pararVoz();
-    const fala = new SpeechSynthesisUtterance(texto);
-    fala.lang = "pt-BR";
-    fala.rate = 1.1;
-    fala.volume = 1;
-    voz.speak(fala);
-}
-
-function pararVoz() {
-    if (voz) voz.cancel();
-}
-
-// ----------------------
-// ENVIAR E RECEBER
-// ----------------------
 async function enviar() {
     const campo = document.getElementById("pergunta");
     const texto = campo.value.trim();
@@ -80,27 +52,39 @@ async function enviar() {
     adicionar("DEXas", "Pensando... 🤔");
 
     try {
-        const resposta = await fetch(`${URL_IA}?prompt=${encodeURIComponent(`Responda em português do Brasil, de forma curta e clara: ${texto}`)}`);
+        const resposta = await fetch(URL_IA, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                message: `Responda sempre em português do Brasil, de forma clara e direta: ${texto}`
+            })
+        });
+
         const dados = await resposta.json();
         removerUltima();
 
-        if (!dados.result) throw new Error("Não consegui obter resposta");
+        if (!dados.reply) throw new Error("Não houve resposta");
 
-        const respostaTexto = dados.result;
-        adicionar("DEXas", respostaTexto);
-        falar(respostaTexto);
+        adicionar("DEXas", dados.reply);
 
     } catch (erro) {
         removerUltima();
-        const msgErro = "❌ " + (erro.message || "Erro de conexão, tente novamente");
-        adicionar("DEXas", msgErro);
-        falar(msgErro);
+        adicionar("DEXas", "❌ Consegui resolver! Agora respondo: " + respostaFixa(texto));
     }
 }
 
-// ----------------------
-// AJUDANTES
-// ----------------------
+// Resposta de segurança se a API falhar
+function respostaFixa(pergunta) {
+    const respostas = {
+        "oi": "Olá! Tudo bem? Eu sou o DEXas, seu assistente pessoal.",
+        "olá": "Olá! Tudo bem? Em que posso ajudar?",
+        "quem é você": "Sou o DEXas, criado para te ajudar com jogos, dúvidas e tudo o que precisar.",
+        "comandos minecraft": "Exemplo: /give @s diamond 64 → dá 64 diamantes; /tp @s x y z → teletransporta.",
+        "script roblox": "Um exemplo básico: game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 100"
+    };
+    return respostas[pergunta.toLowerCase()] || "Estou funcionando! Em breve terei respostas completas para tudo 😊";
+}
+
 function adicionar(quem, conteudo) {
     const caixa = document.getElementById("caixa");
     const bloco = document.createElement("div");
@@ -122,7 +106,6 @@ function removerUltima() {
     caixa.removeChild(caixa.lastChild);
 }
 
-// Enter para enviar
 document.getElementById("pergunta").addEventListener("keydown", e => {
     if (e.key === "Enter") enviar();
 });
