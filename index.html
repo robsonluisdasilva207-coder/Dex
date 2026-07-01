@@ -3,22 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DEXas</title>
+    <title>DEXas - Seu Assistente</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        fundo: '#0F0F14',
-                        painel: '#181820',
-                        itemAtivo: '#29151A',
-                        destaque: '#FF2222',
-                        texto: '#F0F0F8',
-                        textoCinza: '#9090A0',
-                        borda: '#282832'
+                        fundo: '#0A0A0F',
+                        fundoCard: '#12121A',
+                        menuFundo: '#0E0E16',
+                        destaque: '#FF2233',
+                        destaqueClaro: '#FF4455',
+                        texto: '#F8F8FC',
+                        textoSuave: '#B0B0C0',
+                        borda: '#222230',
+                        verde: '#22CC66',
+                        azul: '#3388FF',
+                        roxo: '#9955FF',
+                        amarelo: '#FFCC22'
                     },
                     fontFamily: { sans: ['Inter', 'Segoe UI', 'Roboto', 'sans-serif'] }
                 }
@@ -29,101 +34,153 @@
     <style type="text/tailwindcss">
         @layer utilities {
             .transicao { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-            .menu-lateral { width: 260px; transform: translateX(-100%); }
+            .sombra-leve { box-shadow: 0 2px 8px rgba(0,0,0,0.25); }
+            .sombra-destaque { box-shadow: 0 0 12px rgba(255,34,51,0.3); }
+
+            .menu-lateral {
+                width: 280px;
+                transform: translateX(-100%);
+                background: linear-gradient(180deg, #0E0E16 0%, #0A0A0F 100%);
+            }
             .menu-lateral.aberto { transform: translateX(0); }
-            .item-menu { @apply flex items-center gap-3 p-3 rounded-lg transicao hover:bg-painel/70 active:scale-[0.98]; }
-            .item-menu.ativo { @apply bg-itemAtivo border-l-2 border-destaque; }
-            .bolha-ia { @apply bg-painel rounded-2xl p-4 max-w-[88%] rounded-tl-sm; }
-            .bolha-usuario { @apply bg-destaque rounded-2xl p-4 max-w-[88%] rounded-tr-sm ml-auto text-white; }
+
+            .item-menu {
+                @apply flex items-center gap-4 p-3 rounded-xl transicao;
+            }
+            .item-menu:hover {
+                @apply bg-fundoCard translate-x-1;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+            }
+            .item-menu.ativo {
+                @apply bg-destaque/10 border-l-4 border-destaque text-destaque;
+                box-shadow: 0 0 10px rgba(255,34,51,0.15);
+            }
+
+            .bolha-ia {
+                @apply bg-fundoCard rounded-2xl p-4 max-w-[88%] rounded-tl-sm sombra-leve;
+                border-left: 3px solid #222230;
+            }
+            .bolha-usuario {
+                @apply bg-gradient-to-br from-destaque to-destaqueClaro rounded-2xl p-4 max-w-[88%] rounded-tr-sm ml-auto text-white sombra-destaque;
+            }
+
             .botao-animado { @apply active:scale-95 hover:brightness-110 transicao; }
-            @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-            .animate-fadeIn { animation: fadeIn 0.25s ease forwards; }
+
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(8px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            .animate-fadeIn { animation: fadeIn 0.3s ease forwards; }
         }
     </style>
 </head>
 <body class="bg-fundo text-texto font-sans h-screen flex overflow-hidden">
 
-<!-- MENU LATERAL -->
-<div id="menuLateral" class="menu-lateral bg-painel border-r border-borda fixed top-0 left-0 h-full z-50 shadow-2xl transicao">
-    <div class="p-4 border-b border-borda flex items-center justify-between">
-        <h3 class="text-lg font-semibold">DEXas</h3>
-        <button id="fecharMenu" class="text-xl text-textoCinza hover:text-destaque transicao">
-            <i class="fa-solid fa-xmark"></i>
-        </button>
+<!-- MENU LATERAL NOVO E MAIS BONITO -->
+<div id="menuLateral" class="menu-lateral fixed top-0 left-0 h-full z-50 border-r border-borda">
+    <div class="p-5 border-b border-borda/50">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-destaque to-destaqueClaro flex items-center justify-center text-white text-xl">
+                    <i class="fa-solid fa-brain"></i>
+                </div>
+                <h2 class="text-xl font-bold">DEXas</h2>
+            </div>
+            <button id="fecharMenu" class="text-xl text-textoSuave hover:text-destaque transicao">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <p class="text-xs text-textoSuave mt-2">Seu assistente pessoal inteligente</p>
     </div>
 
     <div class="p-4 space-y-2 mt-2">
-        <div class="item-menu">
-            <div class="w-8 h-8 rounded-full bg-fundo flex items-center justify-center">
-                <i class="fa-solid fa-history"></i>
-            </div>
-            <span>Histórico</span>
-        </div>
-
         <div class="item-menu ativo">
-            <div class="w-8 h-8 rounded-full bg-destaque flex items-center justify-center text-white">
-                <i class="fa-solid fa-plus"></i>
+            <div class="w-9 h-9 rounded-lg bg-fundo flex items-center justify-center text-destaque">
+                <i class="fa-solid fa-comments"></i>
             </div>
-            <span>Nova Conversa</span>
+            <span class="font-medium">Nova Conversa</span>
         </div>
 
         <div class="item-menu" onclick="abrirMenuJogos()">
-            <div class="w-8 h-8 rounded-full bg-fundo flex items-center justify-center">
+            <div class="w-9 h-9 rounded-lg bg-fundo flex items-center justify-center text-azul">
                 <i class="fa-solid fa-gamepad"></i>
             </div>
-            <span>Modo Jogos</span>
+            <span class="font-medium">Modos de Jogo</span>
         </div>
 
         <div class="item-menu">
-            <div class="w-8 h-8 rounded-full bg-fundo flex items-center justify-center">
+            <div class="w-9 h-9 rounded-lg bg-fundo flex items-center justify-center text-roxo">
+                <i class="fa-solid fa-history"></i>
+            </div>
+            <span class="font-medium">Histórico</span>
+        </div>
+
+        <div class="item-menu">
+            <div class="w-9 h-9 rounded-lg bg-fundo flex items-center justify-center text-amarelo">
                 <i class="fa-solid fa-gear"></i>
             </div>
-            <span>Configurações</span>
+            <span class="font-medium">Configurações</span>
         </div>
     </div>
 
-    <div class="absolute bottom-4 left-0 right-0 text-center text-xs text-textoCinza">
-        DEXas v1.0 ✨
+    <div class="absolute bottom-5 left-0 right-0 text-center text-xs text-textoSuave">
+        DEXas v2.0 • Desenvolvido para você ✨
     </div>
 </div>
 
-<!-- MENU DE JOGOS -->
-<div id="menuJogos" class="fixed left-20 top-24 w-52 bg-painel rounded-xl shadow-xl z-40 transicao max-h-0 opacity-0 overflow-hidden border border-borda">
-    <h4 class="text-xs text-textoCinza px-3 py-2">Escolha o modo</h4>
-    <button onclick="mudarModo('minecraft')" class="w-full text-left p-3 hover:bg-fundo transicao flex items-center gap-2">🟩 Minecraft Bedrock</button>
-    <button onclick="mudarModo('roblox')" class="w-full text-left p-3 hover:bg-fundo transicao flex items-center gap-2">🟥 Roblox / Delta</button>
-    <button onclick="mudarModo('ff')" class="w-full text-left p-3 hover:bg-fundo transicao flex items-center gap-2">⚔️ Free Fire</button>
-    <button onclick="mudarModo('geral')" class="w-full text-left p-3 hover:bg-fundo transicao flex items-center gap-2">💬 Geral</button>
+<!-- SUBMENU DE JOGOS -->
+<div id="menuJogos" class="fixed left-24 top-28 w-60 bg-fundoCard rounded-2xl shadow-2xl z-40 transicao max-h-0 opacity-0 overflow-hidden border border-borda/60">
+    <h4 class="text-sm font-semibold px-4 py-3 border-b border-borda/50">Escolha o modo</h4>
+    <button onclick="mudarModo('minecraft')" class="w-full text-left p-3 hover:bg-fundo transicao flex items-center gap-3">
+        <span class="text-xl">🟩</span>
+        <span>Minecraft Bedrock</span>
+    </button>
+    <button onclick="mudarModo('roblox')" class="w-full text-left p-3 hover:bg-fundo transicao flex items-center gap-3">
+        <span class="text-xl">🟥</span>
+        <span>Roblox / Delta</span>
+    </button>
+    <button onclick="mudarModo('ff')" class="w-full text-left p-3 hover:bg-fundo transicao flex items-center gap-3">
+        <span class="text-xl">⚔️</span>
+        <span>Free Fire</span>
+    </button>
+    <button onclick="mudarModo('geral')" class="w-full text-left p-3 hover:bg-fundo transicao flex items-center gap-3">
+        <span class="text-xl">💬</span>
+        <span>Conversa Geral</span>
+    </button>
 </div>
 
 <!-- ÁREA PRINCIPAL -->
 <div class="flex-1 flex flex-col h-full">
-    <header class="bg-painel border-b border-borda px-4 py-3 flex items-center justify-between">
-        <div class="flex items-center gap-3">
-            <button id="abrirMenu" class="w-9 h-9 rounded-full bg-fundo flex items-center justify-center text-xl botao-animado">
+    <header class="bg-menuFundo border-b border-borda/50 px-5 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-4">
+            <button id="abrirMenu" class="w-10 h-10 rounded-xl bg-fundo flex items-center justify-center text-lg botao-animado">
                 <i class="fa-solid fa-bars"></i>
             </button>
             <div>
                 <h1 class="text-lg font-bold">DEXas</h1>
-                <p class="text-xs text-textoCinza" id="statusModo">Seu assistente pessoal 🤖</p>
+                <p class="text-xs text-textoSuave" id="statusModo">Modo: Conversa Geral 💬</p>
             </div>
+        </div>
+        <div class="flex gap-3 text-textoSuave">
+            <button class="hover:text-texto transicao"><i class="fa-solid fa-moon"></i></button>
+            <button class="hover:text-destaque transicao"><i class="fa-solid fa-info-circle"></i></button>
         </div>
     </header>
 
-    <div id="caixaConversa" class="flex-1 overflow-y-auto p-4 space-y-4 bg-fundo/95">
-        <div class="flex gap-3">
-            <div class="w-8 h-8 rounded-full bg-destaque flex items-center justify-center text-white shrink-0">
+    <div id="caixaConversa" class="flex-1 overflow-y-auto p-5 space-y-5 bg-gradient-to-b from-fundo to-fundo/95">
+        <div class="flex gap-3 animate-fadeIn">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-destaque to-destaqueClaro flex items-center justify-center text-white shrink-0">
                 <i class="fa-solid fa-robot"></i>
             </div>
             <div class="bolha-ia">
-                <p class="text-sm leading-relaxed">👋 Olá! Eu sou o <strong>DEXas</strong>, seu assistente pessoal. Estou aqui para te ajudar com jogos, códigos, dúvidas e tudo o que precisar! 😊</p>
+                <p class="text-sm leading-relaxed">👋 Olá! Eu sou o <strong>DEXas</strong>, seu assistente pessoal. Estou aqui para te ajudar com comandos, scripts, dicas, conversas e tudo o que você precisar! É só escolher o modo ou perguntar diretamente 😊</p>
             </div>
         </div>
     </div>
 
-    <div class="bg-painel border-t border-borda p-3 flex items-center gap-2">
-        <input type="text" id="campoMensagem" placeholder="Digite sua mensagem..." class="flex-1 bg-fundo rounded-full px-4 py-2 outline-none focus:ring-1 focus:ring-destaque/50 transicao">
-        <button onclick="enviarMensagem()" class="w-9 h-9 rounded-full bg-destaque flex items-center justify-center text-white botao-animado">
+    <div class="bg-menuFundo border-t border-borda/50 p-4 flex items-center gap-3">
+        <input type="text" id="campoMensagem" placeholder="Digite sua mensagem aqui..." class="flex-1 bg-fundo rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-destaque/40 transicao">
+        <button onclick="enviarMensagem()" class="w-10 h-10 rounded-xl bg-gradient-to-br from-destaque to-destaqueClaro flex items-center justify-center text-white text-lg botao-animado">
             <i class="fa-solid fa-paper-plane"></i>
         </button>
     </div>
@@ -131,7 +188,7 @@
 
 <script>
 // ----------------------
-// CONFIGURAÇÃO
+// CONFIGURAÇÕES
 // ----------------------
 let modoAtual = "geral";
 let menuJogosAberto = false;
@@ -161,10 +218,10 @@ function abrirMenuJogos() {
     const menu = document.getElementById('menuJogos');
     if (menuJogosAberto) {
         menu.classList.remove('max-h-0', 'opacity-0');
-        menu.classList.add('max-h-[220px]', 'opacity-100');
+        menu.classList.add('max-h-[260px]', 'opacity-100');
     } else {
         menu.classList.add('max-h-0', 'opacity-0');
-        menu.classList.remove('max-h-[220px]', 'opacity-100');
+        menu.classList.remove('max-h-[260px]', 'opacity-100');
     }
 }
 
@@ -172,18 +229,18 @@ function mudarModo(modo) {
     modoAtual = modo;
     const status = document.getElementById('statusModo');
     const nomes = {
-        geral: "Modo Geral 💬",
-        minecraft: "Especialista Minecraft Bedrock 🟩",
-        roblox: "Especialista Roblox / Delta 🟥",
-        ff: "Especialista Free Fire ⚔️"
+        geral: "Modo: Conversa Geral 💬",
+        minecraft: "Modo: Minecraft Bedrock 🟩",
+        roblox: "Modo: Roblox / Delta 🟥",
+        ff: "Modo: Free Fire ⚔️"
     };
     status.textContent = nomes[modo];
-    adicionarMensagem("ia", `✅ Agora estou no modo: ${nomes[modo]}! É só perguntar o que precisar.`);
+    adicionarMensagem("ia", `✅ Modo alterado com sucesso! Agora estou especializado em: ${nomes[modo].replace("Modo: ", "")}. Pergunte o que precisar!`);
     abrirMenuJogos();
 }
 
 // ----------------------
-// FUNÇÃO DE RESPOSTAS GARANTIDAS
+// FUNÇÃO DE RESPOSTAS COMPLETAS
 // ----------------------
 async function enviarMensagem() {
     const campo = document.getElementById("campoMensagem");
@@ -194,7 +251,7 @@ async function enviarMensagem() {
     campo.value = "";
     adicionarMensagem("ia", "Pensando... 🤔");
 
-    let resposta = gerarResposta(texto);
+    const resposta = gerarResposta(texto);
 
     removerUltimaMensagem();
     adicionarMensagem("ia", resposta);
@@ -203,61 +260,133 @@ async function enviarMensagem() {
 function gerarResposta(pergunta) {
     const p = pergunta.toLowerCase().trim();
 
-    // Respostas por modo
+    // ----------------------
+    // RESPOSTAS MINECRAFT
+    // ----------------------
     if (modoAtual === "minecraft") {
-        if (p.includes("comando") || p.includes("dar") || p.includes("item")) {
-            return `🟩 Minecraft Bedrock - Comandos úteis:
-• /give @s diamond 64 → Ganha 64 diamantes
+        if (p.includes("comando") || p.includes("ajuda")) {
+            return `🟩 Minecraft Bedrock - Principais Comandos:
+• /give @s diamante 64 → Ganha 64 diamantes
+• /give @s bloco_de_comando → Ganha bloco de comando
 • /gamemode creative → Modo criativo
-• /tp @s 100 70 -200 → Teletransporta
-• /time set day → Põe dia
-• /kill @e[type=zombie] → Remove zumbis`;
+• /gamemode survival → Modo sobrevivência
+• /time set day → Põe o dia
+• /time set night → Põe a noite
+• /tp @s X Y Z → Teletransporta para coordenadas
+• /kill @e → Remove todas as entidades
+• /fill ~ ~ ~ ~10 ~5 ~10 pedra → Preenche área com pedra
+• /effect @s speed 100 5 → Velocidade por 100s`;
         }
         if (p.includes("construir") || p.includes("casa")) {
-            return `🏠 Para construir rápido:
-Use /fill para preencher blocos:
-Exemplo: /fill ~5 ~ ~-5 ~-5 ~10 ~5 stone → cria uma parede de pedra`;
+            return `🏠 Construção Rápida no Minecraft:
+• Parede: /fill ~5 ~ ~-5 ~-5 ~10 ~5 madeira
+• Chão: /fill ~-10 ~-1 ~-10 ~10 ~-1 ~10 pedra
+• Telhado: /setblock ~ ~3 ~ telha
+• Porta: /setblock ~ ~1 ~ porta_carvalho
+• Janela: /setblock ~ ~2 ~ vidro`;
+        }
+        if (p.includes("item") || p.includes("armadura")) {
+            return `🛡️ Itens e Armaduras:
+• /give @s armadura_de_diamante 1 0 {enchanted: [{id:34,lvl:10}]} → Armadura encantada
+• /give @s espada_de_diamante 1 0 {enchanted: [{id:16,lvl:5}]} → Espada afiação 5
+• /give @s maçã_dourada_encantada 10 → 10 maçãs douradas`;
         }
     }
 
+    // ----------------------
+    // RESPOSTAS ROBLOX
+    // ----------------------
     if (modoAtual === "roblox") {
-        if (p.includes("script") || p.includes("velocidade") || p.includes("lua")) {
-            return `🟥 Roblox / Delta - Scripts úteis:
-Velocidade:
+        if (p.includes("script") || p.includes("lua") || p.includes("delta")) {
+            return `🟥 Roblox / Delta - Scripts Úteis:
+
+⚡ Velocidade:
 \`\`\`lua
-game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 300
+game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 350
 \`\`\`
-Pular alto:
+
+🦘 Pulo Alto:
 \`\`\`lua
-game.Players.LocalPlayer.Character.Humanoid.JumpPower = 120
+game.Players.LocalPlayer.Character.Humanoid.JumpPower = 150
 \`\`\`
-Bloquear dano:
+
+❤️ Vida Infinita:
 \`\`\`lua
 game.Players.LocalPlayer.Character.Humanoid.MaxHealth = math.huge
+game.Players.LocalPlayer.Character.Humanoid.Health = math.huge
+\`\`\`
+
+👀 Visão Noturna:
+\`\`\`lua
+game.Lighting.Ambient = Color3.new(1,1,1)
+game.Lighting.Brightness = 2
+\`\`\`
+
+💨 Voar Simples:
+\`\`\`lua
+local h = game.Players.LocalPlayer.Character.Humanoid
+h.PlatformStand = true
+h.WalkSpeed = 0
+h.JumpPower = 0
 \`\`\``;
         }
-    }
-
-    if (modoAtual === "ff") {
-        if (p.includes("dpi") || p.includes("sensibilidade")) {
-            return `⚔️ Free Fire - Configurações recomendadas:
-• DPI: 480 a 550
-• Sensibilidade: Geral 96, Mira de Ponto 92, Mira 2x 88
-• Botão de disparo: 45% a 52% de tamanho
-• Sempre use parede de gelo rápida`;
+        if (p.includes("executar") || p.includes("como usar")) {
+            return `ℹ️ Como usar scripts no Delta:
+1. Abra o jogo e o menu do Delta
+2. Vá até a aba "Script"
+3. Cole o código na área de texto
+4. Clique em "Executar"
+5. Para parar, recarregue o personagem ou desative no menu`;
         }
     }
 
-    // Respostas gerais
+    // ----------------------
+    // RESPOSTAS FREE FIRE
+    // ----------------------
+    if (modoAtual === "ff") {
+        if (p.includes("dpi") || p.includes("sensibilidade")) {
+            return `⚔️ Free Fire - Configurações Ideais:
+
+📱 DPI recomendado:
+• Celulares pequenos: 440 - 480
+• Celulares médios: 490 - 530
+• Celulares grandes: 540 - 600
+
+🎯 Sensibilidade:
+• Geral: 95 - 100
+• Mira de Ponto Vermelho: 90 - 95
+• Mira 2x: 88 - 92
+• Mira 4x: 85 - 90
+• Mira de Francotirador: 50 - 60
+• Visão Livre: 70 - 80
+
+🔘 Botão de disparo: 48% a 55%`;
+        }
+        if (p.includes("parede") || p.includes("gelo")) {
+            return `🧱 Parede de Gelo Rápida:
+1. Coloque o botão da parede ao lado do botão de disparo
+2. Use DPI entre 480 e 520
+3. Movimento: Arraste o dedo de baixo para cima rapidamente
+4. Treine no modo treinamento por 10-15 minutos por dia`;
+        }
+    }
+
+    // ----------------------
+    // RESPOSTAS GERAIS
+    // ----------------------
     const respostasGerais = {
-        "oi": "Olá! Tudo bem? Eu sou o DEXas, seu assistente pessoal 🤝",
-        "olá": "Olá! Tudo bem contigo? Em que posso ajudar hoje?",
-        "quem é você": "Sou o DEXas, criado especialmente para você! Estou aqui para ajudar com jogos, códigos, dicas e o que mais precisar 😎",
-        "tudo bem": "Tudo ótimo! E com você? 😊",
-        "obrigado": "De nada! Estou aqui para isso, sempre que precisar é só chamar ✨"
+        "oi": "Olá! Tudo bem contigo? 😊 Estou aqui para ajudar no que precisar, é só chamar!",
+        "olá": "Oi! Tudo ótimo e você? Espero que esteja tudo bem! 🤝",
+        "tudo bem": "Tudo ótimo! E com você? 😎",
+        "quem é você": "Eu sou o DEXas, o seu assistente pessoal! Fui criado para te ajudar com jogos, códigos, dicas e conversar com você sempre que precisar 🚀",
+        "obrigado": "De nada! Estou aqui para isso, sempre que precisar é só perguntar ✨",
+        "como funciona": "É simples: escolha o modo no menu para receber respostas específicas, ou pergunte qualquer coisa diretamente que eu respondo! 😊",
+        "bom dia": "Bom dia! Que o seu dia seja cheio de vitórias e coisas boas! ☀️",
+        "boa tarde": "Boa tarde! Tudo bem? Espero que esteja aproveitando bem o dia! 🌤️",
+        "boa noite": "Boa noite! Descanse bem e até a próxima! 🌙"
     };
 
-    return respostasGerais[p] || `✅ Entendi! Estou aprendendo cada vez mais. Sobre "${pergunta}", posso te ajudar melhor se for algo relacionado aos jogos ou configurações, ou diga mais detalhes! 😊`;
+    return respostasGerais[p] || `✅ Entendi! Sobre "${pergunta}", estou sempre aprendendo e atualizando. Se for algo de jogo, ative o modo correspondente no menu que eu respondo com detalhes! 😊`;
 }
 
 // ----------------------
@@ -266,9 +395,9 @@ game.Players.LocalPlayer.Character.Humanoid.MaxHealth = math.huge
 function adicionarMensagem(tipo, conteudo) {
     const caixa = document.getElementById("caixaConversa");
     const div = document.createElement("div");
-    div.className = `flex gap-3 transicao animate-fadeIn`;
+    div.className = `flex gap-3 animate-fadeIn`;
     div.innerHTML = `
-        <div class="w-8 h-8 rounded-full shrink-0 flex items-center justify-center ${tipo === "usuario" ? "bg-destaque text-white" : "bg-painel text-destaque"}">
+        <div class="w-10 h-10 rounded-xl shrink-0 flex items-center justify-center ${tipo === "usuario" ? "bg-gradient-to-br from-destaque to-destaqueClaro text-white" : "bg-fundoCard text-destaque"}">
             <i class="fa-solid ${tipo === "usuario" ? "fa-user" : "fa-robot"}"></i>
         </div>
         <div class="${tipo === "usuario" ? "bolha-usuario" : "bolha-ia"}">
@@ -290,5 +419,5 @@ document.getElementById("campoMensagem").addEventListener("keydown", e => {
 </script>
 
 </body>
-            </html>
-                                   
+                </html>
+            
