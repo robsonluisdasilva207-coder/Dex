@@ -45,9 +45,9 @@
 
 <script>
 // ----------------------
-// CONFIGURAÇÃO DE TESTE
+// CONFIGURAÇÃO - IA SEM BLOQUEIO
 // ----------------------
-const URL_IA = "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2";
+const URL_IA = "https://api.kastg.xyz/api/ai/chat";
 let voz = window.speechSynthesis;
 
 // ----------------------
@@ -59,6 +59,7 @@ function falar(texto) {
     const fala = new SpeechSynthesisUtterance(texto);
     fala.lang = "pt-BR";
     fala.rate = 1.1;
+    fala.volume = 1;
     voz.speak(fala);
 }
 
@@ -79,26 +80,19 @@ async function enviar() {
     adicionar("DEXas", "Pensando... 🤔");
 
     try {
-        const resposta = await fetch(URL_IA, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                inputs: `<s>[INST] Responda em português do Brasil, de forma curta e clara: ${texto} [/INST]`
-            })
-        });
-
+        const resposta = await fetch(`${URL_IA}?prompt=${encodeURIComponent(`Responda em português do Brasil, de forma curta e clara: ${texto}`)}`);
         const dados = await resposta.json();
         removerUltima();
 
-        if (dados.error) throw new Error("Aguarde um instante e tente novamente");
+        if (!dados.result) throw new Error("Não consegui obter resposta");
 
-        const respostaTexto = dados[0].generated_text.split("[/INST]")[1].trim();
+        const respostaTexto = dados.result;
         adicionar("DEXas", respostaTexto);
         falar(respostaTexto);
 
     } catch (erro) {
         removerUltima();
-        const msgErro = "❌ " + erro.message;
+        const msgErro = "❌ " + (erro.message || "Erro de conexão, tente novamente");
         adicionar("DEXas", msgErro);
         falar(msgErro);
     }
@@ -110,9 +104,7 @@ async function enviar() {
 function adicionar(quem, conteudo) {
     const caixa = document.getElementById("caixa");
     const bloco = document.createElement("div");
-    bloco.className = quem === "Você" 
-        ? "text-right" 
-        : "text-left";
+    bloco.className = quem === "Você" ? "text-right" : "text-left";
     bloco.innerHTML = `
         <div class="inline-block max-w-[85%] p-3 rounded-lg ${
             quem === "Você" ? "bg-destaque text-white" : "bg-gray-700 text-white"
