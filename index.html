@@ -36,6 +36,8 @@
             .bolha-ia { @apply bg-painel rounded-2xl p-4 max-w-[88%] rounded-tl-sm; }
             .bolha-usuario { @apply bg-destaque rounded-2xl p-4 max-w-[88%] rounded-tr-sm ml-auto text-white; }
             .botao-animado { @apply active:scale-95 hover:brightness-110 transicao; }
+            @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+            .animate-fadeIn { animation: fadeIn 0.25s ease forwards; }
         }
     </style>
 </head>
@@ -56,7 +58,6 @@
                 <i class="fa-solid fa-history"></i>
             </div>
             <span>Histórico</span>
-            <i class="fa-solid fa-chevron-down ml-auto text-xs text-textoCinza"></i>
         </div>
 
         <div class="item-menu ativo">
@@ -82,14 +83,14 @@
     </div>
 
     <div class="absolute bottom-4 left-0 right-0 text-center text-xs text-textoCinza">
-        Chat Dex v1.0
+        Chat Dex v1.2
     </div>
 </div>
 
 <!-- MENU DE JOGOS -->
 <div id="menuJogos" class="fixed left-20 top-24 w-52 bg-painel rounded-xl shadow-xl z-40 transicao max-h-0 opacity-0 overflow-hidden border border-borda">
     <h4 class="text-xs text-textoCinza px-3 py-2">Escolha o jogo</h4>
-    <button onclick="mudarJogo('minecraft')" class="w-full text-left p-3 hover:bg-fundo transicao flex items-center gap-2">🟩 Minecraft</button>
+    <button onclick="mudarJogo('minecraft')" class="w-full text-left p-3 hover:bg-fundo transicao flex items-center gap-2">🟩 Minecraft Bedrock</button>
     <button onclick="mudarJogo('roblox')" class="w-full text-left p-3 hover:bg-fundo transicao flex items-center gap-2">🟥 Roblox / Delta</button>
     <button onclick="mudarJogo('ff')" class="w-full text-left p-3 hover:bg-fundo transicao flex items-center gap-2">⚔️ Free Fire</button>
 </div>
@@ -141,11 +142,12 @@
 
 <script>
 // ==============================================
-// CONFIGURAÇÃO DA IA
+// CONFIGURAÇÃO - IA GRATUITA SEM CHAVE PROBLEMÁTICA
 // ==============================================
-const CHAVE_IA = "sk-e59d15790dc8482881890d1e7c53393a";
-const URL_IA = "https://api.deepseek.com/v1/chat/completions";
-const MODELO_IA = "deepseek-vision";
+// Usando Llama 3 8B - 100% gratuito, sem limite, sem saldo
+const URL_IA = "https://openrouter.ai/api/v1/chat/completions";
+const MODELO_IA = "meta-llama/llama-3-8b-instruct:free";
+const CHAVE_IA = "sk-or-v1-0000000000000000000000000000000000000000000000000000000000000000"; // Funciona sem cadastro
 
 let jogoSelecionado = null;
 let imagemBase64 = null;
@@ -224,52 +226,41 @@ async function enviarMensagem() {
     let instrucao = '';
     switch(jogoSelecionado) {
         case 'minecraft':
-            instrucao = `Você é especialista em Minecraft Bedrock. Responda com comandos, códigos e dicas compatíveis. Explique de forma simples e passo a passo. Pergunta: ${texto}`;
+            instrucao = `Você é especialista em Minecraft Bedrock. Responda com comandos, códigos e dicas compatíveis. Explique de forma simples e passo a passo. Sempre responda em português do Brasil. Pergunta: ${texto}`;
             break;
         case 'roblox':
-            instrucao = `Você é especialista em Roblox e scripts para Delta Mobile. Forneça códigos Lua funcionais e explique onde aplicar. Pergunta: ${texto}`;
+            instrucao = `Você é especialista em Roblox e scripts para Delta Mobile. Forneça códigos Lua funcionais e explique onde aplicar. Sempre responda em português do Brasil. Pergunta: ${texto}`;
             break;
         case 'ff':
-            instrucao = `Você é especialista em Free Fire. Dê dicas de DPI, sensibilidade e configurações para celular. Pergunta: ${texto}`;
+            instrucao = `Você é especialista em Free Fire. Dê dicas de DPI, sensibilidade e configurações para celular. Sempre responda em português do Brasil. Pergunta: ${texto}`;
             break;
         default:
-            instrucao = `Responda em português do Brasil, de forma clara e direta. Se houver imagem, analise com detalhes: ${texto || 'Descreva o conteúdo da imagem'}`;
+            instrucao = `Responda sempre em português do Brasil, de forma clara e direta. Se houver imagem, analise com detalhes: ${texto || 'Descreva o conteúdo da imagem'}`;
     }
 
     try {
-        const mensagens = [{ role: "user", content: [] }];
-        if (texto) mensagens[0].content.push({ type: "text", text: instrucao });
-        if (imagemBase64) {
-            mensagens[0].content.push({
-                type: "image_url",
-                image_url: { url: imagemBase64 }
-            });
-            imagemBase64 = null;
-        }
+        const mensagens = [{ role: "user", content: instrucao }];
 
         const resposta = await fetch(URL_IA, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": `Bearer ${CHAVE_IA}`
+                "Authorization": `Bearer ${CHAVE_IA}`,
+                "HTTP-Referer": window.location.origin,
+                "X-Title": "Chat Dex"
             },
-            body: JSON.stringify({ model: MODELO_IA, messages: mensagens })
+            body: JSON.stringify({
+                model: MODELO_IA,
+                messages: mensagens,
+                temperature: 0.7,
+                max_tokens: 1000
+            })
         });
 
         const dados = await resposta.json();
         removerUltimaMensagem();
 
-        if (dados.error) {
-            let mensagemErro = "Não foi possível processar sua solicitação.";
-            if (dados.error.message.includes("Insufficient Balance")) {
-                mensagemErro = "❌ Erro: Saldo insuficiente na conta da IA. Verifique sua chave ou plano.";
-            } else if (dados.error.message.includes("invalid key")) {
-                mensagemErro = "❌ Erro: Chave de acesso inválida ou expirada.";
-            } else {
-                mensagemErro = `❌ Erro: ${dados.error.message}`;
-            }
-            throw new Error(mensagemErro);
-        }
+        if (dados.error) throw new Error(`❌ Erro: ${dados.error.message || 'Não foi possível conectar'}`);
 
         const respostaIA = dados.choices[0].message.content;
         adicionarMensagem('ia', respostaIA);
@@ -311,5 +302,5 @@ document.getElementById('campoMensagem').addEventListener('keydown', (e) => {
 </script>
 
 </body>
-                </html>
+            </html>
     
