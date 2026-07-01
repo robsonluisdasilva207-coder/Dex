@@ -12,12 +12,12 @@
             theme: {
                 extend: {
                     colors: {
-                        fundo: '#121218',
-                        painel: '#1a1a22',
-                        itemAtivo: '#2b1a20',
-                        destaque: '#ff2222',
-                        textoClaro: '#f0f0f8',
-                        textoCinza: '#a0a0b0',
+                        fundo: '#0F0F14',
+                        painel: '#181820',
+                        itemAtivo: '#29151A',
+                        destaque: '#FF2222',
+                        texto: '#F0F0F8',
+                        textoCinza: '#9090A0',
                         borda: '#282832'
                     },
                     fontFamily: { sans: ['Inter', 'Segoe UI', 'Roboto', 'sans-serif'] }
@@ -28,25 +28,34 @@
 
     <style type="text/tailwindcss">
         @layer utilities {
-            .transicao { transition: all 0.25s ease; }
-            .menu-lateral { width: 220px; }
-            .item-menu { @apply flex items-center gap-3 p-3 rounded-xl transicao hover:bg-painel/60; }
+            .transicao { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+            .menu-lateral { width: 260px; transform: translateX(-100%); }
+            .menu-lateral.aberto { transform: translateX(0); }
+            .item-menu { @apply flex items-center gap-3 p-3 rounded-lg transicao hover:bg-painel/70 active:scale-[0.98]; }
             .item-menu.ativo { @apply bg-itemAtivo border-l-2 border-destaque; }
-            .bolha-ia { @apply bg-painel rounded-2xl p-4 max-w-[85%] rounded-tl-sm; }
-            .bolha-usuario { @apply bg-destaque rounded-2xl p-4 max-w-[85%] rounded-tr-sm ml-auto text-white; }
+            .bolha-ia { @apply bg-painel rounded-2xl p-4 max-w-[88%] rounded-tl-sm; }
+            .bolha-usuario { @apply bg-destaque rounded-2xl p-4 max-w-[88%] rounded-tr-sm ml-auto text-white; }
+            .botao-animado { @apply active:scale-95 hover:brightness-110 transicao; }
         }
     </style>
 </head>
-<body class="bg-fundo text-textoClaro font-sans h-screen flex overflow-hidden">
+<body class="bg-fundo text-texto font-sans h-screen flex overflow-hidden">
 
-<!-- MENU LATERAL ESQUERDO -->
-<div class="menu-lateral bg-painel border-r border-borda p-4 flex flex-col justify-between">
-    <div class="space-y-2 mt-4">
+<!-- MENU LATERAL - COMEÇA FECHADO -->
+<div id="menuLateral" class="menu-lateral bg-painel border-r border-borda fixed top-0 left-0 h-full z-50 shadow-2xl transicao">
+    <div class="p-4 border-b border-borda flex items-center justify-between">
+        <h3 class="text-lg font-semibold">Chat Dex</h3>
+        <button id="fecharMenu" class="text-xl text-textoCinza hover:text-destaque transicao">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    </div>
+
+    <div class="p-4 space-y-2 mt-2">
         <div class="item-menu">
-            <div class="w-8 h-8 rounded-full bg-fundo flex items-center justify-center text-textoClaro">
+            <div class="w-8 h-8 rounded-full bg-fundo flex items-center justify-center">
                 <i class="fa-solid fa-history"></i>
             </div>
-            <span class="text-sm">History</span>
+            <span>Histórico</span>
             <i class="fa-solid fa-chevron-down ml-auto text-xs text-textoCinza"></i>
         </div>
 
@@ -54,64 +63,77 @@
             <div class="w-8 h-8 rounded-full bg-destaque flex items-center justify-center text-white">
                 <i class="fa-solid fa-plus"></i>
             </div>
-            <span class="text-sm font-medium">New Chat</span>
+            <span>Nova Conversa</span>
         </div>
 
-        <div class="item-menu">
-            <div class="w-8 h-8 rounded-full bg-fundo flex items-center justify-center text-textoClaro">
+        <div class="item-menu" onclick="abrirMenuJogos()">
+            <div class="w-8 h-8 rounded-full bg-fundo flex items-center justify-center">
                 <i class="fa-solid fa-gamepad"></i>
             </div>
-            <span class="text-sm">Games</span>
+            <span>Jogos</span>
         </div>
 
         <div class="item-menu">
-            <div class="w-8 h-8 rounded-full bg-fundo flex items-center justify-center text-textoClaro">
+            <div class="w-8 h-8 rounded-full bg-fundo flex items-center justify-center">
                 <i class="fa-solid fa-gear"></i>
             </div>
-            <span class="text-sm">Settings</span>
+            <span>Configurações</span>
         </div>
     </div>
 
-    <div class="mt-auto pt-4 border-t border-borda text-xs text-textoCinza text-center">
+    <div class="absolute bottom-4 left-0 right-0 text-center text-xs text-textoCinza">
         Chat Dex v1.0
     </div>
 </div>
 
-<!-- ÁREA PRINCIPAL DO CHAT -->
+<!-- MENU DE JOGOS -->
+<div id="menuJogos" class="fixed left-20 top-24 w-52 bg-painel rounded-xl shadow-xl z-40 transicao max-h-0 opacity-0 overflow-hidden border border-borda">
+    <h4 class="text-xs text-textoCinza px-3 py-2">Escolha o jogo</h4>
+    <button onclick="mudarJogo('minecraft')" class="w-full text-left p-3 hover:bg-fundo transicao flex items-center gap-2">🟩 Minecraft</button>
+    <button onclick="mudarJogo('roblox')" class="w-full text-left p-3 hover:bg-fundo transicao flex items-center gap-2">🟥 Roblox / Delta</button>
+    <button onclick="mudarJogo('ff')" class="w-full text-left p-3 hover:bg-fundo transicao flex items-center gap-2">⚔️ Free Fire</button>
+</div>
+
+<!-- ÁREA PRINCIPAL -->
 <div class="flex-1 flex flex-col h-full">
     <!-- CABEÇALHO -->
-    <header class="bg-painel border-b border-borda px-6 py-4 flex items-center justify-between">
-        <div>
-            <h1 class="text-xl font-bold">Chat Dex</h1>
-            <p class="text-xs text-textoCinza mt-1">Assistente especializado para jogos e dúvidas gerais</p>
+    <header class="bg-painel border-b border-borda px-4 py-3 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <button id="abrirMenu" class="w-9 h-9 rounded-full bg-fundo flex items-center justify-center text-xl botao-animado">
+                <i class="fa-solid fa-ellipsis-vertical"></i>
+            </button>
+            <div>
+                <h1 class="text-lg font-bold">Chat Dex</h1>
+                <p class="text-xs text-textoCinza">Assistente para jogos e dúvidas</p>
+            </div>
         </div>
-        <div class="flex gap-4 text-textoCinza">
-            <button class="hover:text-textoClaro transicao"><i class="fa-solid fa-desktop"></i></button>
-            <button class="hover:text-textoClaro transicao"><i class="fa-solid fa-circle-half-stroke"></i></button>
+        <div class="flex gap-3 text-textoCinza">
+            <button class="hover:text-texto transicao"><i class="fa-solid fa-desktop"></i></button>
+            <button class="hover:text-texto transicao"><i class="fa-solid fa-circle-half-stroke"></i></button>
             <button class="hover:text-destaque transicao"><i class="fa-solid fa-xmark"></i></button>
         </div>
     </header>
 
-    <!-- CONVERSA -->
-    <div id="caixaConversa" class="flex-1 overflow-y-auto p-6 space-y-6 bg-fundo/80">
-        <!-- Exemplo de mensagens inicial -->
+    <!-- CAIXA DE CONVERSA -->
+    <div id="caixaConversa" class="flex-1 overflow-y-auto p-4 space-y-4 bg-fundo/95">
         <div class="flex gap-3">
             <div class="w-8 h-8 rounded-full bg-destaque flex items-center justify-center text-white shrink-0">
                 <i class="fa-solid fa-robot"></i>
             </div>
             <div class="bolha-ia">
-                <p class="text-sm leading-relaxed">👋 Olá! Eu sou o Chat Dex. Selecione um jogo ou envie sua pergunta, e eu ajudo com comandos, scripts, dicas e configurações!</p>
+                <p class="text-sm leading-relaxed">👋 Olá! Selecione um jogo ou envie sua pergunta, e eu ajudo com comandos, scripts, dicas e configurações!</p>
             </div>
         </div>
     </div>
 
-    <!-- BARRA DE ENVIO -->
-    <div class="bg-painel border-t border-borda p-4 flex items-center gap-3">
-        <button class="w-9 h-9 rounded-full bg-fundo flex items-center justify-center text-textoClaro hover:bg-destaque hover:text-white transicao">
+    <!-- BARRA DE ENTRADA -->
+    <div class="bg-painel border-t border-borda p-3 flex items-center gap-2">
+        <input type="file" id="entradaImagem" accept="image/*" class="hidden">
+        <button onclick="document.getElementById('entradaImagem').click()" class="w-9 h-9 rounded-full bg-fundo flex items-center justify-center botao-animado">
             <i class="fa-solid fa-image"></i>
         </button>
-        <input type="text" id="campoMensagem" placeholder="Digite sua mensagem..." class="flex-1 bg-fundo rounded-full px-4 py-2 outline-none focus:ring-1 focus:ring-destaque/50 text-sm">
-        <button onclick="enviarMensagem()" class="w-9 h-9 rounded-full bg-destaque flex items-center justify-center text-white hover:bg-destaque/90 transicao">
+        <input type="text" id="campoMensagem" placeholder="Digite sua mensagem..." class="flex-1 bg-fundo rounded-full px-4 py-2 outline-none focus:ring-1 focus:ring-destaque/50 transicao">
+        <button onclick="enviarMensagem()" class="w-9 h-9 rounded-full bg-destaque flex items-center justify-center text-white botao-animado">
             <i class="fa-solid fa-paper-plane"></i>
         </button>
     </div>
@@ -119,7 +141,7 @@
 
 <script>
 // ==============================================
-// CONFIGURAÇÃO DEEPSEEK - JÁ COM SUA CHAVE
+// CONFIGURAÇÃO DA IA
 // ==============================================
 const CHAVE_IA = "sk-e59d15790dc8482881890d1e7c53393a";
 const URL_IA = "https://api.deepseek.com/v1/chat/completions";
@@ -130,27 +152,79 @@ let imagemBase64 = null;
 let historicoConversas = [];
 
 // ==============================================
-// FUNÇÕES DE INTERAÇÃO
+// CONTROLE DO MENU LATERAL
 // ==============================================
-function mudarJogo(jogo) {
-    jogoSelecionado = jogo;
-    adicionarMensagem('ia', `✅ Modo ativado: ${jogo === 'minecraft' ? 'Minecraft Bedrock' : jogo === 'roblox' ? 'Roblox / Delta' : 'Free Fire'}`);
+const menuLateral = document.getElementById('menuLateral');
+const abrirMenu = document.getElementById('abrirMenu');
+const fecharMenu = document.getElementById('fecharMenu');
+
+abrirMenu.addEventListener('click', () => menuLateral.classList.add('aberto'));
+fecharMenu.addEventListener('click', () => menuLateral.classList.remove('aberto'));
+
+document.addEventListener('click', (e) => {
+    if (!menuLateral.contains(e.target) && !abrirMenu.contains(e.target)) {
+        menuLateral.classList.remove('aberto');
+    }
+});
+
+// ==============================================
+// MENU DE JOGOS
+// ==============================================
+const menuJogos = document.getElementById('menuJogos');
+let menuJogosAberto = false;
+
+function abrirMenuJogos() {
+    menuJogosAberto = !menuJogosAberto;
+    if (menuJogosAberto) {
+        menuJogos.classList.remove('max-h-0', 'opacity-0');
+        menuJogos.classList.add('max-h-[200px]', 'opacity-100');
+    } else {
+        menuJogos.classList.add('max-h-0', 'opacity-0');
+        menuJogos.classList.remove('max-h-[200px]', 'opacity-100');
+    }
 }
 
-// Enviar mensagem
+function mudarJogo(jogo) {
+    jogoSelecionado = jogo;
+    const nomes = {
+        minecraft: "Minecraft Bedrock",
+        roblox: "Roblox / Delta Mobile",
+        ff: "Free Fire"
+    };
+    adicionarMensagem('ia', `✅ Modo ativado: ${nomes[jogo]}. Pergunte o que precisar!`);
+    abrirMenuJogos();
+}
+
+// ==============================================
+// ENVIO DE IMAGEM
+// ==============================================
+document.getElementById('entradaImagem').addEventListener('change', (e) => {
+    const arquivo = e.target.files[0];
+    if (!arquivo) return;
+    const leitor = new FileReader();
+    leitor.onload = (ev) => {
+        imagemBase64 = ev.target.result;
+        adicionarMensagem('usuario', '📸 Imagem enviada!');
+    };
+    leitor.readAsDataURL(arquivo);
+});
+
+// ==============================================
+// FUNÇÃO PRINCIPAL DE ENVIO
+// ==============================================
 async function enviarMensagem() {
     const campo = document.getElementById('campoMensagem');
     const texto = campo.value.trim();
     if (!texto && !imagemBase64) return;
 
-    adicionarMensagem('usuario', texto);
+    if (texto) adicionarMensagem('usuario', texto);
     campo.value = '';
     adicionarMensagem('ia', 'Processando... ⏳');
 
     let instrucao = '';
     switch(jogoSelecionado) {
         case 'minecraft':
-            instrucao = `Você é especialista em Minecraft Bedrock. Responda com comandos, códigos e dicas compatíveis com a versão Bedrock. Explique de forma simples. Pergunta: ${texto}`;
+            instrucao = `Você é especialista em Minecraft Bedrock. Responda com comandos, códigos e dicas compatíveis. Explique de forma simples e passo a passo. Pergunta: ${texto}`;
             break;
         case 'roblox':
             instrucao = `Você é especialista em Roblox e scripts para Delta Mobile. Forneça códigos Lua funcionais e explique onde aplicar. Pergunta: ${texto}`;
@@ -159,11 +233,19 @@ async function enviarMensagem() {
             instrucao = `Você é especialista em Free Fire. Dê dicas de DPI, sensibilidade e configurações para celular. Pergunta: ${texto}`;
             break;
         default:
-            instrucao = `Responda em português do Brasil, de forma clara e direta: ${texto}`;
+            instrucao = `Responda em português do Brasil, de forma clara e direta. Se houver imagem, analise com detalhes: ${texto || 'Descreva o conteúdo da imagem'}`;
     }
 
     try {
-        const mensagens = [{ role: "user", content: [{ type: "text", text: instrucao }] }];
+        const mensagens = [{ role: "user", content: [] }];
+        if (texto) mensagens[0].content.push({ type: "text", text: instrucao });
+        if (imagemBase64) {
+            mensagens[0].content.push({
+                type: "image_url",
+                image_url: { url: imagemBase64 }
+            });
+            imagemBase64 = null;
+        }
 
         const resposta = await fetch(URL_IA, {
             method: "POST",
@@ -177,21 +259,35 @@ async function enviarMensagem() {
         const dados = await resposta.json();
         removerUltimaMensagem();
 
-        if (dados.error) throw new Error(dados.error.message);
+        if (dados.error) {
+            let mensagemErro = "Não foi possível processar sua solicitação.";
+            if (dados.error.message.includes("Insufficient Balance")) {
+                mensagemErro = "❌ Erro: Saldo insuficiente na conta da IA. Verifique sua chave ou plano.";
+            } else if (dados.error.message.includes("invalid key")) {
+                mensagemErro = "❌ Erro: Chave de acesso inválida ou expirada.";
+            } else {
+                mensagemErro = `❌ Erro: ${dados.error.message}`;
+            }
+            throw new Error(mensagemErro);
+        }
+
         const respostaIA = dados.choices[0].message.content;
         adicionarMensagem('ia', respostaIA);
+        historicoConversas.push({ pergunta: texto, resposta: respostaIA });
 
     } catch (erro) {
         removerUltimaMensagem();
-        adicionarMensagem('ia', `❌ Erro: ${erro.message || 'Não foi possível conectar'}`);
+        adicionarMensagem('ia', erro.message);
     }
 }
 
-// Funções auxiliares
+// ==============================================
+// FUNÇÕES AUXILIARES
+// ==============================================
 function adicionarMensagem(tipo, conteudo) {
     const caixa = document.getElementById('caixaConversa');
     const div = document.createElement('div');
-    div.className = `flex gap-3 ${tipo === 'usuario' ? 'flex-row-reverse' : ''}`;
+    div.className = `flex gap-3 transicao animate-fadeIn`;
     div.innerHTML = `
         <div class="w-8 h-8 rounded-full shrink-0 flex items-center justify-center ${tipo === 'usuario' ? 'bg-destaque text-white' : 'bg-painel text-destaque'}">
             <i class="fa-solid ${tipo === 'usuario' ? 'fa-user' : 'fa-robot'}"></i>
@@ -215,4 +311,5 @@ document.getElementById('campoMensagem').addEventListener('keydown', (e) => {
 </script>
 
 </body>
-</html>
+                </html>
+    
