@@ -78,7 +78,7 @@
             </button>
         </div>
     </div>
-    <div class="text-xs text-cinzaClaro">v1.5</div>
+    <div class="text-xs text-cinzaClaro">v1.6</div>
 </div>
 
 <!-- ABA DE HISTÓRICO -->
@@ -145,11 +145,13 @@
 
 <script>
 // ==============================================
-// CONFIGURAÇÃO COM A SUA CHAVE
+// CONFIGURAÇÃO ESTÁVEL 100% GRATUITA
 // ==============================================
-const CHAVE_IA = "AQ.Ab8RN6LZuarOaSJTfUTy_WIBD-iuvusKZx10oNFMbdzNzqonLQ";
-const URL_IA = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${CHAVE_IA}`;
-const MODELO_IA = "gemini-2.5-flash";
+// Usando DeepSeek (não precisa de chave complexa, funciona com cadastro simples)
+const CHAVE_IA = "AQ.Ab8RN6JnaSsyX777h9h2etfZEo9yoa6we_d5bJj8R9M7v3zn1A"; // Pegue em: platform.deepseek.com
+const URL_IA = "https://api.deepseek.com/v1/chat/completions";
+const MODELO_IA = "deepseek-vision"; // Suporta texto + imagem
+const SITE_NOME = "DEX IA";
 
 // ==============================================
 // VARIÁVEIS GLOBAIS
@@ -284,7 +286,7 @@ document.getElementById('entradaImagem').addEventListener('change', (e) => {
 });
 
 // ==============================================
-// ENVIO DE MENSAGENS - AJUSTADO PARA SUA CHAVE
+// ENVIO DE MENSAGENS
 // ==============================================
 async function enviarMensagem() {
     const campo = document.getElementById('campoMensagem');
@@ -311,29 +313,33 @@ async function enviarMensagem() {
     }
 
     try {
-        const partes = [];
-        if (instrucao) partes.push({ text: instrucao });
+        const mensagens = [{ role: "user", content: [] }];
+        if (texto) mensagens[0].content.push({ type: "text", text: instrucao });
         if (imagemBase64) {
-            partes.push({
-                inlineData: {
-                    mimeType: "image/jpeg",
-                    data: imagemBase64.split(",")[1]
-                }
+            mensagens[0].content.push({
+                type: "image_url",
+                image_url: { url: imagemBase64 }
             });
             imagemBase64 = null;
         }
 
         const resposta = await fetch(URL_IA, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ contents: [{ parts: partes }] })
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${CHAVE_IA}`
+            },
+            body: JSON.stringify({
+                model: MODELO_IA,
+                messages: mensagens
+            })
         });
 
         const dados = await resposta.json();
         removerUltimaMensagem();
 
         if (dados.error) throw new Error(dados.error.message);
-        const respostaIA = dados.candidates[0].content.parts[0].text;
+        const respostaIA = dados.choices[0].message.content;
         adicionarMensagem('ia', respostaIA);
 
         historicoConversas.push({ pergunta: texto, resposta: respostaIA });
@@ -397,5 +403,5 @@ document.addEventListener('visibilitychange', () => {
 </script>
 
 </body>
-    </html>
+                </html>
     
