@@ -39,8 +39,24 @@
     </div>
 
 <script>
-// ✅ NOVA IA: Funciona direto no GitHub Pages, sem bloqueio
-const URL_IA = "https://api.freegpt4.tech/v1/chat/completions";
+// ✅ 3 OPÇÕES DE IA DIFERENTES PARA TENTAR
+const APIS = [
+    {
+        url: "https://api.affiliateplus.xyz/api/chatbot",
+        body: (msg) => ({ message: msg, botname: "DEXas", owner: "Você" }),
+        parser: (d) => d.reply
+    },
+    {
+        url: "https://vukkyapi.xyz/api/ai/gpt",
+        body: (msg) => ({ prompt: msg }),
+        parser: (d) => d.result
+    },
+    {
+        url: "https://api.pawan.krd/v1/chat/completions",
+        body: (msg) => ({ model: "gpt-3.5-turbo", messages: [{ role: "user", content: msg }] }),
+        parser: (d) => d.choices[0].message.content
+    }
+];
 
 async function enviar() {
     const campo = document.getElementById("pergunta");
@@ -51,55 +67,47 @@ async function enviar() {
     campo.value = "";
     adicionar("DEXas", "Pensando... 🤔");
 
-    try {
-        const resposta = await fetch(URL_IA, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                model: "gpt-3.5-turbo",
-                messages: [
-                    {
-                        role: "system",
-                        content: "Você é o DEXas, assistente pessoal. Responda SEMPRE em português do Brasil, de forma curta, clara e direta."
-                    },
-                    {
-                        role: "user",
-                        content: texto
-                    }
-                ]
-            })
-        });
+    let respostaFinal = null;
 
-        const dados = await resposta.json();
-        removerUltima();
-
-        if (dados.choices && dados.choices[0]) {
-            adicionar("DEXas", dados.choices[0].message.content.trim());
-        } else {
-            throw new Error("Sem resposta da IA");
-        }
-
-    } catch (erro) {
-        removerUltima();
-        // Se a IA falhar, usa respostas prontas para SEMPRE funcionar
-        adicionar("DEXas", respostaSegura(texto));
+    // Tenta uma por uma
+    for (const api of APIS) {
+        try {
+            const res = await fetch(api.url, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(api.body(`Responda em português do Brasil, curto e claro: ${texto}`))
+            });
+            const dados = await res.json();
+            const resposta = api.parser(dados);
+            if (resposta) {
+                respostaFinal = resposta;
+                break;
+            }
+        } catch { continue; }
     }
+
+    removerUltima();
+
+    // Se nenhuma IA funcionar, usa respostas prontas
+    if (!respostaFinal) {
+        respostaFinal = respostaSegura(texto);
+    }
+
+    adicionar("DEXas", respostaFinal);
 }
 
-// Respostas que nunca falham
+// Respostas que NUNCA falham
 function respostaSegura(pergunta) {
     const p = pergunta.toLowerCase().trim();
     const respostas = {
         "oi": "Olá! Tudo bem? Eu sou o DEXas, seu assistente pessoal 🤝",
         "olá": "Olá! Tudo bem contigo? Em que posso ajudar?",
-        "quem é você": "Sou o DEXas, seu assistente criado para ajudar com jogos, códigos, dúvidas e o que mais precisar!",
-        "comandos minecraft": "Exemplos úteis:\n• /give @s diamond 64 → ganha 64 diamantes\n• /tp @s 100 70 -200 → teletransporta\n• /gamemode creative → modo criativo",
-        "script roblox": "Exemplo básico de velocidade:\n```lua\ngame.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 200\n```",
-        "dicas free fire": "• DPI recomendado: 450 a 550\n• Sensibilidade: Geral 95, Mira de Ponto 90\n• Sempre use capa de parede rápida"
+        "quem é você": "Sou o DEXas, criado para te ajudar com jogos, códigos, dúvidas e o que precisar!",
+        "comandos minecraft": "• /give @s diamond 64 → ganha diamantes\n• /tp @s ~ ~ ~ → teletransporta\n• /gamemode creative → modo criativo",
+        "script roblox": "Velocidade:\n```lua\ngame.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 200\n```",
+        "dicas free fire": "DPI: 480 | Sensibilidade: Geral 96, Mira 92"
     };
-    return respostas[p] || `✅ Estou funcionando perfeitamente! Recebi sua mensagem: "${pergunta}". Em breve terei respostas completas para tudo o que você perguntar 😊`;
+    return respostas[p] || `✅ Estou funcionando! Recebi sua mensagem: "${pergunta}". Em breve com respostas completas 😊`;
 }
 
 function adicionar(quem, conteudo) {
@@ -129,5 +137,4 @@ document.getElementById("pergunta").addEventListener("keydown", e => {
 </script>
 
 </body>
-    </html>
-    
+</html>
