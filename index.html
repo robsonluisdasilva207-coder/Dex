@@ -2,50 +2,68 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>DEX IA</title>
+    <!-- Bibliotecas -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Configuração de cores -->
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
                         principal: '#ff2222',
-                        escuro: '#0f0f13',
-                        medio: '#1a1a22',
-                        cinza: '#2a2a35',
-                        cinzaClaro: '#888899',
-                        texto: '#e5e5ee'
+                        escuro: '#0a0a0f',
+                        medio: '#15151e',
+                        cinza: '#22222e',
+                        cinzaClaro: '#858596',
+                        texto: '#f0f0f8'
                     },
                     fontFamily: {
-                        sans: ['Inter', 'Segoe UI', 'Roboto', 'system-ui', 'sans-serif']
+                        sans: ['Inter', 'Segoe UI', 'Roboto', 'sans-serif']
                     }
                 }
             }
         }
     </script>
+
+    <!-- Estilos personalizados -->
     <style type="text/tailwindcss">
         @layer utilities {
             .transicao { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
             .mensagem-ia { border-left: 3px solid #ff2222; }
-            .menu-jogos { max-height: 0; overflow: hidden; opacity: 0; }
+            .menu-jogos { max-height: 0; opacity: 0; overflow: hidden; }
             .menu-jogos.aberto { max-height: 220px; opacity: 1; }
-            .ponto { @apply w-2 h-2 rounded-full bg-principal; }
+            .ponto-logo { @apply w-2 h-2 rounded-full bg-principal; }
             .rolagem-suave { scroll-behavior: smooth; }
+            .gravando { animation: pulso 1.5s infinite; }
+            .ligacao-ativa { animation: piscar 2s infinite; }
+            @keyframes pulso {
+                0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 34, 34, 0.4); }
+                70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(255, 34, 34, 0); }
+                100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 34, 34, 0); }
+            }
+            @keyframes piscar {
+                0%, 100% { opacity: 1; }
+                50% { opacity: 0.6; }
+            }
         }
     </style>
 </head>
 <body class="bg-escuro text-texto font-sans overflow-x-hidden rolagem-suave">
 
-<!-- MENU LATERAL -->
-<div class="fixed top-0 left-0 h-full w-20 bg-medio shadow-lg z-50 flex flex-col items-center py-6 justify-between border-r border-cinza/50">
+<!-- ==============================================
+        MENU LATERAL FIXO
+============================================== -->
+<div class="fixed top-0 left-0 h-full w-20 bg-medio shadow-lg z-50 flex flex-col items-center py-6 justify-between border-r border-cinza/40">
     <div class="flex flex-col gap-10 items-center">
         <!-- Logo DEX -->
         <div class="flex flex-col items-center gap-2">
             <div class="grid grid-cols-2 gap-1">
-                <div class="ponto"></div><div class="ponto"></div>
-                <div class="ponto"></div><div class="ponto"></div>
+                <div class="ponto-logo"></div><div class="ponto-logo"></div>
+                <div class="ponto-logo"></div><div class="ponto-logo"></div>
             </div>
             <span class="text-xl font-bold text-principal tracking-wider">DEX</span>
         </div>
@@ -53,10 +71,13 @@
         <!-- Botões do menu -->
         <div class="flex flex-col gap-8 items-center">
             <button id="botaoMenu" class="text-2xl hover:scale-110 hover:text-principal transicao">
-                <i class="fa fa-bars"></i>
+                <i class="fa-solid fa-bars"></i>
             </button>
             <button class="text-xl text-principal hover:scale-110 transicao">
-                <i class="fa fa-comments"></i>
+                <i class="fa-solid fa-comments"></i>
+            </button>
+            <button id="botaoLigacao" class="text-xl hover:scale-110 transicao" title="Ligação">
+                <i class="fa-solid fa-phone"></i>
             </button>
             <button id="botaoMais" class="w-11 h-11 rounded-full bg-cinza flex items-center justify-center text-xl transicao hover:bg-principal hover:text-white shadow-sm">
                 +
@@ -64,18 +85,20 @@
         </div>
     </div>
 
-    <div class="text-xs text-cinzaClaro">v1.0</div>
+    <div class="text-xs text-cinzaClaro">v1.1</div>
 </div>
 
-<!-- MENU DE JOGOS -->
+<!-- ==============================================
+        MENU DE SELEÇÃO DE JOGOS
+============================================== -->
 <div id="menuJogos" class="fixed left-24 top-28 w-48 bg-medio rounded-xl shadow-xl z-40 menu-jogos transicao p-2 border border-cinza/60">
     <button onclick="mudarJogo('minecraft')" class="w-full text-left p-3 rounded-lg hover:bg-cinza flex items-center gap-3 transicao">
         <span class="text-green-500 text-lg">🟩</span>
-        <span>Minecraft</span>
+        <span>Minecraft Bedrock</span>
     </button>
     <button onclick="mudarJogo('roblox')" class="w-full text-left p-3 rounded-lg hover:bg-cinza flex items-center gap-3 transicao">
         <span class="text-red-500 font-bold">R</span>
-        <span>Roblox</span>
+        <span>Roblox / Delta</span>
     </button>
     <button onclick="mudarJogo('ff')" class="w-full text-left p-3 rounded-lg hover:bg-cinza flex items-center gap-3 transicao">
         <span class="text-white font-bold">FF</span>
@@ -83,124 +106,201 @@
     </button>
 </div>
 
-<!-- ÁREA PRINCIPAL -->
+<!-- ==============================================
+        ÁREA PRINCIPAL DO CHAT
+============================================== -->
 <main class="ml-20 h-screen flex flex-col">
     <!-- Cabeçalho -->
     <header class="h-16 bg-medio flex items-center justify-between px-6 border-b border-cinza/50 shadow-sm">
         <h2 class="text-lg font-semibold tracking-wide">DEX IA <span id="jogoAtual" class="text-sm text-cinzaClaro ml-2 font-normal">| Nenhum jogo selecionado</span></h2>
         <div class="flex gap-5">
             <button class="text-lg hover:text-principal transicao">
-                <i class="fa fa-search"></i>
+                <i class="fa-solid fa-search"></i>
             </button>
-            <button class="text-lg hover:text-principal transicao">
-                <i class="fa fa-phone"></i>
-            </button>
+            <span id="statusLigacao" class="hidden text-sm text-green-400 font-medium">🔊 Em ligação</span>
         </div>
     </header>
 
-    <!-- Área de conversa -->
+    <!-- Área de mensagens -->
     <div id="caixaConversa" class="flex-1 p-5 overflow-y-auto space-y-5 bg-escuro/95">
         <div class="mensagem-ia bg-medio p-4 rounded-lg shadow-sm max-w-[88%]">
-            <p class="text-sm leading-relaxed">👋 Olá! Selecione um jogo no botão + e me peça o que precisar: scripts, comandos, configurações ou ajuda com qualquer coisa!</p>
+            <p class="text-sm leading-relaxed">👋 Olá! Selecione um jogo, envie texto, imagem ou use o microfone. A ligação fica ativa mesmo se você trocar de jogo ou abrir outro aplicativo!</p>
         </div>
     </div>
 
-    <!-- Campo de entrada -->
+    <!-- Campo de envio -->
     <div class="h-20 bg-medio border-t border-cinza/50 px-4 flex items-center gap-3 shadow-inner">
         <input type="file" id="entradaImagem" accept="image/*" class="hidden">
-        <button onclick="document.getElementById('entradaImagem').click()" class="w-10 h-10 rounded-full bg-cinza flex items-center justify-center text-lg transicao hover:bg-principal hover:text-white shadow-sm">
-            <i class="fa fa-image"></i>
+        <button onclick="document.getElementById('entradaImagem').click()" class="w-10 h-10 rounded-full bg-cinza flex items-center justify-center text-lg transicao hover:bg-principal hover:text-white shadow-sm" title="Enviar imagem">
+            <i class="fa-solid fa-image"></i>
         </button>
 
-        <button id="botaoMicrofone" class="w-10 h-10 rounded-full bg-cinza flex items-center justify-center text-lg transicao hover:bg-principal hover:text-white shadow-sm">
-            <i class="fa fa-microphone"></i>
+        <button id="botaoMicrofone" class="w-10 h-10 rounded-full bg-cinza flex items-center justify-center text-lg transicao hover:bg-principal hover:text-white shadow-sm" title="Usar microfone">
+            <i class="fa-solid fa-microphone"></i>
         </button>
 
         <input type="text" id="campoMensagem" placeholder="Digite sua mensagem..." class="flex-1 bg-cinza rounded-full px-4 py-2.5 outline-none focus:ring-2 focus:ring-principal/40 transition-shadow">
 
-        <button onclick="enviarMensagem()" class="w-10 h-10 rounded-full bg-principal flex items-center justify-center text-white text-lg transicao hover:bg-principal/90 shadow-md">
-            <i class="fa fa-paper-plane"></i>
+        <button onclick="enviarMensagem()" class="w-10 h-10 rounded-full bg-principal flex items-center justify-center text-white text-lg transicao hover:bg-principal/90 shadow-md" title="Enviar">
+            <i class="fa-solid fa-paper-plane"></i>
         </button>
     </div>
 </main>
 
+<!-- ==============================================
+        CÓDIGO JAVASCRIPT ORGANIZADO
+============================================== -->
 <script>
-// === CONFIGURAÇÃO GROQ — PRONTA E CORRETA ===
-const CHAVE_IA = "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";
+// ------------------------------
+// 1. CONFIGURAÇÕES DA IA
+// ------------------------------
+const CHAVE_IA = "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";
 const URL_IA = "https://api.groq.com/openai/v1/chat/completions";
-const MODELO_IA = "llama3.1-70b-versatile";
-    
+const MODELO_IA = "llama-3.2-90b-vision-preview"; // Suporta ANÁLISE DE IMAGENS
 
+// ------------------------------
+// 2. VARIÁVEIS GLOBAIS
+// ------------------------------
 let jogoSelecionado = null;
+let reconhecimentoVoz = null;
+let gravando = false;
+let ligacaoAtiva = false;
+let imagemBase64 = null;
 
-// === ABRIR / FECHAR MENU DE JOGOS ===
+// ------------------------------
+// 3. SISTEMA DO MENU DE JOGOS
+// ------------------------------
 const botaoMais = document.getElementById('botaoMais');
 const menuJogos = document.getElementById('menuJogos');
+
 botaoMais.addEventListener('click', () => {
     menuJogos.classList.toggle('aberto');
     botaoMais.classList.toggle('bg-principal');
     botaoMais.classList.toggle('text-white');
 });
 
-// === SELECIONAR JOGO ===
+// ------------------------------
+// 4. SISTEMA DE SELEÇÃO DE JOGOS
+// ------------------------------
 function mudarJogo(jogo) {
     jogoSelecionado = jogo;
     const nomes = {
         minecraft: "Minecraft Bedrock",
-        roblox: "Roblox / Delta",
+        roblox: "Roblox / Delta Mobile",
         ff: "Free Fire"
     };
     document.getElementById('jogoAtual').textContent = `| ${nomes[jogo]}`;
     menuJogos.classList.remove('aberto');
     botaoMais.classList.remove('bg-principal', 'text-white');
+    // Ligação continua funcionando mesmo trocando de jogo
 }
 
-// === RECONHECIMENTO DE VOZ ===
+// ------------------------------
+// 5. SISTEMA DE LIGAÇÃO (PERMANENTE)
+// ------------------------------
+const botaoLigacao = document.getElementById('botaoLigacao');
+const statusLigacao = document.getElementById('statusLigacao');
+
+botaoLigacao.addEventListener('click', () => {
+    if (!ligacaoAtiva) {
+        iniciarLigacao();
+    } else {
+        pararLigacao();
+    }
+});
+
+function iniciarLigacao() {
+    ligacaoAtiva = true;
+    botaoLigacao.classList.add('text-green-400', 'ligacao-ativa');
+    statusLigacao.classList.remove('hidden');
+    // Mantém funcionando em segundo plano
+    if ('wakeLock' in navigator) {
+        navigator.wakeLock.request('screen').catch(() => {});
+    }
+    adicionarMensagem('ia', '📞 Ligação iniciada! Continuarei ouvindo mesmo se você abrir outro jogo ou minimizar.');
+}
+
+function pararLigacao() {
+    ligacaoAtiva = false;
+    botaoLigacao.classList.remove('text-green-400', 'ligacao-ativa');
+    statusLigacao.classList.add('hidden');
+    adicionarMensagem('ia', '📴 Ligação encerrada.');
+}
+
+// ------------------------------
+// 6. SISTEMA DE RECONHECIMENTO DE VOZ
+// ------------------------------
 if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    const reconhecimento = new SpeechRecognition();
-    reconhecimento.lang = 'pt-BR';
-    reconhecimento.continuous = false;
-    reconhecimento.interimResults = false;
+    const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
+    reconhecimentoVoz = new SpeechRecognitionAPI();
+    reconhecimentoVoz.lang = 'pt-BR';
+    reconhecimentoVoz.continuous = true; // Fica ouvindo se ligação estiver ativa
+    reconhecimentoVoz.interimResults = false;
 
     const botaoMic = document.getElementById('botaoMicrofone');
-    let gravando = false;
 
     botaoMic.addEventListener('click', () => {
         if (!gravando) {
-            reconhecimento.start();
-            botaoMic.classList.add('bg-principal', 'animate-pulse');
+            reconhecimentoVoz.start();
+            botaoMic.classList.add('bg-principal', 'gravando');
             gravando = true;
         } else {
-            reconhecimento.stop();
-            botaoMic.classList.remove('bg-principal', 'animate-pulse');
+            reconhecimentoVoz.stop();
+            botaoMic.classList.remove('bg-principal', 'gravando');
             gravando = false;
         }
     });
 
-    reconhecimento.onresult = (e) => {
-        const texto = e.results[0][0].transcript;
-        document.getElementById('campoMensagem').value = texto;
-        botaoMic.classList.remove('bg-principal', 'animate-pulse');
-        gravando = false;
+    reconhecimentoVoz.onresult = (evento) => {
+        const textoFalado = evento.results[evento.results.length - 1][0].transcript;
+        document.getElementById('campoMensagem').value = textoFalado;
+        // Se ligação estiver ativa, envia automaticamente
+        if (ligacaoAtiva && textoFalado.trim().length > 3) {
+            setTimeout(() => enviarMensagem(), 500);
+        }
     };
 
-    reconhecimento.onerror = () => {
-        botaoMic.classList.remove('bg-principal', 'animate-pulse');
-        gravando = false;
+    reconhecimentoVoz.onerror = () => {
+        if (!ligacaoAtiva) {
+            botaoMic.classList.remove('bg-principal', 'gravando');
+            gravando = false;
+        }
+    };
+
+    // Reinicia automaticamente se ligação estiver ativa
+    reconhecimentoVoz.onend = () => {
+        if (ligacaoAtiva) reconhecimentoVoz.start();
     };
 }
 
-// === ENVIAR MENSAGEM PARA A IA ===
+// ------------------------------
+// 7. SISTEMA DE ENVIO E ANÁLISE DE IMAGENS
+// ------------------------------
+document.getElementById('entradaImagem').addEventListener('change', (e) => {
+    const arquivo = e.target.files[0];
+    if (!arquivo) return;
+
+    const leitor = new FileReader();
+    leitor.onload = (evento) => {
+        imagemBase64 = evento.target.result;
+        adicionarMensagem('usuario', '📸 Imagem enviada. Pergunte o que quiser sobre ela!');
+    };
+    leitor.readAsDataURL(arquivo);
+});
+
+// ------------------------------
+// 8. SISTEMA DE ENVIO DE MENSAGENS
+// ------------------------------
 async function enviarMensagem() {
     const campo = document.getElementById('campoMensagem');
     const texto = campo.value.trim();
-    if (!texto) return;
+    if (!texto && !imagemBase64) return;
 
-    adicionarMensagem('voce', texto);
+    if (texto) adicionarMensagem('usuario', texto);
     campo.value = '';
     adicionarMensagem('ia', 'Pensando... ⏳');
 
+    // Monta instrução personalizada por jogo
     let instrucao = '';
     switch(jogoSelecionado) {
         case 'minecraft':
@@ -213,11 +313,25 @@ async function enviarMensagem() {
             instrucao = `Você é especialista em Free Fire. Dê DPI, sensibilidade, configurações e dicas de mira por modelo de celular. Pergunta: ${texto}`;
             break;
         default:
-            instrucao = `Responda em português, de forma clara, direta e organizada: ${texto}`;
+            instrucao = `Responda em português do Brasil, de forma clara, direta e organizada. Se tiver imagem, analise com detalhes: ${texto || 'Descreva o que vê na imagem'}`;
     }
 
+    // ------------------------------
+    // 9. COMUNICAÇÃO COM A API (COM SUPORTE A IMAGENS)
+    // ------------------------------
     try {
-        const resposta = await fetch(URL_IA, {
+        const mensagens = [{ role: "user", content: [] }];
+
+        if (texto) mensagens[0].content.push({ type: "text", text: instrucao });
+        if (imagemBase64) {
+            mensagens[0].content.push({
+                type: "image_url",
+                image_url: { url: imagemBase64 }
+            });
+            imagemBase64 = null; // Limpa após envio
+        }
+
+        const respostaAPI = await fetch(URL_IA, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -225,11 +339,11 @@ async function enviarMensagem() {
             },
             body: JSON.stringify({
                 model: MODELO_IA,
-                messages: [{ role: "user", content: instrucao }]
+                messages: mensagens
             })
         });
 
-        const dados = await resposta.json();
+        const dados = await respostaAPI.json();
         removerUltimaMensagem();
 
         if (dados.error) throw new Error(dados.error.message);
@@ -241,12 +355,14 @@ async function enviarMensagem() {
     }
 }
 
-// === FUNÇÕES DE EXIBIÇÃO DAS MENSAGENS ===
+// ------------------------------
+// 10. FUNÇÕES DE INTERFACE
+// ------------------------------
 function adicionarMensagem(tipo, conteudo) {
     const caixa = document.getElementById('caixaConversa');
     const div = document.createElement('div');
-    div.className = `max-w-[88%] p-4 rounded-lg shadow-sm whitespace-pre-wrap leading-relaxed ${
-        tipo === 'voce' 
+    div.className = `max-w-[88%] p-4 rounded-lg shadow-sm whitespace-pre-wrap leading-relaxed transicao ${
+        tipo === 'usuario' 
         ? 'bg-principal/90 ml-auto text-white text-right' 
         : 'bg-medio mensagem-ia mr-auto'
     }`;
@@ -260,12 +376,26 @@ function removerUltimaMensagem() {
     caixa.removeChild(caixa.lastChild);
 }
 
-// === ENVIAR COM A TECLA ENTER ===
+// ------------------------------
+// 11. EVENTOS DO TECLADO
+// ------------------------------
 document.getElementById('campoMensagem').addEventListener('keydown', (e) => {
     if (e.key === 'Enter') enviarMensagem();
+});
+
+// ------------------------------
+// 12. MANTER LIGAÇÃO ATIVA AO MUDAR DE APLICATIVO
+// ------------------------------
+document.addEventListener('visibilitychange', () => {
+    if (ligacaoAtiva && document.hidden) {
+        // Mantém o reconhecimento ativo em segundo plano
+        if (reconhecimentoVoz && reconhecimentoVoz.state === 'inactive') {
+            reconhecimentoVoz.start();
+        }
+    }
 });
 </script>
 
 </body>
-                    </html>
-    
+                </html>
+                
