@@ -2,10 +2,11 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Teste DEXas</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>DEXas</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <script>
         tailwind.config = {
             theme: {
@@ -13,128 +14,281 @@
                     colors: {
                         fundo: '#0F0F14',
                         painel: '#181820',
+                        itemAtivo: '#29151A',
                         destaque: '#FF2222',
                         texto: '#F0F0F8',
                         textoCinza: '#9090A0',
-                    }
+                        borda: '#282832'
+                    },
+                    fontFamily: { sans: ['Inter', 'Segoe UI', 'Roboto', 'sans-serif'] }
                 }
             }
         }
     </script>
+
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .transicao { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+            .menu-lateral { width: 260px; transform: translateX(-100%); }
+            .menu-lateral.aberto { transform: translateX(0); }
+            .item-menu { @apply flex items-center gap-3 p-3 rounded-lg transicao hover:bg-painel/70 active:scale-[0.98]; }
+            .item-menu.ativo { @apply bg-itemAtivo border-l-2 border-destaque; }
+            .bolha-ia { @apply bg-painel rounded-2xl p-4 max-w-[88%] rounded-tl-sm; }
+            .bolha-usuario { @apply bg-destaque rounded-2xl p-4 max-w-[88%] rounded-tr-sm ml-auto text-white; }
+            .botao-animado { @apply active:scale-95 hover:brightness-110 transicao; }
+            @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+            .animate-fadeIn { animation: fadeIn 0.25s ease forwards; }
+        }
+    </style>
 </head>
-<body class="bg-fundo text-texto h-screen flex flex-col p-4">
+<body class="bg-fundo text-texto font-sans h-screen flex overflow-hidden">
 
-    <h1 class="text-xl font-bold text-center mb-4">🧪 Teste DEXas</h1>
-
-    <div id="caixa" class="flex-1 bg-painel rounded-xl p-4 mb-4 overflow-y-auto space-y-3">
-        <div class="text-textoCinza">Aguardando sua pergunta...</div>
-    </div>
-
-    <div class="flex gap-2">
-        <input type="text" id="pergunta" placeholder="Digite algo para testar..." 
-            class="flex-1 bg-painel border border-textoCinza/30 rounded-lg px-3 py-2 outline-none focus:ring-1 focus:ring-destaque">
-        <button onclick="enviar()" class="bg-destaque px-4 rounded-lg text-white">
-            <i class="fa-solid fa-paper-plane"></i>
+<!-- MENU LATERAL -->
+<div id="menuLateral" class="menu-lateral bg-painel border-r border-borda fixed top-0 left-0 h-full z-50 shadow-2xl transicao">
+    <div class="p-4 border-b border-borda flex items-center justify-between">
+        <h3 class="text-lg font-semibold">DEXas</h3>
+        <button id="fecharMenu" class="text-xl text-textoCinza hover:text-destaque transicao">
+            <i class="fa-solid fa-xmark"></i>
         </button>
     </div>
 
-<script>
-// ✅ 3 OPÇÕES DE IA DIFERENTES PARA TENTAR
-const APIS = [
-    {
-        url: "https://api.affiliateplus.xyz/api/chatbot",
-        body: (msg) => ({ message: msg, botname: "DEXas", owner: "Você" }),
-        parser: (d) => d.reply
-    },
-    {
-        url: "https://vukkyapi.xyz/api/ai/gpt",
-        body: (msg) => ({ prompt: msg }),
-        parser: (d) => d.result
-    },
-    {
-        url: "https://api.pawan.krd/v1/chat/completions",
-        body: (msg) => ({ model: "gpt-3.5-turbo", messages: [{ role: "user", content: msg }] }),
-        parser: (d) => d.choices[0].message.content
-    }
-];
+    <div class="p-4 space-y-2 mt-2">
+        <div class="item-menu">
+            <div class="w-8 h-8 rounded-full bg-fundo flex items-center justify-center">
+                <i class="fa-solid fa-history"></i>
+            </div>
+            <span>Histórico</span>
+        </div>
 
-async function enviar() {
-    const campo = document.getElementById("pergunta");
+        <div class="item-menu ativo">
+            <div class="w-8 h-8 rounded-full bg-destaque flex items-center justify-center text-white">
+                <i class="fa-solid fa-plus"></i>
+            </div>
+            <span>Nova Conversa</span>
+        </div>
+
+        <div class="item-menu" onclick="abrirMenuJogos()">
+            <div class="w-8 h-8 rounded-full bg-fundo flex items-center justify-center">
+                <i class="fa-solid fa-gamepad"></i>
+            </div>
+            <span>Modo Jogos</span>
+        </div>
+
+        <div class="item-menu">
+            <div class="w-8 h-8 rounded-full bg-fundo flex items-center justify-center">
+                <i class="fa-solid fa-gear"></i>
+            </div>
+            <span>Configurações</span>
+        </div>
+    </div>
+
+    <div class="absolute bottom-4 left-0 right-0 text-center text-xs text-textoCinza">
+        DEXas v1.0 ✨
+    </div>
+</div>
+
+<!-- MENU DE JOGOS -->
+<div id="menuJogos" class="fixed left-20 top-24 w-52 bg-painel rounded-xl shadow-xl z-40 transicao max-h-0 opacity-0 overflow-hidden border border-borda">
+    <h4 class="text-xs text-textoCinza px-3 py-2">Escolha o modo</h4>
+    <button onclick="mudarModo('minecraft')" class="w-full text-left p-3 hover:bg-fundo transicao flex items-center gap-2">🟩 Minecraft Bedrock</button>
+    <button onclick="mudarModo('roblox')" class="w-full text-left p-3 hover:bg-fundo transicao flex items-center gap-2">🟥 Roblox / Delta</button>
+    <button onclick="mudarModo('ff')" class="w-full text-left p-3 hover:bg-fundo transicao flex items-center gap-2">⚔️ Free Fire</button>
+    <button onclick="mudarModo('geral')" class="w-full text-left p-3 hover:bg-fundo transicao flex items-center gap-2">💬 Geral</button>
+</div>
+
+<!-- ÁREA PRINCIPAL -->
+<div class="flex-1 flex flex-col h-full">
+    <header class="bg-painel border-b border-borda px-4 py-3 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <button id="abrirMenu" class="w-9 h-9 rounded-full bg-fundo flex items-center justify-center text-xl botao-animado">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <div>
+                <h1 class="text-lg font-bold">DEXas</h1>
+                <p class="text-xs text-textoCinza" id="statusModo">Seu assistente pessoal 🤖</p>
+            </div>
+        </div>
+    </header>
+
+    <div id="caixaConversa" class="flex-1 overflow-y-auto p-4 space-y-4 bg-fundo/95">
+        <div class="flex gap-3">
+            <div class="w-8 h-8 rounded-full bg-destaque flex items-center justify-center text-white shrink-0">
+                <i class="fa-solid fa-robot"></i>
+            </div>
+            <div class="bolha-ia">
+                <p class="text-sm leading-relaxed">👋 Olá! Eu sou o <strong>DEXas</strong>, seu assistente pessoal. Estou aqui para te ajudar com jogos, códigos, dúvidas e tudo o que precisar! 😊</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-painel border-t border-borda p-3 flex items-center gap-2">
+        <input type="text" id="campoMensagem" placeholder="Digite sua mensagem..." class="flex-1 bg-fundo rounded-full px-4 py-2 outline-none focus:ring-1 focus:ring-destaque/50 transicao">
+        <button onclick="enviarMensagem()" class="w-9 h-9 rounded-full bg-destaque flex items-center justify-center text-white botao-animado">
+            <i class="fa-solid fa-paper-plane"></i>
+        </button>
+    </div>
+</div>
+
+<script>
+// ----------------------
+// CONFIGURAÇÃO
+// ----------------------
+let modoAtual = "geral";
+let menuJogosAberto = false;
+
+// ----------------------
+// CONTROLE DE MENUS
+// ----------------------
+const menuLateral = document.getElementById('menuLateral');
+const abrirMenu = document.getElementById('abrirMenu');
+const fecharMenu = document.getElementById('fecharMenu');
+
+abrirMenu.addEventListener('click', () => menuLateral.classList.add('aberto'));
+fecharMenu.addEventListener('click', () => menuLateral.classList.remove('aberto'));
+
+document.addEventListener('click', (e) => {
+    if (!menuLateral.contains(e.target) && !abrirMenu.contains(e.target)) {
+        menuLateral.classList.remove('aberto');
+    }
+    if (!document.getElementById('menuJogos').contains(e.target)) {
+        document.getElementById('menuJogos').classList.add('max-h-0', 'opacity-0');
+        menuJogosAberto = false;
+    }
+});
+
+function abrirMenuJogos() {
+    menuJogosAberto = !menuJogosAberto;
+    const menu = document.getElementById('menuJogos');
+    if (menuJogosAberto) {
+        menu.classList.remove('max-h-0', 'opacity-0');
+        menu.classList.add('max-h-[220px]', 'opacity-100');
+    } else {
+        menu.classList.add('max-h-0', 'opacity-0');
+        menu.classList.remove('max-h-[220px]', 'opacity-100');
+    }
+}
+
+function mudarModo(modo) {
+    modoAtual = modo;
+    const status = document.getElementById('statusModo');
+    const nomes = {
+        geral: "Modo Geral 💬",
+        minecraft: "Especialista Minecraft Bedrock 🟩",
+        roblox: "Especialista Roblox / Delta 🟥",
+        ff: "Especialista Free Fire ⚔️"
+    };
+    status.textContent = nomes[modo];
+    adicionarMensagem("ia", `✅ Agora estou no modo: ${nomes[modo]}! É só perguntar o que precisar.`);
+    abrirMenuJogos();
+}
+
+// ----------------------
+// FUNÇÃO DE RESPOSTAS GARANTIDAS
+// ----------------------
+async function enviarMensagem() {
+    const campo = document.getElementById("campoMensagem");
     const texto = campo.value.trim();
     if (!texto) return;
 
-    adicionar("Você", texto);
+    adicionarMensagem("usuario", texto);
     campo.value = "";
-    adicionar("DEXas", "Pensando... 🤔");
+    adicionarMensagem("ia", "Pensando... 🤔");
 
-    let respostaFinal = null;
+    let resposta = gerarResposta(texto);
 
-    // Tenta uma por uma
-    for (const api of APIS) {
-        try {
-            const res = await fetch(api.url, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(api.body(`Responda em português do Brasil, curto e claro: ${texto}`))
-            });
-            const dados = await res.json();
-            const resposta = api.parser(dados);
-            if (resposta) {
-                respostaFinal = resposta;
-                break;
-            }
-        } catch { continue; }
-    }
-
-    removerUltima();
-
-    // Se nenhuma IA funcionar, usa respostas prontas
-    if (!respostaFinal) {
-        respostaFinal = respostaSegura(texto);
-    }
-
-    adicionar("DEXas", respostaFinal);
+    removerUltimaMensagem();
+    adicionarMensagem("ia", resposta);
 }
 
-// Respostas que NUNCA falham
-function respostaSegura(pergunta) {
+function gerarResposta(pergunta) {
     const p = pergunta.toLowerCase().trim();
-    const respostas = {
+
+    // Respostas por modo
+    if (modoAtual === "minecraft") {
+        if (p.includes("comando") || p.includes("dar") || p.includes("item")) {
+            return `🟩 Minecraft Bedrock - Comandos úteis:
+• /give @s diamond 64 → Ganha 64 diamantes
+• /gamemode creative → Modo criativo
+• /tp @s 100 70 -200 → Teletransporta
+• /time set day → Põe dia
+• /kill @e[type=zombie] → Remove zumbis`;
+        }
+        if (p.includes("construir") || p.includes("casa")) {
+            return `🏠 Para construir rápido:
+Use /fill para preencher blocos:
+Exemplo: /fill ~5 ~ ~-5 ~-5 ~10 ~5 stone → cria uma parede de pedra`;
+        }
+    }
+
+    if (modoAtual === "roblox") {
+        if (p.includes("script") || p.includes("velocidade") || p.includes("lua")) {
+            return `🟥 Roblox / Delta - Scripts úteis:
+Velocidade:
+\`\`\`lua
+game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 300
+\`\`\`
+Pular alto:
+\`\`\`lua
+game.Players.LocalPlayer.Character.Humanoid.JumpPower = 120
+\`\`\`
+Bloquear dano:
+\`\`\`lua
+game.Players.LocalPlayer.Character.Humanoid.MaxHealth = math.huge
+\`\`\``;
+        }
+    }
+
+    if (modoAtual === "ff") {
+        if (p.includes("dpi") || p.includes("sensibilidade")) {
+            return `⚔️ Free Fire - Configurações recomendadas:
+• DPI: 480 a 550
+• Sensibilidade: Geral 96, Mira de Ponto 92, Mira 2x 88
+• Botão de disparo: 45% a 52% de tamanho
+• Sempre use parede de gelo rápida`;
+        }
+    }
+
+    // Respostas gerais
+    const respostasGerais = {
         "oi": "Olá! Tudo bem? Eu sou o DEXas, seu assistente pessoal 🤝",
-        "olá": "Olá! Tudo bem contigo? Em que posso ajudar?",
-        "quem é você": "Sou o DEXas, criado para te ajudar com jogos, códigos, dúvidas e o que precisar!",
-        "comandos minecraft": "• /give @s diamond 64 → ganha diamantes\n• /tp @s ~ ~ ~ → teletransporta\n• /gamemode creative → modo criativo",
-        "script roblox": "Velocidade:\n```lua\ngame.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 200\n```",
-        "dicas free fire": "DPI: 480 | Sensibilidade: Geral 96, Mira 92"
+        "olá": "Olá! Tudo bem contigo? Em que posso ajudar hoje?",
+        "quem é você": "Sou o DEXas, criado especialmente para você! Estou aqui para ajudar com jogos, códigos, dicas e o que mais precisar 😎",
+        "tudo bem": "Tudo ótimo! E com você? 😊",
+        "obrigado": "De nada! Estou aqui para isso, sempre que precisar é só chamar ✨"
     };
-    return respostas[p] || `✅ Estou funcionando! Recebi sua mensagem: "${pergunta}". Em breve com respostas completas 😊`;
+
+    return respostasGerais[p] || `✅ Entendi! Estou aprendendo cada vez mais. Sobre "${pergunta}", posso te ajudar melhor se for algo relacionado aos jogos ou configurações, ou diga mais detalhes! 😊`;
 }
 
-function adicionar(quem, conteudo) {
-    const caixa = document.getElementById("caixa");
-    const bloco = document.createElement("div");
-    bloco.className = quem === "Você" ? "text-right" : "text-left";
-    bloco.innerHTML = `
-        <div class="inline-block max-w-[85%] p-3 rounded-lg ${
-            quem === "Você" ? "bg-destaque text-white" : "bg-gray-700 text-white"
-        }">
-            <strong>${quem}:</strong><br>
-            <p class="whitespace-pre-wrap">${conteudo}</p>
+// ----------------------
+// FUNÇÕES AUXILIARES
+// ----------------------
+function adicionarMensagem(tipo, conteudo) {
+    const caixa = document.getElementById("caixaConversa");
+    const div = document.createElement("div");
+    div.className = `flex gap-3 transicao animate-fadeIn`;
+    div.innerHTML = `
+        <div class="w-8 h-8 rounded-full shrink-0 flex items-center justify-center ${tipo === "usuario" ? "bg-destaque text-white" : "bg-painel text-destaque"}">
+            <i class="fa-solid ${tipo === "usuario" ? "fa-user" : "fa-robot"}"></i>
+        </div>
+        <div class="${tipo === "usuario" ? "bolha-usuario" : "bolha-ia"}">
+            <p class="text-sm leading-relaxed whitespace-pre-wrap">${conteudo}</p>
         </div>
     `;
-    caixa.appendChild(bloco);
+    caixa.appendChild(div);
     caixa.scrollTop = caixa.scrollHeight;
 }
 
-function removerUltima() {
-    const caixa = document.getElementById("caixa");
+function removerUltimaMensagem() {
+    const caixa = document.getElementById("caixaConversa");
     caixa.removeChild(caixa.lastChild);
 }
 
-document.getElementById("pergunta").addEventListener("keydown", e => {
-    if (e.key === "Enter") enviar();
+document.getElementById("campoMensagem").addEventListener("keydown", e => {
+    if (e.key === "Enter") enviarMensagem();
 });
 </script>
 
 </body>
-</html>
+            </html>
+                                   
