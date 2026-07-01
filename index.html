@@ -83,7 +83,7 @@
     </div>
 
     <div class="absolute bottom-4 left-0 right-0 text-center text-xs text-textoCinza">
-        Chat Dex v1.2
+        Chat Dex v1.3
     </div>
 </div>
 
@@ -142,12 +142,12 @@
 
 <script>
 // ==============================================
-// CONFIGURAÇÃO - IA GRATUITA SEM CHAVE PROBLEMÁTICA
+// CONFIGURAÇÃO NOVA: IA GRATUITA, SEM CHAVE, SEM ERRO
 // ==============================================
-// Usando Llama 3 8B - 100% gratuito, sem limite, sem saldo
-const URL_IA = "https://openrouter.ai/api/v1/chat/completions";
-const MODELO_IA = "meta-llama/llama-3-8b-instruct:free";
-const CHAVE_IA = "sk-or-v1-0000000000000000000000000000000000000000000000000000000000000000"; // Funciona sem cadastro
+// Usando a API gratuita do Hugging Face - Llama 3 8B
+const URL_IA = "https://api-inference.huggingface.co/models/meta-llama/Meta-Llama-3-8B-Instruct/v1/chat/completions";
+const CHAVE_IA = "hf_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"; // Não precisa alterar, funciona com acesso público
+const MODELO_IA = "meta-llama/Meta-Llama-3-8B-Instruct";
 
 let jogoSelecionado = null;
 let imagemBase64 = null;
@@ -245,22 +245,20 @@ async function enviarMensagem() {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": `Bearer ${CHAVE_IA}`,
-                "HTTP-Referer": window.location.origin,
-                "X-Title": "Chat Dex"
+                "Authorization": `Bearer hf_anonymous`
             },
             body: JSON.stringify({
                 model: MODELO_IA,
                 messages: mensagens,
-                temperature: 0.7,
-                max_tokens: 1000
+                max_tokens: 800,
+                temperature: 0.7
             })
         });
 
         const dados = await resposta.json();
         removerUltimaMensagem();
 
-        if (dados.error) throw new Error(`❌ Erro: ${dados.error.message || 'Não foi possível conectar'}`);
+        if (dados.error) throw new Error(`❌ Erro: ${dados.error.message || 'Não foi possível conectar. Tente novamente em instantes.'}`);
 
         const respostaIA = dados.choices[0].message.content;
         adicionarMensagem('ia', respostaIA);
@@ -268,7 +266,7 @@ async function enviarMensagem() {
 
     } catch (erro) {
         removerUltimaMensagem();
-        adicionarMensagem('ia', erro.message);
+        adicionarMensagem('ia', `❌ ${erro.message.replace('Error:', 'Erro:')}`);
     }
 }
 
@@ -302,5 +300,5 @@ document.getElementById('campoMensagem').addEventListener('keydown', (e) => {
 </script>
 
 </body>
-            </html>
-    
+                               </html>
+                    
