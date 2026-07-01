@@ -4,11 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>DEX IA</title>
-    <!-- Bibliotecas -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- Configuração de cores -->
     <script>
         tailwind.config = {
             theme: {
@@ -21,15 +19,12 @@
                         cinzaClaro: '#858596',
                         texto: '#f0f0f8'
                     },
-                    fontFamily: {
-                        sans: ['Inter', 'Segoe UI', 'Roboto', 'sans-serif']
-                    }
+                    fontFamily: { sans: ['Inter', 'Segoe UI', 'Roboto', 'sans-serif'] }
                 }
             }
         }
     </script>
 
-    <!-- Estilos personalizados -->
     <style type="text/tailwindcss">
         @layer utilities {
             .transicao { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
@@ -40,6 +35,9 @@
             .rolagem-suave { scroll-behavior: smooth; }
             .gravando { animation: pulso 1.5s infinite; }
             .ligacao-ativa { animation: piscar 2s infinite; }
+            .aba-historico { transform: translateX(100%); opacity: 0; }
+            .aba-historico.aberto { transform: translateX(0); opacity: 1; }
+
             @keyframes pulso {
                 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 34, 34, 0.4); }
                 70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(255, 34, 34, 0); }
@@ -54,12 +52,9 @@
 </head>
 <body class="bg-escuro text-texto font-sans overflow-x-hidden rolagem-suave">
 
-<!-- ==============================================
-        MENU LATERAL FIXO
-============================================== -->
+<!-- MENU LATERAL -->
 <div class="fixed top-0 left-0 h-full w-20 bg-medio shadow-lg z-50 flex flex-col items-center py-6 justify-between border-r border-cinza/40">
     <div class="flex flex-col gap-10 items-center">
-        <!-- Logo DEX -->
         <div class="flex flex-col items-center gap-2">
             <div class="grid grid-cols-2 gap-1">
                 <div class="ponto-logo"></div><div class="ponto-logo"></div>
@@ -68,15 +63,14 @@
             <span class="text-xl font-bold text-principal tracking-wider">DEX</span>
         </div>
 
-        <!-- Botões do menu -->
         <div class="flex flex-col gap-8 items-center">
-            <button id="botaoMenu" class="text-2xl hover:scale-110 hover:text-principal transicao">
-                <i class="fa-solid fa-bars"></i>
+            <button id="botaoHistorico" class="text-2xl hover:scale-110 hover:text-principal transicao" title="Histórico de conversas">
+                <i class="fa-solid fa-ellipsis-vertical"></i>
             </button>
-            <button class="text-xl text-principal hover:scale-110 transicao">
+            <button class="text-xl text-principal hover:scale-110 transicao" title="Nova conversa">
                 <i class="fa-solid fa-comments"></i>
             </button>
-            <button id="botaoLigacao" class="text-xl hover:scale-110 transicao" title="Ligação">
+            <button id="botaoLigacao" class="text-xl hover:scale-110 transicao" title="Ligação permanente">
                 <i class="fa-solid fa-phone"></i>
             </button>
             <button id="botaoMais" class="w-11 h-11 rounded-full bg-cinza flex items-center justify-center text-xl transicao hover:bg-principal hover:text-white shadow-sm">
@@ -84,13 +78,23 @@
             </button>
         </div>
     </div>
-
-    <div class="text-xs text-cinzaClaro">v1.1</div>
+    <div class="text-xs text-cinzaClaro">v1.3</div>
 </div>
 
-<!-- ==============================================
-        MENU DE SELEÇÃO DE JOGOS
-============================================== -->
+<!-- ABA DE HISTÓRICO -->
+<div id="abaHistorico" class="fixed top-0 right-0 h-full w-72 bg-medio shadow-2xl z-50 transicao aba-historico border-l border-cinza/60">
+    <div class="p-4 border-b border-cinza/50 flex items-center justify-between">
+        <h3 class="text-lg font-semibold">📜 Histórico</h3>
+        <button id="fecharHistorico" class="text-xl hover:text-principal transicao">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    </div>
+    <div id="listaHistorico" class="p-3 space-y-2 overflow-y-auto h-[calc(100vh-64px)]">
+        <p class="text-cinzaClaro text-center mt-4">Suas conversas aparecerão aqui</p>
+    </div>
+</div>
+
+<!-- MENU DE JOGOS -->
 <div id="menuJogos" class="fixed left-24 top-28 w-48 bg-medio rounded-xl shadow-xl z-40 menu-jogos transicao p-2 border border-cinza/60">
     <button onclick="mudarJogo('minecraft')" class="w-full text-left p-3 rounded-lg hover:bg-cinza flex items-center gap-3 transicao">
         <span class="text-green-500 text-lg">🟩</span>
@@ -106,29 +110,21 @@
     </button>
 </div>
 
-<!-- ==============================================
-        ÁREA PRINCIPAL DO CHAT
-============================================== -->
+<!-- ÁREA PRINCIPAL -->
 <main class="ml-20 h-screen flex flex-col">
-    <!-- Cabeçalho -->
     <header class="h-16 bg-medio flex items-center justify-between px-6 border-b border-cinza/50 shadow-sm">
         <h2 class="text-lg font-semibold tracking-wide">DEX IA <span id="jogoAtual" class="text-sm text-cinzaClaro ml-2 font-normal">| Nenhum jogo selecionado</span></h2>
-        <div class="flex gap-5">
-            <button class="text-lg hover:text-principal transicao">
-                <i class="fa-solid fa-search"></i>
-            </button>
+        <div class="flex gap-5 items-center">
             <span id="statusLigacao" class="hidden text-sm text-green-400 font-medium">🔊 Em ligação</span>
         </div>
     </header>
 
-    <!-- Área de mensagens -->
     <div id="caixaConversa" class="flex-1 p-5 overflow-y-auto space-y-5 bg-escuro/95">
         <div class="mensagem-ia bg-medio p-4 rounded-lg shadow-sm max-w-[88%]">
-            <p class="text-sm leading-relaxed">👋 Olá! Selecione um jogo, envie texto, imagem ou use o microfone. A ligação fica ativa mesmo se você trocar de jogo ou abrir outro aplicativo!</p>
+            <p class="text-sm leading-relaxed">👋 Olá! Selecione um jogo, envie texto, imagem ou use o microfone. A ligação continua funcionando mesmo se você minimizar ou abrir outro aplicativo!</p>
         </div>
     </div>
 
-    <!-- Campo de envio -->
     <div class="h-20 bg-medio border-t border-cinza/50 px-4 flex items-center gap-3 shadow-inner">
         <input type="file" id="entradaImagem" accept="image/*" class="hidden">
         <button onclick="document.getElementById('entradaImagem').click()" class="w-10 h-10 rounded-full bg-cinza flex items-center justify-center text-lg transicao hover:bg-principal hover:text-white shadow-sm" title="Enviar imagem">
@@ -147,29 +143,45 @@
     </div>
 </main>
 
-<!-- ==============================================
-        CÓDIGO JAVASCRIPT ORGANIZADO
-============================================== -->
 <script>
-// ------------------------------
-// 1. CONFIGURAÇÕES DA IA
-// ------------------------------
-const CHAVE_IA = "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";
-const URL_IA = "https://api.groq.com/openai/v1/chat/completions";
-const MODELO_IA = "llama-3.2-90b-vision-preview"; // Suporta ANÁLISE DE IMAGENS
+// ==============================================
+// CONFIGURAÇÃO COMPLETA OPENROUTER
+// ==============================================
+const CHAVE_IA = "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";
+const URL_IA = "https://openrouter.ai/api/v1/chat/completions";
+const MODELO_IA = "meta-llama/llama-3.2-90b-vision-instruct"; // Suporta texto + imagem
+const SITE_URL = "https://robsonluisasilva207-coder.github.io/Dex/";
+const SITE_NOME = "DEX IA";
 
-// ------------------------------
-// 2. VARIÁVEIS GLOBAIS
-// ------------------------------
+// ==============================================
+// VARIÁVEIS GLOBAIS
+// ==============================================
 let jogoSelecionado = null;
 let reconhecimentoVoz = null;
 let gravando = false;
 let ligacaoAtiva = false;
 let imagemBase64 = null;
+let historicoConversas = [];
 
-// ------------------------------
-// 3. SISTEMA DO MENU DE JOGOS
-// ------------------------------
+// ==============================================
+// SISTEMA DE HISTÓRICO
+// ==============================================
+const botaoHistorico = document.getElementById('botaoHistorico');
+const abaHistorico = document.getElementById('abaHistorico');
+const fecharHistorico = document.getElementById('fecharHistorico');
+
+botaoHistorico.addEventListener('click', () => abaHistorico.classList.toggle('aberto'));
+fecharHistorico.addEventListener('click', () => abaHistorico.classList.remove('aberto'));
+
+document.addEventListener('click', (e) => {
+    if (!abaHistorico.contains(e.target) && !botaoHistorico.contains(e.target)) {
+        abaHistorico.classList.remove('aberto');
+    }
+});
+
+// ==============================================
+// MENU DE JOGOS
+// ==============================================
 const botaoMais = document.getElementById('botaoMais');
 const menuJogos = document.getElementById('menuJogos');
 
@@ -179,9 +191,6 @@ botaoMais.addEventListener('click', () => {
     botaoMais.classList.toggle('text-white');
 });
 
-// ------------------------------
-// 4. SISTEMA DE SELEÇÃO DE JOGOS
-// ------------------------------
 function mudarJogo(jogo) {
     jogoSelecionado = jogo;
     const nomes = {
@@ -192,49 +201,40 @@ function mudarJogo(jogo) {
     document.getElementById('jogoAtual').textContent = `| ${nomes[jogo]}`;
     menuJogos.classList.remove('aberto');
     botaoMais.classList.remove('bg-principal', 'text-white');
-    // Ligação continua funcionando mesmo trocando de jogo
 }
 
-// ------------------------------
-// 5. SISTEMA DE LIGAÇÃO (PERMANENTE)
-// ------------------------------
+// ==============================================
+// LIGAÇÃO PERMANENTE
+// ==============================================
 const botaoLigacao = document.getElementById('botaoLigacao');
 const statusLigacao = document.getElementById('statusLigacao');
 
-botaoLigacao.addEventListener('click', () => {
-    if (!ligacaoAtiva) {
-        iniciarLigacao();
-    } else {
-        pararLigacao();
-    }
-});
+botaoLigacao.addEventListener('click', () => ligacaoAtiva ? pararLigacao() : iniciarLigacao());
 
 function iniciarLigacao() {
     ligacaoAtiva = true;
     botaoLigacao.classList.add('text-green-400', 'ligacao-ativa');
     statusLigacao.classList.remove('hidden');
-    // Mantém funcionando em segundo plano
-    if ('wakeLock' in navigator) {
-        navigator.wakeLock.request('screen').catch(() => {});
-    }
-    adicionarMensagem('ia', '📞 Ligação iniciada! Continuarei ouvindo mesmo se você abrir outro jogo ou minimizar.');
+    if ('wakeLock' in navigator) navigator.wakeLock.request('screen').catch(() => {});
+    adicionarMensagem('ia', '📞 Ligação iniciada! Continuo ouvindo mesmo se minimizar ou trocar de jogo.');
 }
 
 function pararLigacao() {
     ligacaoAtiva = false;
     botaoLigacao.classList.remove('text-green-400', 'ligacao-ativa');
     statusLigacao.classList.add('hidden');
+    if (reconhecimentoVoz) reconhecimentoVoz.stop();
     adicionarMensagem('ia', '📴 Ligação encerrada.');
 }
 
-// ------------------------------
-// 6. SISTEMA DE RECONHECIMENTO DE VOZ
-// ------------------------------
+// ==============================================
+// MICROFONE
+// ==============================================
 if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
     const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
     reconhecimentoVoz = new SpeechRecognitionAPI();
     reconhecimentoVoz.lang = 'pt-BR';
-    reconhecimentoVoz.continuous = true; // Fica ouvindo se ligação estiver ativa
+    reconhecimentoVoz.continuous = true;
     reconhecimentoVoz.interimResults = false;
 
     const botaoMic = document.getElementById('botaoMicrofone');
@@ -252,11 +252,10 @@ if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
     });
 
     reconhecimentoVoz.onresult = (evento) => {
-        const textoFalado = evento.results[evento.results.length - 1][0].transcript;
-        document.getElementById('campoMensagem').value = textoFalado;
-        // Se ligação estiver ativa, envia automaticamente
-        if (ligacaoAtiva && textoFalado.trim().length > 3) {
-            setTimeout(() => enviarMensagem(), 500);
+        const textoFalado = evento.results[evento.results.length - 1][0].transcript.trim();
+        if (textoFalado) {
+            document.getElementById('campoMensagem').value = textoFalado;
+            if (ligacaoAtiva) setTimeout(enviarMensagem, 600);
         }
     };
 
@@ -267,30 +266,28 @@ if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
         }
     };
 
-    // Reinicia automaticamente se ligação estiver ativa
     reconhecimentoVoz.onend = () => {
         if (ligacaoAtiva) reconhecimentoVoz.start();
     };
 }
 
-// ------------------------------
-// 7. SISTEMA DE ENVIO E ANÁLISE DE IMAGENS
-// ------------------------------
+// ==============================================
+// ANÁLISE DE IMAGENS
+// ==============================================
 document.getElementById('entradaImagem').addEventListener('change', (e) => {
     const arquivo = e.target.files[0];
     if (!arquivo) return;
-
     const leitor = new FileReader();
-    leitor.onload = (evento) => {
-        imagemBase64 = evento.target.result;
+    leitor.onload = (ev) => {
+        imagemBase64 = ev.target.result;
         adicionarMensagem('usuario', '📸 Imagem enviada. Pergunte o que quiser sobre ela!');
     };
     leitor.readAsDataURL(arquivo);
 });
 
-// ------------------------------
-// 8. SISTEMA DE ENVIO DE MENSAGENS
-// ------------------------------
+// ==============================================
+// ENVIO DE MENSAGENS
+// ==============================================
 async function enviarMensagem() {
     const campo = document.getElementById('campoMensagem');
     const texto = campo.value.trim();
@@ -300,54 +297,49 @@ async function enviarMensagem() {
     campo.value = '';
     adicionarMensagem('ia', 'Pensando... ⏳');
 
-    // Monta instrução personalizada por jogo
     let instrucao = '';
     switch(jogoSelecionado) {
         case 'minecraft':
-            instrucao = `Você é especialista em Minecraft Bedrock. Responda com comandos, addons, redstone e dicas sempre compatíveis com a versão Bedrock. Explique tudo passo a passo e de forma simples. Pergunta: ${texto}`;
+            instrucao = `Você é especialista em Minecraft Bedrock. Responda com comandos, addons, redstone compatíveis. Explique passo a passo. Pergunta: ${texto}`;
             break;
         case 'roblox':
-            instrucao = `Você é especialista em scripts Roblox e Delta Mobile. Use código Lua funcional, organizado e explique exatamente onde e como usar. Pergunta: ${texto}`;
+            instrucao = `Você é especialista em scripts Roblox e Delta Mobile. Use código Lua funcional e explique onde usar. Pergunta: ${texto}`;
             break;
         case 'ff':
-            instrucao = `Você é especialista em Free Fire. Dê DPI, sensibilidade, configurações e dicas de mira por modelo de celular. Pergunta: ${texto}`;
+            instrucao = `Você é especialista em Free Fire. Dê DPI, sensibilidade e configurações por celular. Pergunta: ${texto}`;
             break;
         default:
-            instrucao = `Responda em português do Brasil, de forma clara, direta e organizada. Se tiver imagem, analise com detalhes: ${texto || 'Descreva o que vê na imagem'}`;
+            instrucao = `Responda em português do Brasil, claro e direto. Se tiver imagem, analise com detalhes: ${texto || 'Descreva o conteúdo da imagem'}`;
     }
 
-    // ------------------------------
-    // 9. COMUNICAÇÃO COM A API (COM SUPORTE A IMAGENS)
-    // ------------------------------
     try {
         const mensagens = [{ role: "user", content: [] }];
-
         if (texto) mensagens[0].content.push({ type: "text", text: instrucao });
         if (imagemBase64) {
-            mensagens[0].content.push({
-                type: "image_url",
-                image_url: { url: imagemBase64 }
-            });
-            imagemBase64 = null; // Limpa após envio
+            mensagens[0].content.push({ type: "image_url", image_url: { url: imagemBase64 } });
+            imagemBase64 = null;
         }
 
-        const respostaAPI = await fetch(URL_IA, {
+        const resposta = await fetch(URL_IA, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": `Bearer ${CHAVE_IA}`
+                "Authorization": `Bearer ${CHAVE_IA}`,
+                "HTTP-Referer": SITE_URL,
+                "X-Title": SITE_NOME
             },
-            body: JSON.stringify({
-                model: MODELO_IA,
-                messages: mensagens
-            })
+            body: JSON.stringify({ model: MODELO_IA, messages: mensagens })
         });
 
-        const dados = await respostaAPI.json();
+        const dados = await resposta.json();
         removerUltimaMensagem();
 
         if (dados.error) throw new Error(dados.error.message);
-        adicionarMensagem('ia', dados.choices[0].message.content);
+        const respostaIA = dados.choices[0].message.content;
+        adicionarMensagem('ia', respostaIA);
+
+        historicoConversas.push({ pergunta: texto, resposta: respostaIA });
+        atualizarHistorico();
 
     } catch (erro) {
         removerUltimaMensagem();
@@ -355,16 +347,14 @@ async function enviarMensagem() {
     }
 }
 
-// ------------------------------
-// 10. FUNÇÕES DE INTERFACE
-// ------------------------------
+// ==============================================
+// FUNÇÕES AUXILIARES
+// ==============================================
 function adicionarMensagem(tipo, conteudo) {
     const caixa = document.getElementById('caixaConversa');
     const div = document.createElement('div');
     div.className = `max-w-[88%] p-4 rounded-lg shadow-sm whitespace-pre-wrap leading-relaxed transicao ${
-        tipo === 'usuario' 
-        ? 'bg-principal/90 ml-auto text-white text-right' 
-        : 'bg-medio mensagem-ia mr-auto'
+        tipo === 'usuario' ? 'bg-principal/90 ml-auto text-white text-right' : 'bg-medio mensagem-ia mr-auto'
     }`;
     div.textContent = conteudo;
     caixa.appendChild(div);
@@ -376,26 +366,38 @@ function removerUltimaMensagem() {
     caixa.removeChild(caixa.lastChild);
 }
 
-// ------------------------------
-// 11. EVENTOS DO TECLADO
-// ------------------------------
+function atualizarHistorico() {
+    const lista = document.getElementById('listaHistorico');
+    lista.innerHTML = '';
+    if (historicoConversas.length === 0) {
+        lista.innerHTML = '<p class="text-cinzaClaro text-center mt-4">Suas conversas aparecerão aqui</p>';
+        return;
+    }
+    historicoConversas.slice().reverse().forEach((item) => {
+        const div = document.createElement('div');
+        div.className = 'p-3 rounded-lg bg-cinza hover:bg-cinza/70 cursor-pointer transicao';
+        div.innerHTML = `<p class="text-sm font-medium truncate">${item.pergunta || 'Imagem enviada'}</p>`;
+        div.onclick = () => {
+            document.getElementById('caixaConversa').innerHTML = '';
+            adicionarMensagem('usuario', item.pergunta);
+            adicionarMensagem('ia', item.resposta);
+            abaHistorico.classList.remove('aberto');
+        };
+        lista.appendChild(div);
+    });
+}
+
 document.getElementById('campoMensagem').addEventListener('keydown', (e) => {
     if (e.key === 'Enter') enviarMensagem();
 });
 
-// ------------------------------
-// 12. MANTER LIGAÇÃO ATIVA AO MUDAR DE APLICATIVO
-// ------------------------------
 document.addEventListener('visibilitychange', () => {
-    if (ligacaoAtiva && document.hidden) {
-        // Mantém o reconhecimento ativo em segundo plano
-        if (reconhecimentoVoz && reconhecimentoVoz.state === 'inactive') {
-            reconhecimentoVoz.start();
-        }
+    if (ligacaoAtiva && document.hidden && reconhecimentoVoz?.state === 'inactive') {
+        reconhecimentoVoz.start();
     }
 });
 </script>
 
 </body>
-                </html>
-                
+    </html>
+            
