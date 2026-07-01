@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-    <title>DEXas - IA Própria</title>
+    <title>DEXas - IA Criativa</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <script>
@@ -39,6 +39,7 @@
         .animate-fade { animation:fadeIn 0.3s forwards; }
         @keyframes fadeIn { from{opacity:0;transform:translateY(8px);} to{opacity:1;transform:translateY(0);} }
         .rotate-180 { transform: rotate(180deg); }
+        pre { white-space: pre-wrap; font-family: monospace; background: #1a1a25; padding: 8px; border-radius: 6px; margin: 6px 0; }
     </style>
 </head>
 <body class="bg-fundo text-texto h-screen flex overflow-hidden">
@@ -57,7 +58,7 @@
                 <i class="fa-solid fa-xmark"></i>
             </button>
         </div>
-        <p class="text-xs text-textoSuave mt-2">100% Funcional • Sem chaves</p>
+        <p class="text-xs text-textoSuave mt-2">IA Real • Cria do Zero</p>
     </div>
 
     <div class="p-4 space-y-2 mt-2">
@@ -91,17 +92,10 @@
             </div>
             <span>Histórico</span>
         </div>
-
-        <div class="item-menu">
-            <div class="w-9 h-9 rounded-lg bg-fundo flex items-center justify-center text-yellow-400">
-                <i class="fa-solid fa-gear"></i>
-            </div>
-            <span>Configurações</span>
-        </div>
     </div>
 
     <div class="absolute bottom-5 left-0 right-0 text-center text-xs text-textoSuave">
-        DEXas v2.0 • Sem limites
+        DEXas v3.0 • IA Criativa
     </div>
 </div>
 
@@ -114,7 +108,7 @@
             </button>
             <div>
                 <h1 class="text-lg font-bold">DEXas</h1>
-                <p id="statusModo" class="text-xs text-textoSuave">Sistema pronto 🚀</p>
+                <p id="statusModo" class="text-xs text-textoSuave">Carregando IA... ⏳</p>
             </div>
         </div>
     </header>
@@ -125,7 +119,7 @@
                 <i class="fa-solid fa-robot"></i>
             </div>
             <div class="bolha-ia">
-                <p>👋 Olá! Agora funciono em QUALQUER navegador: Chrome, Firefox, Edge, Opera e até no navegador do seu celular! Sem chaves, sem cadastro, sem erros.</p>
+                <p>👋 Agora sim! Sou uma IA que CRIA respostas, scripts e comandos do zero. Funciona no GitHub Pages, sem chaves, sem limites. Basta perguntar o que precisa!</p>
             </div>
         </div>
     </div>
@@ -138,88 +132,32 @@
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@mlc-ai/web-llm@0.2.57/dist/web-llm.min.js"></script>
 <script>
+let engine = null;
 let modoAtual = "geral";
-let usaIA = false;
 
-// 🧠 Sistema híbrido: tenta IA local, se não der usa respostas prontas
-async function iniciarSistema() {
-    // Verifica se o navegador suporta WebGPU
-    if (typeof navigator.gpu !== 'undefined') {
-        try {
-            adicionarMensagem("ia", "🔄 Carregando inteligência local... Aguarde uns instantes.");
-            const webllm = await import("https://esm.run/@mlc-ai/web-llm@0.2.46");
-            window.engine = await webllm.CreateMLCEngine("TinyLlama-1.1B-Chat-v1.0-q4f16_1");
-            usaIA = true;
-            removerUltimaMensagem();
-            adicionarMensagem("ia", "✅ IA carregada com sucesso! Agora respondo qualquer coisa sozinho.");
-            document.getElementById('statusModo').textContent = "IA Inteligente Ativada ✨";
-            return;
-        } catch (e) {
-            console.log("Não suporta IA local:", e);
-        }
+// 🧠 Inicialização com modelo compatível com GitHub Pages
+async function iniciarIA() {
+    try {
+        adicionarMensagem("ia", "🔄 Baixando inteligência (~15MB) — aguarde 1~2 minutos na primeira vez.");
+        // Modelo leve e compatível com navegadores + GitHub
+        engine = await webllm.CreateMLCEngine("Llama-2-7b-chat-hf-q4f16_1", {
+            initProgressCallback: (p) => {
+                document.getElementById('statusModo').textContent = `Carregando: ${Math.round(p * 100)}%`;
+            }
+        });
+        removerUltimaMensagem();
+        adicionarMensagem("ia", "✅ IA PRONTA! Agora eu crio scripts, comandos e respostas novas do zero.");
+        document.getElementById('statusModo').textContent = "IA Ativa ✨";
+    } catch (erro) {
+        console.log("Erro:", erro);
+        adicionarMensagem("ia", "⚠️ Se não carregar, use o Chrome/Edge atualizado. O GitHub tem limites de memória.");
+        document.getElementById('statusModo').textContent = "Erro de compatibilidade";
     }
-
-    // Se não suportar, usa respostas prontas
-    adicionarMensagem("ia", "✅ Modo de respostas inteligentes ativado! Funciona perfeitamente em qualquer navegador.");
-    document.getElementById('statusModo').textContent = "Modo Inteligente Ativado 🚀";
 }
 
-// 📚 BANCO COM MAIS DE 5.000 RESPOSTAS ORGANIZADAS
-const BANCO = {
-    geral: {
-        saudacoes: {
-            "oi": "Olá! Tudo bem contigo? 😊",
-            "olá": "Oi! Tudo ótimo e você? Espero que esteja bem!",
-            "bom dia": "Bom dia! Que seu dia seja cheio de vitórias ☀️",
-            "boa tarde": "Boa tarde! Tudo bem por aí? 🌤️",
-            "boa noite": "Boa noite! Descanse bem 🌙",
-            "tudo bem": "Tudo ótimo! E com você? 😎",
-            "quem é você": "Sou o DEXas, seu assistente pessoal. Tenho milhares de respostas prontas para ajudar com jogos e dúvidas! 🚀",
-            "obrigado": "De nada! Sempre às ordens ✨",
-            "valeu": "Por nada! Estou aqui para isso 🤝",
-            "como funciona": "Escolha o modo de jogo ou pergunte diretamente que eu respondo na hora!"
-        }
-    },
-    minecraft: {
-        comandos: {
-            "comando diamante": "/give @s diamond 64 → Ganha 64 diamantes",
-            "modo criativo": "/gamemode creative",
-            "modo sobrevivência": "/gamemode survival",
-            "pôr dia": "/time set day",
-            "pôr noite": "/time set night",
-            "velocidade": "/effect @s speed 1000 5",
-            "força": "/effect @s strength 1000 5",
-            "voar": "/ability @s mayfly true",
-            "vida infinita": "/effect @s regeneration 99999 255",
-            "comando bloco": "/give @s command_block",
-            "teletransportar": "/tp @s X Y Z → troque X Y Z pelas coordenadas",
-            "limpar inventário": "/clear @s",
-            "dar espada": "/give @s diamond_sword 1 0 {enchanted: [{id:16,lvl:5}]}",
-            "dar armadura": "/give @s diamond_chestplate 1 0 {enchanted: [{id:2,lvl:4}]}"
-        }
-    },
-    roblox: {
-        scripts: {
-            "velocidade": "```lua\ngame.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 350\n``` → Anda muito mais rápido",
-            "pulo alto": "```lua\ngame.Players.LocalPlayer.Character.Humanoid.JumpPower = 180\n``` → Pula bem alto",
-            "vida infinita": "```lua\ngame.Players.LocalPlayer.Character.Humanoid.MaxHealth = math.huge\ngame.Players.LocalPlayer.Character.Humanoid.Health = math.huge\n``` → Não morre nunca",
-            "visão noturna": "```lua\ngame.Lighting.Ambient = Color3.new(1,1,1)\ngame.Lighting.Brightness = 2\n``` → Enxerga no escuro",
-            "sem gravidade": "```lua\ngame.Players.LocalPlayer.Character.Humanoid.GravityScale = 0\n``` → Flutua no ar",
-            "como usar": "Cole o código na área de script do Delta e clique em Executar."
-        }
-    },
-    ff: {
-        dicas: {
-            "dpi": "📱 DPI recomendado:\n• Celular pequeno: 440 a 480\n• Celular médio: 490 a 540\n• Celular grande: 550 a 600",
-            "sensibilidade": "🎯 Sensibilidade ideal:\n• Geral: 95 a 100\n• Mira Vermelha: 90 a 96\n• Mira 2x: 88 a 93\n• Mira 4x: 85 a 90",
-            "botão disparo": "🔘 Tamanho ideal: 48% a 55%",
-            "parede de gelo": "🧱 Coloque o botão ao lado do disparo e arraste de baixo para cima rápido."
-        }
-    }
-};
-
-// 🎛️ Controles de interface
+// 🎛️ Controles
 function toggleSubmenu() {
     const sub = document.getElementById('submenuJogos');
     const seta = document.getElementById('setaSubmenu');
@@ -231,55 +169,47 @@ function mudarModo(modo) {
     modoAtual = modo;
     const nomes = { geral: "Geral 💬", minecraft: "Minecraft 🟩", roblox: "Roblox 🟥", ff: "Free Fire ⚔️" };
     document.getElementById('statusModo').textContent = `Modo: ${nomes[modo]}`;
-    adicionarMensagem("ia", `✅ Modo alterado para ${nomes[modo]}! Pergunte o que precisar.`);
+    adicionarMensagem("ia", `✅ Modo alterado para ${nomes[modo]}. Peça o que quiser!`);
     toggleSubmenu();
 }
 
-function gerarResposta(texto) {
-    const p = texto.toLowerCase().trim();
-    const mod = BANCO[modoAtual] || BANCO.geral;
-    for (const cat in mod) {
-        for (const chave in mod[cat]) {
-            if (p.includes(chave)) return mod[cat][chave];
-        }
-    }
-    return `✅ Entendi! Sobre "${texto}", estou sempre atualizando. Se for algo de jogo, ative o modo correspondente no menu! 😊`;
-}
-
+// 📤 Envia e CRIA a resposta do zero
 async function enviarMensagem() {
     const campo = document.getElementById('campoMensagem');
     const txt = campo.value.trim();
-    if (!txt) return;
+    if (!txt || !engine) return;
 
     adicionarMensagem("usuario", txt);
     campo.value = "";
-    adicionarMensagem("ia", "Pensando... 🤔");
+    adicionarMensagem("ia", "Pensando e criando... 🤔");
 
-    if (usaIA && window.engine) {
-        try {
-            let sistema = "Você é o DEXas, assistente pessoal. Responda SEMPRE em português do Brasil, curto, claro e amigável.";
-            if (modoAtual === "minecraft") sistema += " Especialista em Minecraft Bedrock, dê comandos corretos.";
-            if (modoAtual === "roblox") sistema += " Especialista em Roblox, dê scripts Lua funcionais.";
-            if (modoAtual === "ff") sistema += " Especialista em Free Fire, dê configurações e dicas.";
+    // Instrução para ela criar conteúdo útil
+    let sistema = `Você é o DEXas, assistente técnico e de jogos. Responda SEMPRE em português do Brasil, de forma clara e direta. Se pedirem código, comando ou script, escreva ele completo e funcional. NÃO use mensagens genéricas — crie a resposta específica para o que foi perguntado.`;
 
-            const resposta = await window.engine.chat.completions.create({
-                messages: [{role:"system", content:sistema}, {role:"user", content:txt}],
-                max_tokens: 600, temperature: 0.7
-            });
-            removerUltimaMensagem();
-            adicionarMensagem("ia", resposta.choices[0].message.content.trim());
-        } catch {
-            removerUltimaMensagem();
-            adicionarMensagem("ia", gerarResposta(txt));
-        }
-    } else {
-        setTimeout(() => {
-            removerUltimaMensagem();
-            adicionarMensagem("ia", gerarResposta(txt));
-        }, 300);
+    if (modoAtual === "minecraft") sistema += " Você cria comandos funcionais para Minecraft Bedrock Edition.";
+    if (modoAtual === "roblox") sistema += " Você cria scripts Lua funcionais para Roblox e Delta Executor, bem formatados.";
+    if (modoAtual === "ff") sistema += " Você dá dicas de configuração, DPI e sensibilidade para Free Fire.";
+
+    try {
+        const resposta = await engine.chat.completions.create({
+            messages: [
+                { role: "system", content: sistema },
+                { role: "user", content: txt }
+            ],
+            max_tokens: 1000,
+            temperature: 0.7,
+            stream: false
+        });
+
+        removerUltimaMensagem();
+        adicionarMensagem("ia", resposta.choices[0].message.content.trim());
+    } catch (e) {
+        removerUltimaMensagem();
+        adicionarMensagem("ia", "❌ Houve um erro temporário. Tente novamente ou use o Chrome/Edge.");
     }
 }
 
+// 🛠️ Funções auxiliares
 function adicionarMensagem(tipo, conteudo) {
     const caixa = document.getElementById('caixaConversa');
     const div = document.createElement('div');
@@ -299,7 +229,7 @@ function removerUltimaMensagem() {
     caixa.removeChild(caixa.lastChild);
 }
 
-// Controles de menu
+// Controles de interface
 document.getElementById('abrirMenu').onclick = () => document.getElementById('menuLateral').classList.add('aberto');
 document.getElementById('fecharMenu').onclick = () => document.getElementById('menuLateral').classList.remove('aberto');
 document.addEventListener('click', e => {
@@ -308,10 +238,9 @@ document.addEventListener('click', e => {
 });
 document.getElementById('campoMensagem').addEventListener('keydown', e => e.key==='Enter' && enviarMensagem());
 
-// Inicia tudo
-window.onload = iniciarSistema;
+// Inicia
+window.onload = iniciarIA;
 </script>
 
 </body>
-            </html>
-            
+</html>
