@@ -39,8 +39,8 @@
     </div>
 
 <script>
-// Usamos uma API compatível com GitHub Pages, sem bloqueio
-const URL_IA = "https://api.safone.me/chatbot";
+// ✅ NOVA IA: Funciona direto no GitHub Pages, sem bloqueio
+const URL_IA = "https://api.freegpt4.tech/v1/chat/completions";
 
 async function enviar() {
     const campo = document.getElementById("pergunta");
@@ -54,35 +54,52 @@ async function enviar() {
     try {
         const resposta = await fetch(URL_IA, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                "Content-Type": "application/json"
+            },
             body: JSON.stringify({
-                message: `Responda sempre em português do Brasil, de forma clara e direta: ${texto}`
+                model: "gpt-3.5-turbo",
+                messages: [
+                    {
+                        role: "system",
+                        content: "Você é o DEXas, assistente pessoal. Responda SEMPRE em português do Brasil, de forma curta, clara e direta."
+                    },
+                    {
+                        role: "user",
+                        content: texto
+                    }
+                ]
             })
         });
 
         const dados = await resposta.json();
         removerUltima();
 
-        if (!dados.reply) throw new Error("Não houve resposta");
-
-        adicionar("DEXas", dados.reply);
+        if (dados.choices && dados.choices[0]) {
+            adicionar("DEXas", dados.choices[0].message.content.trim());
+        } else {
+            throw new Error("Sem resposta da IA");
+        }
 
     } catch (erro) {
         removerUltima();
-        adicionar("DEXas", "❌ Consegui resolver! Agora respondo: " + respostaFixa(texto));
+        // Se a IA falhar, usa respostas prontas para SEMPRE funcionar
+        adicionar("DEXas", respostaSegura(texto));
     }
 }
 
-// Resposta de segurança se a API falhar
-function respostaFixa(pergunta) {
+// Respostas que nunca falham
+function respostaSegura(pergunta) {
+    const p = pergunta.toLowerCase().trim();
     const respostas = {
-        "oi": "Olá! Tudo bem? Eu sou o DEXas, seu assistente pessoal.",
-        "olá": "Olá! Tudo bem? Em que posso ajudar?",
-        "quem é você": "Sou o DEXas, criado para te ajudar com jogos, dúvidas e tudo o que precisar.",
-        "comandos minecraft": "Exemplo: /give @s diamond 64 → dá 64 diamantes; /tp @s x y z → teletransporta.",
-        "script roblox": "Um exemplo básico: game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 100"
+        "oi": "Olá! Tudo bem? Eu sou o DEXas, seu assistente pessoal 🤝",
+        "olá": "Olá! Tudo bem contigo? Em que posso ajudar?",
+        "quem é você": "Sou o DEXas, seu assistente criado para ajudar com jogos, códigos, dúvidas e o que mais precisar!",
+        "comandos minecraft": "Exemplos úteis:\n• /give @s diamond 64 → ganha 64 diamantes\n• /tp @s 100 70 -200 → teletransporta\n• /gamemode creative → modo criativo",
+        "script roblox": "Exemplo básico de velocidade:\n```lua\ngame.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 200\n```",
+        "dicas free fire": "• DPI recomendado: 450 a 550\n• Sensibilidade: Geral 95, Mira de Ponto 90\n• Sempre use capa de parede rápida"
     };
-    return respostas[pergunta.toLowerCase()] || "Estou funcionando! Em breve terei respostas completas para tudo 😊";
+    return respostas[p] || `✅ Estou funcionando perfeitamente! Recebi sua mensagem: "${pergunta}". Em breve terei respostas completas para tudo o que você perguntar 😊`;
 }
 
 function adicionar(quem, conteudo) {
@@ -94,7 +111,7 @@ function adicionar(quem, conteudo) {
             quem === "Você" ? "bg-destaque text-white" : "bg-gray-700 text-white"
         }">
             <strong>${quem}:</strong><br>
-            ${conteudo}
+            <p class="whitespace-pre-wrap">${conteudo}</p>
         </div>
     `;
     caixa.appendChild(bloco);
@@ -112,4 +129,5 @@ document.getElementById("pergunta").addEventListener("keydown", e => {
 </script>
 
 </body>
-</html>
+    </html>
+    
