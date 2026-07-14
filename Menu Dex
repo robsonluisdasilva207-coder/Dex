@@ -26,7 +26,7 @@ screenGui.DisplayOrder = 999999
 screenGui.Parent = playerGui
 
 ----------------------------------------------------
--- JANELA PRINCIPAL (SUPER COMPACTA)
+-- JANELA PRINCIPAL 
 ----------------------------------------------------
 local mainFrame = Instance.new("Frame")
 mainFrame.Name = "MainFrame"
@@ -37,12 +37,83 @@ mainFrame.BorderSizePixel = 0
 mainFrame.Active = true
 mainFrame.ZIndex = 1 
 mainFrame.Parent = screenGui
+----------------------------------------------------
+-- ANIMAÇÃO DE INTRODUÇÃO (ESTILO VOID WARE) 
+----------------------------------------------------
+-- Deixa o menu principal invisível para a introdução rodar
+mainFrame.Visible = false
+
+-- 1. Fundo branco suave de tela cheia (Efeito Nuvem/Névoa)
+local introBackground = Instance.new("Frame")
+introBackground.Name = "IntroBackground"
+introBackground.Size = UDim2.new(1, 0, 1, 0)
+introBackground.Position = UDim2.new(0, 0, 0, 0)
+introBackground.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+introBackground.BackgroundTransparency = 1 -- Começa totalmente invisível
+introBackground.BorderSizePixel = 0
+introBackground.ZIndex = 5 -- Garante que fica no topo
+introBackground.Parent = screenGui
+
+-- 2. Título do menu no centro da tela (ligeiramente acima do meio)
+local introText = Instance.new("TextLabel")
+introText.Name = "IntroText"
+introText.Size = UDim2.new(0, 300, 0, 50)
+introText.Position = UDim2.new(0.5, -150, 0.4, -25) -- Posição centralizada e elevada
+introText.BackgroundTransparency = 1
+introText.Text = "DEX MENU"
+introText.TextColor3 = Color3.fromRGB(255, 255, 255)
+introText.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+introText.TextStrokeTransparency = 0.8
+introText.Font = Enum.Font.SourceSansBold
+introText.TextSize = 36
+introText.TextTransparency = 1 -- Começa oculto
+introText.ZIndex = 100000
+introText.Parent = screenGui
+
+-- 3. Sequência de animação em segundo plano
+task.spawn(function()
+    local introTweenInfo = TweenInfo.new(1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+    
+    -- Fade In: A névoa branca e o título surgem suavemente
+    TweenService:Create(introBackground, introTweenInfo, { BackgroundTransparency = 0.88 }):Play()
+    TweenService:Create(introText, introTweenInfo, { TextTransparency = 0.1 }):Play()
+    task.wait(1)
+    
+    -- Efeito de piscar sutil (Blink) simulando variação de transparência
+    local tempoDecorrido = 0
+    while tempoDecorrido < 2 do
+        TweenService:Create(introText, TweenInfo.new(0.4, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), { TextTransparency = 0.5 }):Play()
+        TweenService:Create(introBackground, TweenInfo.new(0.4, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), { BackgroundTransparency = 0.93 }):Play()
+        task.wait(0.4)
+        TweenService:Create(introText, TweenInfo.new(0.4, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), { TextTransparency = 0.1 }):Play()
+        TweenService:Create(introBackground, TweenInfo.new(0.4, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), { BackgroundTransparency = 0.88 }):Play()
+        task.wait(0.4)
+        tempoDecorrido = tempoDecorrido + 0.8
+    end
+    
+    -- Fade Out: Desvanecimento completo de toda a cena
+    local fadeOutInfo = TweenInfo.new(1, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
+    TweenService:Create(introBackground, fadeOutInfo, { BackgroundTransparency = 1 }):Play()
+    local textFade = TweenService:Create(introText, fadeOutInfo, { TextTransparency = 1 })
+    textFade:Play()
+    
+    -- Espera a transição acabar para remover os objetos e exibir o menu
+    textFade.Completed:Wait()
+    
+    introBackground:Destroy()
+    introText:Destroy()
+    
+    -- Exibe o menu principal expandindo ele verticalmente de forma bem fluida
+    mainFrame.Visible = true
+    mainFrame.Size = UDim2.new(0, 150, 0, 0)
+    TweenService:Create(mainFrame, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Size = UDim2.new(0, 150, 0, 190) }):Play()
+end)
 
 local mainCorner = Instance.new("UICorner")
 mainCorner.CornerRadius = UDim.new(0, 8)
 mainCorner.Parent = mainFrame
 
--- Barra de Título
+-- Barra de Titulo
 local titleBar = Instance.new("Frame")
 titleBar.Name = "TitleBar"
 titleBar.Size = UDim2.new(1, 0, 0, 26)
@@ -55,7 +126,7 @@ local titleCorner = Instance.new("UICorner")
 titleCorner.CornerRadius = UDim.new(0, 8)
 titleCorner.Parent = titleBar
 
--- Texto do Título
+-- Texto do Titulo
 local titleLabel = Instance.new("TextLabel")
 titleLabel.Size = UDim2.new(0.6, 0, 1, 0)
 titleLabel.Position = UDim2.new(0.08, 0, 0, 0)
@@ -73,7 +144,7 @@ local minButton = Instance.new("TextButton")
 minButton.Size = UDim2.new(0.15, 0, 1, 0)
 minButton.Position = UDim2.new(0.7, 0, 0, 0)
 minButton.BackgroundTransparency = 1
-minButton.Text = "−"
+minButton.Text = "-" -- Usando hífen comum para não bugar
 minButton.TextColor3 = Color3.fromRGB(200, 200, 200)
 minButton.Font = Enum.Font.SourceSansBold
 minButton.TextSize = 13
@@ -85,7 +156,7 @@ local closeButton = Instance.new("TextButton")
 closeButton.Size = UDim2.new(0.15, 0, 1, 0)
 closeButton.Position = UDim2.new(0.85, 0, 0, 0)
 closeButton.BackgroundTransparency = 1
-closeButton.Text = "×"
+closeButton.Text = "X" -- Usando X maiúsculo simples
 closeButton.TextColor3 = Color3.fromRGB(255, 100, 100)
 closeButton.Font = Enum.Font.SourceSansBold
 closeButton.TextSize = 13
@@ -105,7 +176,7 @@ contentFrame.ClipsDescendants = true
 contentFrame.ZIndex = 2
 contentFrame.Parent = mainFrame
 
--- Ativa o Scroll Inteligente Automático! 📈
+-- Ativa o Scroll Inteligente AutomÃ¡tico! ðŸ“ˆ
 contentFrame.AutomaticCanvasSize = Enum.AutomaticSize.Y
 contentFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
 
@@ -120,14 +191,14 @@ listPadding.Parent = contentFrame
 listPadding.PaddingTop = UDim.new(0, 4)
 
 ----------------------------------------------------
--- ABA LATERAL DE CONFIGURAÇÃO (CRIADA APENAS UMA VEZ)
+-- ABA LATERAL DE CONFIGURAÇÃO 
 ----------------------------------------------------
 local sideFrame = Instance.new("Frame")
 sideFrame.Name = "SideFrame"
 sideFrame.Size = UDim2.new(0, 125, 0, 95) 
 sideFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
 sideFrame.BorderSizePixel = 0
-sideFrame.ZIndex = 4
+sideFrame.ZIndex = 5
 sideFrame.Visible = false
 sideFrame.Parent = mainFrame
 
@@ -170,7 +241,7 @@ local inputCorner = Instance.new("UICorner")
 inputCorner.CornerRadius = UDim.new(0, 4)
 inputCorner.Parent = valueInput
 
--- Botão Switch com Bolinha Animada (Azul)
+-- Botão da Switch com Bolinha Animada (Azul)
 local toggleContainer = Instance.new("TextButton")
 toggleContainer.Name = "ToggleContainer"
 toggleContainer.Size = UDim2.new(0.28, 0, 0, 18)
@@ -197,6 +268,55 @@ toggleCircle.Parent = toggleContainer
 local circleCorner = Instance.new("UICorner")
 circleCorner.CornerRadius = UDim.new(1, 0)
 circleCorner.Parent = toggleCircle
+
+----------------------------------------------------
+-- FUNÇÃO PARA CRIAR BOTÕES DA LISTA 
+----------------------------------------------------
+local function criarBotaoLista(nome, aoClicar)
+    local btn = Instance.new("TextButton")
+    btn.Name = nome .. "Btn"
+    btn.Size = UDim2.new(0.9, 0, 0, 22)
+    btn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    
+    --  Adiciona a barra "/" antes do nome em letras minúsculas (ou maiúsculas, como preferir)
+    btn.Text = "/" .. nome:lower() 
+    btn.Font = Enum.Font.SourceSansBold
+    btn.TextSize = 11
+    
+    --  Alinha o texto para a esquerda!
+    btn.TextXAlignment = Enum.TextXAlignment.Left
+    btn.ZIndex = 3
+    btn.Parent = contentFrame
+
+    --  Adiciona um espaço de 8 pixels na esquerda para o texto não colar na borda
+    local btnPadding = Instance.new("UIPadding")
+    btnPadding.PaddingLeft = UDim.new(0, 8)
+    btnPadding.Parent = btn
+
+    local btnCorner = Instance.new("UICorner")
+    btnCorner.CornerRadius = UDim.new(0, 4)
+    btnCorner.Parent = btn
+
+    local btnStroke = Instance.new("UIStroke")
+    btnStroke.Color = Color3.fromRGB(40, 40, 40)
+    btnStroke.Thickness = 1
+    btnStroke.Parent = btn
+
+    -- Animação ao passar o dedo/mouse por cima
+    btn.MouseEnter:Connect(function()
+        TweenService:Create(btn, tweenInfo, { BackgroundColor3 = Color3.fromRGB(35, 35, 35) }):Play()
+    end)
+    btn.MouseLeave:Connect(function()
+        TweenService:Create(btn, tweenInfo, { BackgroundColor3 = Color3.fromRGB(30, 30, 30) }):Play()
+    end)
+
+    btn.MouseButton1Click:Connect(function()
+        aoClicar(btn)
+    end)
+
+    return btn
+end
 
 ----------------------------------------------------
 -- LÓGICA DE TRANSIÇÃO E TAMANHO INTELIGENTE
@@ -298,36 +418,7 @@ local function abrirConfiguracao(nome, botaoOrigem, temInput, statusInicial, aoS
 end
 
 ----------------------------------------------------
--- CRIADOR DE BOTÕES 
-----------------------------------------------------
-local function criarBotaoLista(nome, callback)
-    local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(0.9, 0, 0, 24)
-    btn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-    btn.TextColor3 = Color3.fromRGB(230, 230, 230)
-    btn.Text = "/" .. nome
-    btn.Font = Enum.Font.SourceSansSemibold
-    btn.TextSize = 11
-    btn.TextXAlignment = Enum.TextXAlignment.Left
-    btn.ZIndex = 3
-    btn.Parent = contentFrame
-    
-    local textPadding = Instance.new("UIPadding")
-    textPadding.PaddingLeft = UDim.new(0, 10)
-    textPadding.Parent = btn
-    
-    local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(0, 4)
-    corner.Parent = btn
-    
-    btn.MouseButton1Click:Connect(function()
-        callback(btn)
-    end)
-    return btn
-end
-
-----------------------------------------------------
--- SISTEMA DE ARRASTE MANUAL (MOBILE)
+-- SISTEMA DE ARRASTE 
 ----------------------------------------------------
 local dragging, dragInput, dragStart, startPos
 
@@ -377,7 +468,7 @@ minButton.MouseButton1Click:Connect(function()
         contentFrame.Visible = false
         TweenService:Create(mainFrame, tweenInfo, { Size = minimizedSize }):Play()
     else
-        minButton.Text = "−"
+        minButton.Text = "- "
         local tween = TweenService:Create(mainFrame, tweenInfo, { Size = originalSize })
         tween:Play()
         tween.Completed:Connect(function()
@@ -391,7 +482,7 @@ closeButton.MouseButton1Click:Connect(function()
 end)
 
 ----------------------------------------------------
--- CONFIGURAÇÕES & ESTADO ATIVO DO EXECUTOR
+-- CONFIGURAÇÕES e ESTADO ATIVO DO EXECUTOR
 ----------------------------------------------------
 local configs = {
     velocidade = { ativa = false, valor = 16 },
@@ -405,7 +496,7 @@ local configs = {
 }
 
 ----------------------------------------------------
--- GERENCIADOR DE REAPLICAÇÃO DE FUNÇÕES (APÓS MORTE)
+-- GERENCIADOR DE REAPLICAÇÃO DE MORTE
 ----------------------------------------------------
 local function aplicarModificacoesPersonagem(character)
     local humanoid = character:WaitForChild("Humanoid", 5)
@@ -457,7 +548,7 @@ player.CharacterAdded:Connect(function(character)
 end)
 
 ----------------------------------------------------
--- ATRIBUIÇÃO DOS BOTÕES
+-- ATRIBUIÇÃO DOS BOTÕES 
 ----------------------------------------------------
 
 -- 1. Velocidade
@@ -552,7 +643,7 @@ criarBotaoLista("pulo infinito", function(btn)
     )
 end)
 
--- Funções auxiliares para ESP
+-- FunÃ§Ãµes auxiliares para ESP
 local function obterCorJogador(p)
     if not p or not p.Parent then return Color3.fromRGB(0, 255, 150) end
     local char = p.Character
@@ -709,7 +800,7 @@ criarBotaoLista("ver no escuro", function(btn)
     )
 end)
 
--- 6. Teleporte (Lista Dinâmica com Scroll Inteligente)
+-- 6. Teleporte (Lista Dinâmica com Scroll Inteligente Atualizada) 
 criarBotaoLista("teleporte", function(btn)
     local function atualizarListaPlayers(container)
         for _, child in pairs(container:GetChildren()) do
@@ -717,8 +808,9 @@ criarBotaoLista("teleporte", function(btn)
         end
 
         local scroll = Instance.new("ScrollingFrame")
-        scroll.Size = UDim2.new(0.9, 0, 0, 42) 
-        scroll.Position = UDim2.new(0.05, 0, 0, 20)
+        scroll.Name = "TeleporteScroll"
+        scroll.Size = UDim2.new(0.9, 0, 0, 50) -- Altura ideal para a aba de 80px
+        scroll.Position = UDim2.new(0.05, 0, 0, 24) -- Posicionado perfeitamente abaixo do título
         scroll.BackgroundTransparency = 1
         scroll.BorderSizePixel = 0
         scroll.ScrollBarThickness = 2
@@ -742,8 +834,13 @@ criarBotaoLista("teleporte", function(btn)
                 pBtn.Text = p.DisplayName
                 pBtn.Font = Enum.Font.SourceSansSemibold
                 pBtn.TextSize = 10
+                pBtn.TextXAlignment = Enum.TextXAlignment.Left
                 pBtn.ZIndex = 7
                 pBtn.Parent = scroll
+
+                local btnPadding = Instance.new("UIPadding")
+                btnPadding.PaddingLeft = UDim.new(0, 6)
+                btnPadding.Parent = pBtn
 
                 local pCorner = Instance.new("UICorner")
                 pCorner.CornerRadius = UDim.new(0, 3)
@@ -787,22 +884,31 @@ criarBotaoLista("teleporte", function(btn)
     if sideFrame.Visible then atualizarListaPlayers(sideFrame) end
 end)
 
--- 7. Atravessar Parede
+-- 7. Atravessar Parede (Noclip Organizado) 
 criarBotaoLista("atravessar parede", function(btn)
     abrirConfiguracao(
-        "Noclip", btn, false,
+        "NOCLIP", --  Define o título correto que vai aparecer na aba lateral
+        btn, 
+        false, -- Sem caixa de texto, apenas o botão de liga/desliga
         configs.noclip.ativa,
-        function() end,
+        function() end, -- Não precisa de função ao salvar texto
         function(estado)
             configs.noclip.ativa = estado
-            if noclipConn then noclipConn:Disconnect() noclipConn = nil end
             
+            -- Limpa a conexão antiga se ela existir
+            if noclipConn then 
+                noclipConn:Disconnect() 
+                noclipConn = nil 
+            end
+            
+            -- Ativa o novo sistema de Noclip sem empurrar o personagem para cima
             if estado then
                 noclipConn = RunService.Stepped:Connect(function()
                     local char = player.Character
                     if char and configs.noclip.ativa then
                         for _, part in pairs(char:GetDescendants()) do
-                            if part:IsA("BasePart") and part.CanCollide then 
+                            -- Desativa a colisão apenas se for uma parte física do corpo
+                            if part:IsA("BasePart") then 
                                 part.CanCollide = false 
                             end
                         end
@@ -813,10 +919,10 @@ criarBotaoLista("atravessar parede", function(btn)
     )
 end)
 
--- 8. Voar (Fly)
+-- 8. Voar (Fly com Pose Estática Total) 
 criarBotaoLista("voar", function(btn)
     abrirConfiguracao(
-        "Voar (Fly)", btn, true,
+        "VOAR", btn, true,
         configs.voar.ativa,
         function(val)
             if val then configs.voar.valor = val end
@@ -835,8 +941,29 @@ criarBotaoLista("voar", function(btn)
             local char = player.Character
             local root = char and char:FindFirstChild("HumanoidRootPart")
             local hum = char and char:FindFirstChildOfClass("Humanoid")
+            local animateScript = char and char:FindFirstChild("Animate")
             
             if estado and root and hum then
+                --  Para qualquer movimento residual inicial
+                root.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+                root.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
+                
+                --  Força o estado em pé por um instante
+                hum:ChangeState(Enum.HumanoidStateType.Running)
+                
+                -- Desativa o script de animação padrão
+                if animateScript then
+                    animateScript.Disabled = true
+                end
+                
+                -- Para todas as animações que estiverem tocando
+                local animator = hum:FindFirstChildOfClass("Animator")
+                if animator then
+                    for _, track in pairs(animator:GetPlayingAnimationTracks()) do
+                        track:Stop(0)
+                    end
+                end
+                
                 bodyGyro = Instance.new("BodyGyro")
                 bodyGyro.P = 9e4
                 bodyGyro.maxTorque = Vector3.new(9e9, 9e9, 9e9)
@@ -850,6 +977,7 @@ criarBotaoLista("voar", function(btn)
                 
                 hum:ChangeState(Enum.HumanoidStateType.Physics)
                 
+                -- Conexão de voo ativa
                 flyConn = RunService.Stepped:Connect(function()
                     local camera = workspace.CurrentCamera
                     local personagem = player.Character
@@ -857,13 +985,14 @@ criarBotaoLista("voar", function(btn)
                     local humanoide = personagem and personagem:FindFirstChildOfClass("Humanoid")
                     
                     if configs.voar.ativa and tronco and camera and humanoide then
-                        local animator = humanoide:FindFirstChildOfClass("Animator")
-                        if animator then
-                            for _, track in pairs(animator:GetPlayingAnimationTracks()) do
-                                track:Stop(0)
+                        --  Força todos os Motor6D a ficarem na pose padrão reta (idle) a cada quadro
+                        for _, motor in pairs(personagem:GetDescendants()) do
+                            if motor:IsA("Motor6D") then
+                                motor.Transform = CFrame.new()
                             end
                         end
                         
+                        -- Desativa colisões para atravessar o mapa flutuando
                         for _, part in pairs(personagem:GetDescendants()) do
                             if part:IsA("BasePart") then 
                                 part.CanCollide = false 
@@ -889,8 +1018,12 @@ criarBotaoLista("voar", function(btn)
                     end
                 end)
             else
+                --  Restaura o personagem ao estado normal ao desligar o voo
                 if bodyGyro then bodyGyro:Destroy() end
                 if bodyVelocity then bodyVelocity:Destroy() end
+                if animateScript then
+                    animateScript.Disabled = false
+                end
                 if hum then 
                     hum:ChangeState(Enum.HumanoidStateType.GettingUp)
                 end
@@ -899,7 +1032,7 @@ criarBotaoLista("voar", function(btn)
     )
 end)
 
--- 9. Espectador (Com Scroll Inteligente Corrigido!) 🎯
+-- 9. Espectador (Com Scroll Inteligente Corrigido!) ðŸŽ¯
 criarBotaoLista("espectador", function(btn)
     local function atualizarListaEspectador(container)
         for _, child in pairs(container:GetChildren()) do
@@ -911,7 +1044,7 @@ criarBotaoLista("espectador", function(btn)
         local scroll = Instance.new("ScrollingFrame")
         scroll.Name = "EspectadorScroll"
         scroll.Size = UDim2.new(0.9, 0, 0, 48) -- Altura ajustada
-        scroll.Position = UDim2.new(0.05, 0, 0, 46) -- Posicionado abaixo do botão switch!
+        scroll.Position = UDim2.new(0.05, 0, 0, 46) -- Posicionado abaixo do botÃ£o switch!
         scroll.BackgroundTransparency = 1
         scroll.BorderSizePixel = 0
         scroll.ScrollBarThickness = 2
